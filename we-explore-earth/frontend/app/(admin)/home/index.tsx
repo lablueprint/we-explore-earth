@@ -36,10 +36,7 @@ export default function HomeScreen() {
       <Text>Sample Admin HOME Page</Text>
       {allEvents && allEvents.map((event, index) => {
         return(
-        <>
           <Text key={index}>{event.title}</Text>
-          <br/>
-        </>
       )})}
     </View>
   );
