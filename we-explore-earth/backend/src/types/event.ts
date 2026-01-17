@@ -4,4 +4,5 @@ export interface Event {
     location: string;
     timeStart: Date;
     timeEnd: Date;
+    id?: string;
   }

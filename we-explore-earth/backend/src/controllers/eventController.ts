@@ -42,3 +42,21 @@ export async function getEvent (req: Request, res: Response) {
     return res.status(500).json({error: "Failed to fetch event" });
   }
 }
+
+export async function getAllEvents(req: Request, res: Response) {
+  try {
+    const data = await db.collection("events").get();
+    const allEvents : Array<Event> = [];
+    data.forEach((doc) => {
+      if(!doc.exists){
+        return res.status(404).json({ error: "Event not found" });
+      }
+      allEvents.push({id: doc.id, ...doc.data()} as Event);
+    })
+    return res.json(allEvents);
+  }
+  catch (error: any) {
+    console.error("Error fetching all events for home page.", error.message);
+    return res.status(500).json({error: `Error fetching all events for home page. ${error.message}`});
+  }
+}

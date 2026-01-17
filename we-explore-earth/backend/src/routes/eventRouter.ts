@@ -1,5 +1,5 @@
 import express from "express";
-import { createEvent, getEvent } from "../controllers/eventController";
+import { createEvent, getAllEvents, getEvent } from "../controllers/eventController";
 
 const router = express.Router();
 
@@ -8,5 +8,8 @@ router.post("/create", createEvent);
 
 // GET /events/:id
 router.get("/:id", getEvent);
+
+// GET /events
+router.get("/", getAllEvents);
 
 export default router;
