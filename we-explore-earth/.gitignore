@@ -55,4 +55,4 @@ frontend/android
 # Logs
 *.log
 
-app-example
+app-example.env

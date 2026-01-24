@@ -4,3 +4,26 @@
 
 expo-env.d.ts
 # @end expo-cli
+
+# OS files
+.DS_Store
+
+# Env files
+.env
+.env.*
+
+# Node
+node_modules/
+
+# Expo
+.expo/
+.expo-shared/
+
+# Coverage
+coverage/
+frontend/coverage/
+
+# Editor junk
+* 2.ts
+* 2.tsx
+* 2.json

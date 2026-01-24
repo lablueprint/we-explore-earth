@@ -42,3 +42,19 @@ export async function getEvent (req: Request, res: Response) {
     return res.status(500).json({error: "Failed to fetch event" });
   }
 }
+
+export async function getEvents(req: Request, res: Response) {
+  try {
+    const snapshot = await db.collection("events").orderBy("timeStart", "asc").get();
+
+    const events = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    return res.json(events);
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    return res.status(500).json({ error: "Failed to fetch events" });
+  }
+}

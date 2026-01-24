@@ -1,10 +1,11 @@
 // STANDARD / THIRD-PARTY IMPORTS
 import { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, Alert, SafeAreaView, ScrollView, } from 'react-native';
+import {View, Text, ActivityIndicator, Alert, SafeAreaView, ScrollView, Pressable, } from 'react-native';
 
 // LOCAL COMPONENTS
 import EventView from '../../components/Calendar/eventView/eventView';
 import EventDetails from '../../components/Calendar/eventDetails/eventDetails';
+import FiltersPage from '../../components/Filters/filtersPage';
 
 // TYPES
 import type { Event } from '../../components/Calendar/calendar';
@@ -14,6 +15,7 @@ export default function HomeScreen() {
   const [events, setEvents] = useState<Event[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [filterVisible, setFilterVisible] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // DATA FETCHING
@@ -30,7 +32,11 @@ export default function HomeScreen() {
       const res = await fetch(`${baseUrl}/events`);
 
       if (!res.ok) {
-        Alert.alert('Error', `Failed to fetch events (status ${res.status})`);
+        const text = await res.text().catch(() => '');
+        Alert.alert(
+          'Error',
+          `Failed to fetch events (status ${res.status})${text ? `\n${text}` : ''}`
+        );
         return;
       }
 
@@ -55,6 +61,14 @@ export default function HomeScreen() {
     setModalVisible(false);
   };
 
+  const handleOpenFilters = () => {
+    setFilterVisible(true);
+  };
+
+  const handleCloseFilters = () => {
+    setFilterVisible(false);
+  };
+
   // EFFECTS
   useEffect(() => {
     fetchEvents();
@@ -70,21 +84,47 @@ export default function HomeScreen() {
           </View>
         ) : (
           <>
-            <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 16 }}>
-              Events
-            </Text>
+            {/* HEADER */}
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: 16,
+              }}
+            >
+              <Text style={{ fontSize: 24, fontWeight: 'bold' }}>Events</Text>
 
+              <Pressable
+                onPress={handleOpenFilters}
+                style={{
+                  paddingVertical: 8,
+                  paddingHorizontal: 12,
+                  borderRadius: 10,
+                  borderWidth: 1,
+                  borderColor: '#ddd',
+                }}
+              >
+                <Text style={{ fontWeight: '600' }}>Filter</Text>
+              </Pressable>
+            </View>
+
+            {/* EVENT LIST */}
             <ScrollView>
               {events.filter(Boolean).map((event) => (
                 <EventView key={event.id} event={event} onPress={handleEventPress} />
               ))}
             </ScrollView>
 
+            {/* EVENT DETAILS MODAL */}
             <EventDetails
               visible={modalVisible && !!selectedEvent}
               event={selectedEvent}
               onClose={handleCloseModal}
             />
+
+            {/* FILTERS MODAL (DUMMY) */}
+            <FiltersPage visible={filterVisible} onClose={handleCloseFilters} />
           </>
         )}
       </View>

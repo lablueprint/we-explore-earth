@@ -5,7 +5,7 @@ import { View, Text, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { router } from 'expo-router';
 //LOCAL FILES
 import { styles } from './styles';
-import BackButton from '@/app/components/BackButton';
+import BackButton from '@/app/components/BackButton/backButton';
 
 export default function ResetPage() {
     //REACT HOOKS
