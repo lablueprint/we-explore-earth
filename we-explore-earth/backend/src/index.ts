@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import "./firestore"; // This initializes Firebase Admin
 import userRouter from "./routes/userRouter";
 import eventRouter from "./routes/eventRouter";
-import configRouter from "./routes/configRouter";
+import configRouter from './routes/configRouter';
 
 dotenv.config();
 const app = express();

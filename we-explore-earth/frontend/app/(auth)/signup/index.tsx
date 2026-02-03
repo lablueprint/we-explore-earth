@@ -1,5 +1,5 @@
 //STANDARD LIBRARY
-import { useState } from 'react';
+import React, { useState } from 'react';
 //THIRD-PARTY LIBRARIES
 import { View, Text, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native';
 import { router } from 'expo-router';

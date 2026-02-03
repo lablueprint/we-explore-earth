@@ -1,5 +1,5 @@
 //STANDARD LIBRARY
-import { useState } from "react";
+import React, { useState } from 'react';
 //THIRD-PARTY LIBRARIES
 import { View, Text, TouchableOpacity, TextInput, Alert } from "react-native";
 import { router } from "expo-router";
@@ -46,28 +46,33 @@ export default function LoginPage() {
 
       dispatch(setUserState(data));
 
-      console.log("Login successful");
-      router.replace("(admin)/home" as any);
-    } catch (error) {
-      console.error("Login error:", error);
-      Alert.alert(
-        "Login Failed",
-        error instanceof Error ? error.message : "An unknown error occurred"
-      );
+        console.log('Login successful');
+        if(data.isAdmin) {
+          router.replace('/(admin)/home');
+        } else{
+          router.replace('/(users)/home');
+        }
+        
+      } catch (error) {
+        console.error('Login error:', error);
+        Alert.alert(
+          'Login Failed', 
+          error instanceof Error ? error.message : 'An unknown error occurred'
+        );
+      }
     }
-  }
-
-  async function handleForgotPassword() {
-    router.push("/reset" as any);
-  }
-  //EFFECTS
-
-  //RENDER
-  return (
-    <>
-      <BackButton route="/launch" />
-      <View style={styles.container}>
-        <Text style={styles.title}>Welcome to We Explore Earth</Text>
+    
+    async function handleForgotPassword() {
+      router.push('/reset' as any);
+    }
+    //EFFECTS
+    
+    //RENDER
+    return (
+      <>
+        <BackButton route="/launch" />
+        <View style={styles.container}>
+            <Text style={styles.title}>Welcome to We Explore Earth</Text>
 
         <TextInput
           style={styles.input}
