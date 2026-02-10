@@ -1,41 +1,24 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalCard: {
-    width: '90%',
+  container: {
     padding: 16,
-    backgroundColor: '#fff',
-    borderRadius: 8,
   },
-  title: {
+  header: {
+    fontSize: 22,
+    fontWeight: "600",
+    marginBottom: 8,
+    textAlign: "center",
+  },
+  subheading: {
+    color: "#000000ff",
+    marginBottom: 12,
     fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 8,
+    textAlign: "center",
   },
-  body: {
-    fontSize: 14,
-    marginBottom: 8,
-  },
-  meta: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 4,
-  },
-  closeButton: {
-    marginTop: 12,
-    padding: 10,
-    backgroundColor: '#007AFF',
-    borderRadius: 6,
-    alignItems: 'center',
-  },
-  closeText: {
-    color: '#fff',
-    fontWeight: '600',
+  sectionTitle: {
+    marginTop: 16,
+    fontSize: 16,
+    fontWeight: "500",
   },
 });
