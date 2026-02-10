@@ -8,6 +8,7 @@ import { styles } from "./styles";
 import BackButton from "@/app/components/BackButton/backButton";
 import { useAppDispatch } from "@/app/redux/hooks";
 import { setUserState } from "@/app/redux/slices/userSlice";
+import { registerForPushNotificationsAsync } from "@/lib/notifications/registerForPushNotifications";
 
 export default function LoginPage() {
   //REACT HOOKS
@@ -46,7 +47,18 @@ export default function LoginPage() {
 
       dispatch(setUserState(data));
 
-      console.log("Login successful");
+      // Re-register push token on login if user has opted in (tokens can change)
+      if (data.wantsNotifications && data.id) {
+        const token = await registerForPushNotificationsAsync();
+        if (token) {
+          await fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/${data.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ notificationToken: token, wantsNotifications: true }),
+          });
+        }
+      }
+
       router.replace("(admin)/home" as any);
     } catch (error) {
       console.error("Login error:", error);

@@ -5,5 +5,6 @@ export interface User {
   firstName: string;
   lastName: string;
   notificationToken: string | null;
+  wantsNotifications: boolean;
   isAdmin: boolean;
 }

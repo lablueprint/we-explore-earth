@@ -9,6 +9,7 @@ export interface NewUser {
   firstName: string;
   lastName: string;
   notificationToken: string | null;
+  wantsNotifications: boolean;
   isAdmin: boolean;
   events: UserRSVP[];
 }

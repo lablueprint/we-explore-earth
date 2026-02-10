@@ -7,7 +7,7 @@ import nodemailer from 'nodemailer';
 // GET /users/:id
 export async function getUser(req: Request, res: Response) {
   try {
-    const doc = await db.collection("users").doc(req.params.id).get();
+    const doc = await db.collection("users").doc(req.params.id as string).get();
 
     if (!doc.exists) return res.status(404).json({ error: "User not found" });
 
@@ -20,7 +20,7 @@ export async function getUser(req: Request, res: Response) {
 // POST /users/signup
 export async function signupUser(req: Request, res: Response) {
   try {
-    const { email, password, username, firstName, lastName, notifications} = req.body;
+    const { email, password, username, firstName, lastName, notifications } = req.body;
 
     if (!email || !password || !username || !firstName || !lastName) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -64,6 +64,7 @@ export async function signupUser(req: Request, res: Response) {
       firstName,
       lastName,
       notificationToken: null,
+      wantsNotifications: Boolean(notifications),
       isAdmin: false,
       events: []
     };
@@ -85,13 +86,13 @@ export async function signupUser(req: Request, res: Response) {
 export async function updateUser(req: Request, res:Response) {
   try {
     const { id } = req.params;
-    const { username, email, firstName, lastName, notificationToken, isAdmin } = req.body;
+    const { username, email, firstName, lastName, notificationToken, wantsNotifications, isAdmin } = req.body;
 
     if (!id) {
       return res.status(400).json({ error: "Missing required fields" });
     }
     
-    const userDocument = await db.collection("users").doc(id).get();
+    const userDocument = await db.collection("users").doc(id as string).get();
 
     if (!userDocument.exists) {
       return res.status(404).json({ error: "User not found" });
@@ -99,8 +100,9 @@ export async function updateUser(req: Request, res:Response) {
 
     const userData = userDocument.data() as NewUser;  
     if (notificationToken !== undefined) userData.notificationToken = notificationToken;
+    if (wantsNotifications !== undefined) userData.wantsNotifications = wantsNotifications;
   
-    await db.collection("users").doc(id).set(userData);
+    await db.collection("users").doc(id as string).set(userData);
     
     res.json({ id: id, ...userData });
     

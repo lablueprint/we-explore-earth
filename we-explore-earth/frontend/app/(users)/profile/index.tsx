@@ -1,76 +1,73 @@
 import React from 'react';
 import { View, Text, Alert } from 'react-native';
-import { useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import { TouchableOpacity } from 'react-native';
 
 //LOCAL FILES
 import { styles } from './styles';
 import { User } from "../../types/user";
 import { useUser } from '../../../hooks/useUser';
+import { EnableNotifications } from '@/components/notifications/EnableNotifications';
 
 export default function ProfileScreen() {
-  //REACT HOOKS
   const { userId } = useUser();
-  //STATE VARIABLES
   const [user, setUser] = useState<User | null>(null);
-  const [notificationTokenEnabled, setNotificationTokenEnabled] = useState<boolean>(false);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
-  //HANDLERS
-  const fetchUser = async (userId: string) => {
+  const fetchUser = async (id: string) => {
     try {
-      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/${userId}`, {
-        method: 'GET', 
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/${id}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
       });
-      console.log(response);
-      if (!response.ok) {
-        throw new Error('Failed to fetch user');
-      }
-
+      if (!response.ok) throw new Error('Failed to fetch user');
       const userData: User = await response.json();
       setUser(userData);
-      setNotificationTokenEnabled(userData.notificationToken !== null);
-    } catch(error: any) {
+    } catch (error: unknown) {
       console.error('Error while fetching user:', error);
     }
-  }
+  };
 
-  const handleToggleNotification = () => {
-    setNotificationTokenEnabled(!notificationTokenEnabled);
-  }
-
-  const handleUpdate = async () => {
-    if (!user) return;
-
+  const handleDisableNotifications = async () => {
+    if (!user || !userId) return;
     setIsUpdating(true);
     try {
-      const updatedUser = {
-        ...user,
-        notificationToken: notificationTokenEnabled ? (user.notificationToken || 'enabled') : null,
-      };
-
       const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/${userId}`, {
-        method: 'PATCH', 
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedUser),
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notificationToken: null, wantsNotifications: false }),
       });
+      if (!response.ok) throw new Error('Failed to update user');
+      const updated: User = await response.json();
+      setUser(updated);
+    } catch (error: unknown) {
+      console.error('Error disabling notifications:', error);
+      Alert.alert('Error', 'Failed to disable notifications.');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
-      if (!response.ok) {
-        throw new Error('Failed to update user');
-      }
-
-      const updatedUserData: User = await response.json();
-      setUser(updatedUserData);
-      setNotificationTokenEnabled(updatedUserData.notificationToken !== null);
+  const handleUpdate = async () => {
+    if (!user || !userId) return;
+    setIsUpdating(true);
+    try {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/${userId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: user.username,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        }),
+      });
+      if (!response.ok) throw new Error('Failed to update user');
+      const updated: User = await response.json();
+      setUser(updated);
       Alert.alert('Success', 'Profile updated successfully!');
-    } catch(error: any) {
+    } catch (error: unknown) {
       console.error('Error while updating user:', error);
-      Alert.alert('Error', 'Failed to update profile. Please try again.');
+      Alert.alert('Error', 'Failed to update profile.');
     } finally {
       setIsUpdating(false);
     }
@@ -94,18 +91,21 @@ export default function ProfileScreen() {
         <Text style={styles.infoText}>Last Name: {user?.lastName}</Text>
 
         <View style={styles.notificationContainer}>
-          <Text style={styles.label}>Enable Notifications:</Text>
-          <TouchableOpacity 
-            style={styles.checkbox}
-            onPress={handleToggleNotification}
-          >
-            <View style={[
-              styles.checkboxInner,
-              notificationTokenEnabled && styles.checkboxChecked
-            ]}>
-              {notificationTokenEnabled && <Text style={styles.checkmark}>✓</Text>}
-            </View>
-          </TouchableOpacity>
+          <Text style={styles.label}>Notifications:</Text>
+          {(user?.wantsNotifications ?? user?.notificationToken != null) ? (
+            <>
+              <Text style={styles.infoText}>Notifications enabled</Text>
+              <TouchableOpacity onPress={handleDisableNotifications} disabled={isUpdating}>
+                <Text style={styles.infoText}>Disable</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <EnableNotifications
+              userId={userId!}
+              wantsNotifications={false}
+              onSuccess={() => fetchUser(userId!)}
+            />
+          )}
         </View>
       </View>
 
