@@ -21,4 +21,42 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
   },
+ attendeeItem: {
+  padding: 10,
+  marginBottom: 10,
+  borderWidth: 1,
+  borderColor: "#686869",      
+  backgroundColor: "#f0f5fa", 
+  borderRadius: 6,
+
+},
+  attendeeName: {
+    fontSize: 18,
+  },
+
+  attendeeUsername: {
+    fontSize: 14,
+  },
+
+  attendeeEmail: {
+    fontSize: 14,
+  },
+
+ checkInButton: {
+  alignSelf: "flex-start",
+},
+
+
+  searchBar: {
+    height: 40,
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+  },
+  item: {
+    fontSize: 18,
+    padding: 10,
+  },
+
 });
