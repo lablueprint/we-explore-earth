@@ -32,6 +32,7 @@ export const styles = StyleSheet.create({
 },
   attendeeName: {
     fontSize: 18,
+    fontWeight: "bold",
   },
 
   attendeeUsername: {

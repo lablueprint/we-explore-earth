@@ -14,46 +14,12 @@ type Props = {
 
 export default function EventStats({eventId}: Props){
 
-  const sampleUsers: User[]= [
-  {
-    id: "u1",
-    firstName: "Aarav ",
-    lastName: "Mehta",
-    email: "aarav.mehta@gmail.com",
-    notificationToken: null,
-    username: "testtest",
-    isAdmin: false,
-    events: [],
-
-  
-  },
-  {
-    id: "u2",
-    firstName: "Barav ",
-    lastName: "Mehta",
-    email: "aarav.mehta@gmail.com",
-    notificationToken: null,
-    username: "testtest",
-    isAdmin: false,
-    events: [],
-  },
-  {
-    id: "u3",
-    firstName: "Carav ",
-    lastName: "Mehta",
-    email: "aarav.mehta@gmail.com",
-    notificationToken: null,
-    username: "testtest",
-    isAdmin: false,
-    events: [],
-  },
-];
-
     const [event, setEvent] = useState<Event | null>(null);
-    // const [attendee, setAttendee] = useState<User | null>(null);
     const [attendees, setAttendees] = useState<User[]>([]);
     const [search, setSearch] = useState('');
-    const [filteredData, setFilteredData] = useState(sampleUsers)
+    const [filteredData, setFilteredData] = useState<User[]>([]);
+    const [YesAttendees, setYesAttendees] = useState<User[]>([]);
+    const [MayabeAttendees, setMaybeAttendees] = useState<User[]>([]);
 
     const fetchEventDetails = async (eventId: string) => {
         try {
@@ -74,33 +40,39 @@ export default function EventStats({eventId}: Props){
         }
     }
 
-    // const fetchAttendeeDetails = async (attendeeId: string) => {
-    //     try {
-    //         const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/${attendeeId}`, {
-    //         method: 'GET', 
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //         },});
-    //         console.log(response);
-    //         if (!response.ok) {
-    //             throw new Error('Failed to fetch attendee');
-    //         }
-    //         const attendeeData: User = await response.json();
-    //         setAttendee(attendeeData);
-    //     }
-    //     catch (error: any) {
-    //         console.error('Error while fetching attendee:', error);
-    //     }
-    // }
+    const fetchAttendees = async (ids: string[]) => {
+      try {
+        const users = await Promise.all(ids.map(fetchAttendeeDetailsOne));
+        setAttendees(users);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    const fetchAttendeeDetailsOne = async (id: string): Promise<User> => {
+      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/${id}`);
+      if (!res.ok) throw new Error(`Failed to fetch user ${id}`);
+      return res.json();
+    };
 
     useEffect(() => {
     fetchEventDetails(eventId);
     }, [eventId]);
 
+    useEffect(() => {
+    if (event?.attendees?.length) {
+      const ids = event.attendees.map((rsvp) => rsvp.userID);
+      fetchAttendees(ids);
+    }
+  }, [event?.attendees]);
+
     const handleSearch = (text: string) => {
     setSearch(text);
-    const filtered = sampleUsers.filter(item =>
-      item.firstName.toLowerCase().includes(text.toLowerCase())
+    const filtered = attendees.filter(item =>
+      item.firstName.toLowerCase().includes(text.toLowerCase()) ||
+      item.lastName.toLowerCase().includes(text.toLowerCase()) ||
+      item.username.toLowerCase().includes(text.toLowerCase()) ||
+      item.email.toLowerCase().includes(text.toLowerCase())
     );
     setFilteredData(filtered);
   };
@@ -121,25 +93,17 @@ export default function EventStats({eventId}: Props){
         onChangeText={handleSearch}
       />
 
-      {/* FlatList */}
       <FlatList
         data={filteredData}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.attendeeItem}>
-          <Text style={styles.attendeeName}>{item.firstName}{item.lastName}</Text>
+          <Text style={styles.attendeeName}>{item.firstName} {item.lastName}</Text>
           <Text style={styles.attendeeUsername}>{item.username}</Text>
           <Text style={styles.attendeeEmail}>{item.email}</Text>
           </View>
         )}
       />
-        {sampleUsers.map((user) => (
-        <View key={user.id} style={styles.attendeeItem}>
-          <Text>Name: {user.firstName}{user.lastName}</Text>
-          <Text>Email: {user.email}</Text>
-        </View>
-      ))}
-
         </>
     )}
   </View>
