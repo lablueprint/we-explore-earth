@@ -60,4 +60,41 @@ export const styles = StyleSheet.create({
     padding: 10,
   },
 
+tabRow: {
+  flexDirection: "row",
+  justifyContent: "center",
+  alignItems: "center",
+  gap: 60, // <-- space between tabs
+  marginTop: 12,
+  marginBottom: 12,
+},
+
+tab: {
+  paddingVertical: 10,
+  paddingHorizontal: 30,  // gives them width
+  borderRadius: 8,
+  alignItems: "center",
+  backgroundColor: "#f1f1f1",
+  marginHorizontal: 10,   // spacing between tabs
+},
+
+tabActive: {
+  backgroundColor: "#ffffff",
+  shadowColor: "#000",
+  shadowOpacity: 0.08,
+  shadowRadius: 4,
+  elevation: 2,
+},
+
+tabText: {
+  fontSize: 14,
+  fontWeight: "600",
+  color: "#666",
+},
+
+tabTextActive: {
+  color: "#111",
+  fontWeight: "bold",
+  textDecorationLine: "underline",
+},
 });
