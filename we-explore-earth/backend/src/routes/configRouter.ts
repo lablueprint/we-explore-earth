@@ -3,8 +3,6 @@ import {
   getAdmins,
   addAdmin,
   removeAdmin,
-  isAdmin,
-  getConfig,
   getCategories,
 } from "../controllers/configController";
 
