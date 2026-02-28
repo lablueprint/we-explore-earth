@@ -140,8 +140,6 @@ export default function MyEventsScreen() {
           visible={modalVisible && !!selectedEvent}
           event={selectedEvent}
           onClose={handleCloseModal}
-          currentRSVP={"YES" as 'YES' | 'MAYBE' | null} // Placeholder, remove this prop once currentRSVP is implement within EventDetails
-          onRSVPPress={handleCloseModal} // Placeholder, same thing as above
         />
       </View>
     </SafeAreaView>
