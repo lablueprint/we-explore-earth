@@ -9,26 +9,21 @@ type Props = {
   visible: boolean;
   event: Event | null;
   onClose: () => void;
-  /** Optional for backward compat (e.g. My Events); when not provided, RSVP is derived from user */
-  currentRSVP?: 'YES' | 'MAYBE' | null;
-  onRSVPPress?: () => void;
-  onRSVPChange?: (status: 'YES' | 'MAYBE' | null) => void;
 };
 
 const formatTimestamp = (ts: { _seconds: number; _nanoseconds: number }) => {
   return new Date(ts._seconds * 1000).toLocaleString();
 };
 
-export default function EventDetails({ visible, event, onClose, currentRSVP: currentRSVPProp, onRSVPPress, onRSVPChange: onRSVPChangeProp }: Props) {
+export default function EventDetails({ visible, event, onClose }: Props) {
   const { user } = useUser();
   const [rsvpModalVisible, setRsvpModalVisible] = useState(false);
   const [localRSVP, setLocalRSVP] = useState<'YES' | 'MAYBE' | null>(null);
 
-  // Derive current RSVP from user.events when event or user changes (so parent doesn't need to pass it)
-  const derivedRSVP = event && user?.events
+  // Derive current RSVP from user.events when event or user changes
+  const currentRSVP = event && user?.events
     ? (user.events.find((e) => e.eventID === event.id)?.status as 'YES' | 'MAYBE' | undefined) ?? null
     : null;
-  const currentRSVP = currentRSVPProp ?? derivedRSVP;
 
   useEffect(() => {
     setLocalRSVP(currentRSVP ?? null);
@@ -53,7 +48,6 @@ export default function EventDetails({ visible, event, onClose, currentRSVP: cur
 
   const handleRSVPChange = (status: 'YES' | 'MAYBE' | null) => {
     setLocalRSVP(status);
-    onRSVPChangeProp?.(status);
   };
 
   const displayRSVP = rsvpModalVisible ? localRSVP : currentRSVP;
