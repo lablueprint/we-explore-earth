@@ -32,32 +32,31 @@ export default function RSVPModal({ visible, event, currentRSVP, onClose, onRSVP
     }
 
     try {
-      const [eventRes, userRes] = await Promise.all([
-        fetch(`${baseUrl}/events/${event.id}/rsvp`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userID: userId, status }),
-        }),
-        fetch(`${baseUrl}/users/${userId}/rsvp`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ eventID: event.id, status }),
-        }),
-      ]);
+      // Update event attendees
+      const eventRes = await fetch(`${baseUrl}/events/${event.id}/rsvp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userID: userId, status }),
+      });
+      if (!eventRes.ok) {
+        Alert.alert('Error', 'Failed to update event RSVP.');
+        return;
+      }
 
-      if (!eventRes.ok || !userRes.ok) {
-        Alert.alert('Error', 'Failed to submit RSVP.');
+      // Update user events
+      const userRes = await fetch(`${baseUrl}/users/${userId}/rsvp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eventID: event.id, status }),
+      });
+      if (!userRes.ok) {
+        Alert.alert('Error', 'Failed to update user RSVP.');
         return;
       }
 
       // Update user state in Redux
-      const updatedEvents = user.events ? [...user.events] : [];
-      const existingIndex = updatedEvents.findIndex((e) => e.eventID === event.id);
-      if (existingIndex >= 0) {
-        updatedEvents[existingIndex] = { eventID: event.id, status };
-      } else {
-        updatedEvents.push({ eventID: event.id, status });
-      }
+      const updatedEvents = user.events.filter((e) => e.eventID !== event.id);
+      updatedEvents.push({ eventID: event.id, status });
       dispatch(updateUserState({ ...user, events: updatedEvents }));
 
       onRSVPChange(status);
@@ -94,26 +93,30 @@ export default function RSVPModal({ visible, event, currentRSVP, onClose, onRSVP
     }
 
     try {
-      const [eventRes, userRes] = await Promise.all([
-        fetch(`${baseUrl}/events/${event.id}/rsvp`, {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userID: userId }),
-        }),
-        fetch(`${baseUrl}/users/${userId}/rsvp`, {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ eventID: event.id }),
-        }),
-      ]);
+      // Remove from event attendees
+      const eventRes = await fetch(`${baseUrl}/events/${event.id}/rsvp`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userID: userId }),
+      });
+      if (!eventRes.ok) {
+        Alert.alert('Error', 'Failed to remove event RSVP.');
+        return;
+      }
 
-      if (!eventRes.ok || !userRes.ok) {
-        Alert.alert('Error', 'Failed to remove RSVP.');
+      // Remove from user events
+      const userRes = await fetch(`${baseUrl}/users/${userId}/rsvp`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eventID: event.id }),
+      });
+      if (!userRes.ok) {
+        Alert.alert('Error', 'Failed to remove user RSVP.');
         return;
       }
 
       // Update user state in Redux
-      const updatedEvents = user.events?.filter((e) => e.eventID !== event.id) || [];
+      const updatedEvents = user.events.filter((e) => e.eventID !== event.id);
       dispatch(updateUserState({ ...user, events: updatedEvents }));
 
       onRSVPChange(null);

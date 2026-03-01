@@ -16,5 +16,5 @@ export interface NewUser {
 }
 
 export interface User extends NewUser {
-  id: string; 
+  id: string;
 }
