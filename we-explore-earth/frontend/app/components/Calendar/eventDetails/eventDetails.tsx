@@ -2,6 +2,9 @@ import React from 'react';
 import { Modal, View, Text, TouchableOpacity } from 'react-native';
 import { styles } from './styles';
 import type { Event } from '@shared/types/event';
+import EventAttendees from '../eventAttendees/eventAttendees';
+import EventAttendeesSummary from '../eventAttendeesSummary/eventAttendeesSummary';
+
 
 type Props = {
   visible: boolean;
@@ -25,6 +28,11 @@ export default function EventDetails({ visible, event, onClose }: Props) {
               <Text style={styles.meta}>Location: {event.location}</Text>
               <Text style={styles.meta}>Start: {formatTimestamp(event.timeStart)}</Text>
               <Text style={styles.meta}>End: {formatTimestamp(event.timeEnd)}</Text>
+              <EventAttendeesSummary
+                selectedEvent={event} 
+              />
+              
+
             </>
           ) : (
             <Text style={styles.title}>No event selected.</Text>

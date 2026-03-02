@@ -9,7 +9,7 @@ type Props = {
   eventId: string;
 };
 
-export default function EventStats({eventId}: Props){
+export default function EventAttendees({eventId}: Props){
   type Tab = "YES" | "MAYBE";
   const [tab, setTab] = useState<Tab>("YES");
   const [event, setEvent] = useState<Event | null>(null);
@@ -26,7 +26,6 @@ export default function EventStats({eventId}: Props){
           'Content-Type': 'application/json',
         },
       });
-      console.log(response);
       if (!response.ok) {
         throw new Error('Failed to fetch event');
       }

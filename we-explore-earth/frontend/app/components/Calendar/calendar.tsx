@@ -5,6 +5,7 @@ import { View, Text, ActivityIndicator, Alert, SafeAreaView, ScrollView} from 'r
 // LOCAL COMPONENTS
 import EventView from './eventView/eventView';
 import EventDetails from './eventDetails/eventDetails';
+import EventAttendees from './eventAttendees/eventAttendees';
 
 // TYPES
 import type { Event } from '@shared/types/event';
@@ -101,6 +102,7 @@ export default function Calendar() {
               event={selectedEvent}
               onClose={handleCloseModal}
             />
+
           </>
         )}
       </View>
