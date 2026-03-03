@@ -8,7 +8,7 @@ import EventDetails from './eventDetails/eventDetails';
 import RSVPModal from './RSVPModal/RSVPModal';
 
 // TYPES
-import type { Event } from '@shared/types/event';
+import type { Event, RSVPStatus } from '@shared/types/event';
 
 // HOOKS
 import { useUser } from '../../../hooks/useUser';
@@ -22,7 +22,7 @@ export default function Calendar() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
   const [rsvpModalVisible, setRsvpModalVisible] = useState(false);
-  const [currentRSVP, setCurrentRSVP] = useState<'YES' | 'MAYBE' | null>(null);
+  const [currentRSVP, setCurrentRSVP] = useState<RSVPStatus | null>(null);
   const [loading, setLoading] = useState(true);
 
   // TIME FILTERING - only upcoming events
@@ -71,7 +71,7 @@ export default function Calendar() {
     if (!event) return;
     setSelectedEvent(event);
     const existingRSVP = user?.events?.find((e) => e.eventID === event.id);
-    setCurrentRSVP(existingRSVP ? (existingRSVP.status as 'YES' | 'MAYBE') : null);
+    setCurrentRSVP(existingRSVP ? (existingRSVP.status as RSVPStatus) : null);
     setDetailsModalVisible(true);
   };
 
@@ -93,7 +93,7 @@ export default function Calendar() {
     setDetailsModalVisible(true);
   };
 
-  const handleRSVPChange = (status: 'YES' | 'MAYBE' | null) => {
+  const handleRSVPChange = (status: RSVPStatus | null) => {
     setCurrentRSVP(status);
   };
 

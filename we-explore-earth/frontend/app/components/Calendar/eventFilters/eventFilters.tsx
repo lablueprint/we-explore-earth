@@ -191,14 +191,14 @@ function EventFilters() {
 
     async function retrieveCategories() {
         try {
-            const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/config/categories`, { method: 'GET' });
+            const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/config/event-options`, { method: 'GET' });
             const data = await response.json();
 
             if(!response.ok) {
                 throw new Error(data.error || "Failed to fetch categories");
             }
 
-            setCategoryOptions(data);
+            setCategoryOptions(Array.isArray(data.category) ? data.category : []);
         }
         catch (error: any) {
             console.log(error instanceof Error ? error.message : "Failed to fetch categories");

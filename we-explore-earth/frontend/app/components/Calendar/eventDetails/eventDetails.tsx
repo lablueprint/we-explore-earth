@@ -2,17 +2,21 @@ import React from "react";
 import { Modal, View, Text, TouchableOpacity } from "react-native";
 import { useRouter, useSegments } from "expo-router";
 import { styles } from "./styles";
-import type { Event } from "@shared/types/event";
+import type {
+  Event,
+  RSVPStatus,
+  FirestoreTimestamp,
+} from "@shared/types/event";
 
 type Props = {
   visible: boolean;
   event: Event | null;
-  currentRSVP: "YES" | "MAYBE" | null;
+  currentRSVP: RSVPStatus | null;
   onClose: () => void;
   onRSVPPress: () => void;
 };
 
-const formatTimestamp = (ts: { _seconds: number; _nanoseconds: number }) => {
+const formatTimestamp = (ts: FirestoreTimestamp) => {
   return new Date(ts._seconds * 1000).toLocaleString();
 };
 

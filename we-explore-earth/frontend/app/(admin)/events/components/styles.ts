@@ -71,22 +71,22 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     paddingLeft: 5,
   },
-  // TagsSection styles
-  tagsContainer: {
+  // CategoryAccommodationSection styles
+  categoryAccommodationContainer: {
     marginVertical: 15,
   },
-  tagsSectionTitle: {
+  categoryAccommodationTitle: {
     fontSize: 16,
     fontWeight: "600",
     marginBottom: 12,
     color: "#333",
   },
-  tagsButtonsContainer: {
+  categoryAccommodationButtons: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 10,
   },
-  tagButton: {
+  categoryAccommodationButton: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#fff",
@@ -97,22 +97,22 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 14,
     gap: 8,
   },
-  tagButtonText: {
+  categoryAccommodationButtonText: {
     fontSize: 14,
     color: "#333",
   },
-  tagBadge: {
+  categoryAccommodationBadge: {
     backgroundColor: "#007AFF",
     borderRadius: 10,
     paddingHorizontal: 8,
     paddingVertical: 2,
   },
-  tagBadgeText: {
+  categoryAccommodationBadgeText: {
     color: "#fff",
     fontSize: 12,
     fontWeight: "600",
   },
-  // TagSelectorModal styles
+  // Modal styles
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.5)",

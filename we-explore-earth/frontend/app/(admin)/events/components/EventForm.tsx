@@ -13,8 +13,7 @@ import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import { styles } from "./styles";
-import { EventTagsConfig, EventTagsSelection } from "@shared/types/event";
-import { TagsSection } from "./TagsSection";
+import { CategoryAccommodationSection } from "./CategoryAccommodationSection";
 import * as ImagePicker from 'expo-image-picker';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 // import { storage } from "@/firebase.config";
@@ -34,9 +33,12 @@ interface EventFormProps {
   setDateEnd: (date: Date) => void;
   timeEnd: Date;
   setTimeEnd: (date: Date) => void;
-  eventTagsConfig: EventTagsConfig | null;
-  tagsSelection: EventTagsSelection;
-  onTagsChange: (newSelection: EventTagsSelection) => void;
+  categoryOptions: string[];
+  accommodationOptions: string[];
+  category: string[];
+  accommodation: string[];
+  onCategoryChange: (category: string[]) => void;
+  onAccommodationChange: (accommodation: string[]) => void;
   price: string;
   setPrice: (text: string) => void;
   hostedBy: string;
@@ -67,9 +69,12 @@ export function EventForm({
   setDateEnd,
   timeEnd,
   setTimeEnd,
-  eventTagsConfig,
-  tagsSelection,
-  onTagsChange,
+  categoryOptions,
+  accommodationOptions,
+  category,
+  accommodation,
+  onCategoryChange,
+  onAccommodationChange,
   price,
   setPrice,
   hostedBy,
@@ -354,10 +359,13 @@ export function EventForm({
           />
         </View>
 
-        <TagsSection
-          eventTagsConfig={eventTagsConfig}
-          tagsSelection={tagsSelection}
-          onTagsChange={onTagsChange}
+        <CategoryAccommodationSection
+          categoryOptions={categoryOptions}
+          accommodationOptions={accommodationOptions}
+          category={category}
+          accommodation={accommodation}
+          onCategoryChange={onCategoryChange}
+          onAccommodationChange={onAccommodationChange}
         />
          
 

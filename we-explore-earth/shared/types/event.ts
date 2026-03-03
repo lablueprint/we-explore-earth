@@ -31,6 +31,10 @@ export interface Event {
   price: number;
   maxAttendees: number;
   attendees: EventRSVP[];
+  /** Stored when creating/updating; may be missing on older events */
+  hostedBy?: string;
+  /** Stored when creating/updating; may be missing on older events */
+  rsvpDeadline?: FirestoreTimestamp | Date;
 }
 
 // Event data for writing to Firestore (uses Date - Firestore converts to FirestoreTimestamp)
@@ -44,8 +48,7 @@ export interface FirestoreEventData {
   maxAttendees: number;
   rsvpDeadline: Date;
   hostedBy: string;
-  tags: string[];
-  category?: string[];
-  accommodation?: string[];
+  category: string[];
+  accommodation: string[];
   attendees?: EventRSVP[];
 }

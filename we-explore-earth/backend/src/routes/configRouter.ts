@@ -3,7 +3,7 @@ import {
   getAdmins,
   addAdmin,
   removeAdmin,
-  getCategories,
+  getEventOptions,
 } from "../controllers/configController";
 
 const router = Router();
@@ -12,6 +12,6 @@ router.get("/admins", getAdmins);
 router.post("/admin", addAdmin);
 router.delete("/admin", removeAdmin);
 
-router.get("/categories", getCategories);
+router.get("/event-options", getEventOptions);
 
 export default router;

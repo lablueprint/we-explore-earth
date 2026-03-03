@@ -3,12 +3,7 @@ import { useLocalSearchParams, useRouter, useNavigation } from "expo-router";
 import { Alert, View, Text, ActivityIndicator } from "react-native";
 import { useEventFormDirty } from "../EventFormDirtyContext";
 import { EventForm } from "./components/EventForm";
-import { EventTagsConfig, EventTagsSelection } from "@shared/types/event";
-import {
-  initializeTagsSelection,
-  combineDateAndTime,
-  timestampToDate,
-} from "@/utils/eventUtils";
+import { combineDateAndTime, timestampToDate } from "@/utils/eventUtils";
 
 export default function EventFormPage() {
   const router = useRouter();
@@ -27,10 +22,11 @@ export default function EventFormPage() {
   const [location, setLocation] = useState("");
   const [price, setPrice] = useState("");
   const [hostedBy, setHostedBy] = useState("");
-  const [eventTagsConfig, setEventTagsConfig] =
-    useState<EventTagsConfig | null>(null);
+  const [categoryOptions, setCategoryOptions] = useState<string[]>([]);
+  const [accommodationOptions, setAccommodationOptions] = useState<string[]>([]);
+  const [category, setCategory] = useState<string[]>([]);
+  const [accommodation, setAccommodation] = useState<string[]>([]);
   const [maxAttendees, setMaxAttendees] = useState("");
-  const [tagsSelection, setTagsSelection] = useState<EventTagsSelection>({});
   const [rsvpDeadline, setRsvpDeadline] = useState(new Date());
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [loading, setLoading] = useState(!isCreate);
@@ -88,12 +84,11 @@ export default function EventFormPage() {
       setRsvpDeadline(now);
       setImageUri(null);
       setLoading(false);
-      if (eventTagsConfig) {
-        setTagsSelection(initializeTagsSelection(eventTagsConfig));
-      }
+      setCategory([]);
+      setAccommodation([]);
     });
     return unsubscribe;
-  }, [navigation, setEventFormDirty, eventTagsConfig]);
+  }, [navigation, setEventFormDirty]);
 
   // Reset form when navigating to create (e.g. from navbar) so we don't keep edit data
   useEffect(() => {
@@ -113,9 +108,8 @@ export default function EventFormPage() {
       setRsvpDeadline(now);
       setImageUri(null);
       setLoading(false);
-      if (eventTagsConfig) {
-        setTagsSelection(initializeTagsSelection(eventTagsConfig));
-      }
+      setCategory([]);
+      setAccommodation([]);
     }
   }, [id, setEventFormDirty]);
 
@@ -190,7 +184,8 @@ export default function EventFormPage() {
           event.maxAttendees != null ? event.maxAttendees.toString() : "",
         );
         setRsvpDeadline(rsvpDeadlineDate);
-        setTagsSelection(event.tags || {});
+        setCategory(Array.isArray(event.category) ? event.category : []);
+        setAccommodation(Array.isArray(event.accommodation) ? event.accommodation : []);
       } catch (error) {
         console.error("Error fetching event:", error);
         Alert.alert(
@@ -205,35 +200,28 @@ export default function EventFormPage() {
     fetchEvent();
   }, [eventId, isCreate]);
 
-  const getEventTagsConfig = async () => {
+  const getEventOptions = async () => {
     try {
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/config/categories`,
+        `${process.env.EXPO_PUBLIC_API_URL}/config/event-options`,
         { method: "GET" },
       );
 
       if (!response.ok) {
-        console.error("Failed to fetch event tags config");
+        console.error("Failed to fetch event options");
         return;
       }
 
-      const raw = await response.json();
-      //assume it is a flat array todo @euan to change in the future
-      const config: EventTagsConfig = Array.isArray(raw)
-        ? { Category: raw }
-        : (raw as EventTagsConfig);
-      setEventTagsConfig(config);
-      if (isCreate) {
-        setTagsSelection(initializeTagsSelection(config));
-      }
-      // In edit mode, tagsSelection is set when the event is fetched
+      const data = await response.json();
+      setCategoryOptions(Array.isArray(data.category) ? data.category : []);
+      setAccommodationOptions(Array.isArray(data.accommodations) ? data.accommodations : []);
     } catch (e) {
-      console.error("Unable to get event tags config", e);
+      console.error("Unable to get event options", e);
     }
   };
 
   useEffect(() => {
-    getEventTagsConfig();
+    getEventOptions();
   }, []);
 
   const handleSubmit = async () => {
@@ -252,7 +240,8 @@ export default function EventFormPage() {
       timeEnd: combinedTimeEnd.toISOString(),
       price,
       hostedBy,
-      tags: tagsSelection,
+      category,
+      accommodation,
       maxAttendees,
       rsvpDeadline: rsvpDeadline.toISOString(),
     };
@@ -293,9 +282,8 @@ export default function EventFormPage() {
         setDateEnd(now);
         setTimeEnd(now);
         setPrice("");
-        if (eventTagsConfig) {
-          setTagsSelection(initializeTagsSelection(eventTagsConfig));
-        }
+        setCategory([]);
+        setAccommodation([]);
         setMaxAttendees("");
         setRsvpDeadline(now);
         setImageUri(null);
@@ -365,9 +353,12 @@ export default function EventFormPage() {
       setDateEnd={withDirty(setDateEnd)}
       timeEnd={timeEnd}
       setTimeEnd={withDirty(setTimeEnd)}
-      eventTagsConfig={eventTagsConfig}
-      tagsSelection={tagsSelection}
-      onTagsChange={withDirty(setTagsSelection)}
+      categoryOptions={categoryOptions}
+      accommodationOptions={accommodationOptions}
+      category={category}
+      accommodation={accommodation}
+      onCategoryChange={withDirty(setCategory)}
+      onAccommodationChange={withDirty(setAccommodation)}
       price={price}
       setPrice={withDirty(setPrice)}
       hostedBy={hostedBy}
