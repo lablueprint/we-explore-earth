@@ -11,12 +11,16 @@ export const combineDateAndTime = (date: Date, time: Date): Date => {
 };
 
 // Convert FirestoreTimestamp to Date
-// Handles FirestoreTimestamp format or ISO string format
+// Handles FirestoreTimestamp format, ISO string, or Unix timestamp (seconds)
 export const timestampToDate = (
-  timestamp: FirestoreTimestamp | Date | string | null | undefined
+  timestamp: FirestoreTimestamp | Date | string | number | null | undefined
 ): Date => {
   if (!timestamp) {
     return new Date(); // Return current date as fallback
+  }
+
+  if (typeof timestamp === "number") {
+    return new Date(timestamp > 1e12 ? timestamp : timestamp * 1000);
   }
 
   // If it's a FirestoreTimestamp object with _seconds

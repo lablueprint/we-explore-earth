@@ -37,6 +37,24 @@ export interface Event {
   rsvpDeadline?: FirestoreTimestamp | Date;
 }
 
+/** Form state for event create/edit UI. Uses split date/time and string inputs for pickers. */
+export interface EventFormState {
+  title: string;
+  description: string;
+  dateStart: Date;
+  timeStart: Date;
+  dateEnd: Date;
+  timeEnd: Date;
+  location: string;
+  price: string;
+  hostedBy: string;
+  category: string[];
+  accommodation: string[];
+  maxAttendees: string;
+  rsvpDeadline: Date;
+  imageUri: string | null;
+}
+
 // Event data for writing to Firestore (uses Date - Firestore converts to FirestoreTimestamp)
 export interface FirestoreEventData {
   title: string;
