@@ -69,7 +69,7 @@ export default function EventAttendeesSummary({ selectedEvent }: Props) {
       }
       <Modal visible={showAll} animationType="slide" onRequestClose={() => setShowAll(false)}>
         <View>
-          <TouchableOpacity style={styles.viewAllButton} onPress={() => setShowAll(false)}>
+          <TouchableOpacity style={styles.closeButton} onPress={() => setShowAll(false)}>
             <Text style={styles.closeText}>Close</Text>     
           </TouchableOpacity>
         </View>
