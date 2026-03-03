@@ -1,17 +1,24 @@
 // STANDARD / THIRD-PARTY IMPORTS
-import { useEffect, useState, useMemo } from 'react';
-import { View, Text, ActivityIndicator, Alert, SafeAreaView, ScrollView} from 'react-native';
+import { useEffect, useState, useMemo } from "react";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  Alert,
+  SafeAreaView,
+  ScrollView,
+} from "react-native";
 
 // LOCAL COMPONENTS
-import EventView from './eventView/eventView';
-import EventDetails from './eventDetails/eventDetails';
-import RSVPModal from './RSVPModal/RSVPModal';
+import EventView from "./eventView/eventView";
+import EventDetails from "./eventDetails/eventDetails";
+import RSVPModal from "./RSVPModal/RSVPModal";
 
 // TYPES
-import type { Event, RSVPStatus } from '@shared/types/event';
+import type { Event, RSVPStatus } from "@shared/types/event";
 
 // HOOKS
-import { useUser } from '../../../hooks/useUser';
+import { useUser } from "../../../hooks/useUser";
 
 export default function Calendar() {
   const { user } = useUser();
@@ -44,23 +51,23 @@ export default function Calendar() {
     const baseUrl = process.env.EXPO_PUBLIC_API_URL;
 
     if (!baseUrl) {
-      Alert.alert('Config Error', 'EXPO_PUBLIC_API_URL is not set.');
+      Alert.alert("Config Error", "EXPO_PUBLIC_API_URL is not set.");
       setLoading(false);
       return;
     }
-    
+
     try {
       const res = await fetch(`${baseUrl}/events`);
 
       if (!res.ok) {
-        Alert.alert('Error', `Failed to fetch events (status ${res.status})`);
+        Alert.alert("Error", `Failed to fetch events (status ${res.status})`);
         return;
       }
 
       const data: Event[] = await res.json();
       setAllEvents(data);
     } catch {
-      Alert.alert('Network Error', 'Could not fetch events.');
+      Alert.alert("Network Error", "Could not fetch events.");
     } finally {
       setLoading(false);
     }
@@ -81,7 +88,7 @@ export default function Calendar() {
 
   const handleRSVPPress = () => {
     if (!user) {
-      Alert.alert('Sign In Required', 'Please sign in to RSVP to events.');
+      Alert.alert("Sign In Required", "Please sign in to RSVP to events.");
       return;
     }
     setDetailsModalVisible(false);
@@ -105,21 +112,29 @@ export default function Calendar() {
 
   // RENDER
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
       <View style={{ flex: 1, padding: 16 }}>
         {loading ? (
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
             <ActivityIndicator size="large" />
           </View>
         ) : (
           <>
-            <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 16 }}>
+            <Text
+              style={{ fontSize: 24, fontWeight: "bold", marginBottom: 16 }}
+            >
               Events
             </Text>
 
             <ScrollView>
               {currentEvents.filter(Boolean).map((event) => (
-                <EventView key={event.id} event={event} onPress={handleEventPress} />
+                <EventView
+                  key={event.id}
+                  event={event}
+                  onPress={handleEventPress}
+                />
               ))}
             </ScrollView>
 

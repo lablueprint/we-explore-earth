@@ -4,7 +4,7 @@ export interface FirestoreTimestamp {
   _nanoseconds: number;
 }
 
-export type RSVPStatus = 'YES' | 'MAYBE';
+export type RSVPStatus = "YES" | "MAYBE";
 
 //THIS HERE SHOULD BE ALL YOU NEED BUT IF NOT RUN IT BY PLs TO DOUBLE CHECK
 //CONSOLDATE EVERYTHING TO

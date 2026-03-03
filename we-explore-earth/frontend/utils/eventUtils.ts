@@ -13,7 +13,7 @@ export const combineDateAndTime = (date: Date, time: Date): Date => {
 // Convert FirestoreTimestamp to Date
 // Handles FirestoreTimestamp format, ISO string, or Unix timestamp (seconds)
 export const timestampToDate = (
-  timestamp: FirestoreTimestamp | Date | string | number | null | undefined
+  timestamp: FirestoreTimestamp | Date | string | number | null | undefined,
 ): Date => {
   if (!timestamp) {
     return new Date(); // Return current date as fallback

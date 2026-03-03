@@ -84,7 +84,11 @@ export async function getEventOptions(req: Request, res: Response) {
 
     const data = snapshot.data();
     const category: string[] = Array.isArray(data?.category) ? data.category : [];
-    const accommodation: string[] = Array.isArray(data?.accommodation) ? data.accommodation : [];
+    const accommodation: string[] = Array.isArray(data?.accommodation)
+      ? data.accommodation
+      : Array.isArray(data?.accommodations)
+        ? data.accommodations
+        : [];
 
     return res.json({ category, accommodation });
   } catch (e: any) {
