@@ -40,14 +40,14 @@ export async function createEvent(req: Request, res: Response) {
       location,
       timeStart: new Date(timeStart),
       timeEnd: new Date(timeEnd),
+      category: tags.category || [],
+      accommodation: tags.accommodation || [],
       price: typeof price === "string" ? parseInt(price, 10) : price,
-      hostedBy,
-      tags,
       maxAttendees:
         typeof maxAttendees === "string"
           ? parseInt(maxAttendees, 10)
           : maxAttendees,
-      rsvpDeadline: new Date(rsvpDeadline),
+      attendees: [] as EventRSVP[],
     };
 
     const docRef = await db.collection("events").add(eventData);
@@ -144,13 +144,13 @@ export async function updateEvent(req: Request, res: Response) {
       timeStart: new Date(timeStart),
       timeEnd: new Date(timeEnd),
       price: typeof price === "string" ? parseInt(price, 10) : price,
-      hostedBy,
-      tags,
+      category: tags.category || [],
+      accommodation: tags.accommodation || [],
       maxAttendees:
         typeof maxAttendees === "string"
           ? parseInt(maxAttendees, 10)
           : maxAttendees,
-      rsvpDeadline: new Date(rsvpDeadline),
+      attendees: [] as EventRSVP[],
     };
 
     await eventRef.update(eventData as any);
