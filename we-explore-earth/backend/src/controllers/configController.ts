@@ -74,7 +74,7 @@ export async function removeAdmin(req: Request, res: Response) {
   }
 }
 
-// GET /config/event-options - Get category and accommodations for event form
+// GET /config/event-options - Get category and accommodation for event form
 export async function getEventOptions(req: Request, res: Response) {
   try {
     const snapshot = await db.collection("config").doc("shared").get();
@@ -84,9 +84,9 @@ export async function getEventOptions(req: Request, res: Response) {
 
     const data = snapshot.data();
     const category: string[] = Array.isArray(data?.category) ? data.category : [];
-    const accommodations: string[] = Array.isArray(data?.accommodations) ? data.accommodations : [];
+    const accommodation: string[] = Array.isArray(data?.accommodation) ? data.accommodation : [];
 
-    return res.json({ category, accommodations });
+    return res.json({ category, accommodation });
   } catch (e: any) {
     return res.status(500).json({ error: e.message });
   }

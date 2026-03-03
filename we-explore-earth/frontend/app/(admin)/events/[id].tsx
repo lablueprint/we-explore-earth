@@ -214,7 +214,7 @@ export default function EventFormPage() {
 
       const data = await response.json();
       setCategoryOptions(Array.isArray(data.category) ? data.category : []);
-      setAccommodationOptions(Array.isArray(data.accommodations) ? data.accommodations : []);
+      setAccommodationOptions(Array.isArray(data.accommodation) ? data.accommodation : []);
     } catch (e) {
       console.error("Unable to get event options", e);
     }
