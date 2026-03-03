@@ -5,6 +5,7 @@ import { View, Text, ActivityIndicator, Alert, SafeAreaView, ScrollView} from 'r
 // LOCAL COMPONENTS
 import EventView from './eventView/eventView';
 import EventDetails from './eventDetails/eventDetails';
+import EventAttendees from './eventAttendees/eventAttendees';
 import RSVPModal from './RSVPModal/RSVPModal';
 
 // TYPES
@@ -138,6 +139,7 @@ export default function Calendar() {
               onClose={handleCloseRSVPModal}
               onRSVPChange={handleRSVPChange}
             />
+
           </>
         )}
       </View>
