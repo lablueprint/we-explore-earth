@@ -9,13 +9,14 @@ type Props = {
   visible: boolean;
   event: Event | null;
   onClose: () => void;
+  onRSVPChange?: () => void;
 };
 
 const formatTimestamp = (ts: { _seconds: number; _nanoseconds: number }) => {
   return new Date(ts._seconds * 1000).toLocaleString();
 };
 
-export default function EventDetails({ visible, event, onClose }: Props) {
+export default function EventDetails({ visible, event, onClose, onRSVPChange }: Props) {
   const { user } = useUser();
   const [rsvpModalVisible, setRsvpModalVisible] = useState(false);
   const [localRSVP, setLocalRSVP] = useState<'YES' | 'MAYBE' | null>(null);
@@ -48,6 +49,7 @@ export default function EventDetails({ visible, event, onClose }: Props) {
 
   const handleRSVPChange = (status: 'YES' | 'MAYBE' | null) => {
     setLocalRSVP(status);
+    onRSVPChange?.();
   };
 
   const displayRSVP = rsvpModalVisible ? localRSVP : currentRSVP;

@@ -1,5 +1,6 @@
 //STANDARD LIBRARY
-import { useEffect, useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
+import { useFocusEffect } from 'expo-router';
 import {
   View,
   Text,
@@ -75,9 +76,11 @@ export default function MyEventsScreen() {
     }
   }, [userId]);
 
-  useEffect(() => {
-    fetchMyEvents();
-  }, [fetchMyEvents]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchMyEvents();
+    }, [fetchMyEvents])
+  );
 
   //RENDER
   const filtered = events.filter((e) => {
@@ -140,6 +143,7 @@ export default function MyEventsScreen() {
           visible={modalVisible && !!selectedEvent}
           event={selectedEvent}
           onClose={handleCloseModal}
+          onRSVPChange={fetchMyEvents}
         />
       </View>
     </SafeAreaView>
