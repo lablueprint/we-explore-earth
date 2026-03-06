@@ -68,28 +68,45 @@ const RangeCalendar = () => {
     );
 };
 
-function FilterHeader(
+function FilterSection(
     {
         header,
-        setSelectedOptions,
+        options,
+        selectedOptions,
+        setSelectedOptions
     }
     :
     {
         header: string,
+        options: string[],
+        selectedOptions: Set<string>,
         setSelectedOptions: React.Dispatch<any>
     }
-){
+) {
     const handleReset = () => {
         setSelectedOptions(new Set());
     }
 
-    return(
-        <View style={filterStyles.filterHeaderWrapper}>
-            <Text style={filterStyles.filterHeader}>{header}</Text>
-            <TouchableOpacity onPress={handleReset}>
-                <Text style={filterStyles.reset}>Reset</Text>
-            </TouchableOpacity>
-        </View>
+    return (
+        <>
+            {/** Filter header */}
+            <View style={filterStyles.filterHeaderWrapper}>
+                <Text style={filterStyles.filterHeader}>{header}</Text>
+                <TouchableOpacity onPress={handleReset}>
+                    <Text style={filterStyles.reset}>Reset</Text>
+                </TouchableOpacity>
+            </View>
+
+            {/** Filter options */}
+            {options.map((option, index) => 
+                <FilterOption
+                    key={index}
+                    option={option}
+                    selectedOptions={selectedOptions}
+                    setSelectedOptions={setSelectedOptions}
+                />
+            )}
+        </>
     )
 }
 
@@ -217,20 +234,12 @@ function EventFilters(
             <View>
                 <Text style={filterStyles.filterTitle}>Filter</Text>
                 {dateOptions && dateOptions.length >= 0 &&
-                    <>
-                        <FilterHeader
-                            header='Date'
-                            setSelectedOptions={setSelectedDates}
-                        />
-                        {dateOptions.map((option, index) => 
-                            <FilterOption
-                                key={index}
-                                option={option}
-                                selectedOptions={selectedDates}
-                                setSelectedOptions={setSelectedDates}
-                            />
-                        )}
-                    </>
+                    <FilterSection
+                        header='Date'
+                        options={dateOptions}
+                        selectedOptions={selectedDates}
+                        setSelectedOptions={setSelectedDates}
+                    />
                 }
 
                 {/** Calendar Picker Modal */}
@@ -260,20 +269,12 @@ function EventFilters(
                 </Modal>
 
                 {categoryOptions && categoryOptions.length >= 0 &&
-                    <>
-                        <FilterHeader
-                            header='Category'
-                            setSelectedOptions={setSelectedCategories}
-                        />
-                        {categoryOptions.map((option, index) => 
-                            <FilterOption
-                                key={index}
-                                option={option}
-                                selectedOptions={selectedCategories}
-                                setSelectedOptions={setSelectedCategories}
-                            />
-                        )}
-                    </>
+                    <FilterSection
+                        header='Categories'
+                        options={categoryOptions}
+                        selectedOptions={selectedCategories}
+                        setSelectedOptions={setSelectedCategories}
+                    />
                 }
                 <TouchableOpacity
                     style={filterStyles.submit}
