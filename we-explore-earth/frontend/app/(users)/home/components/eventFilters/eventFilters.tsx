@@ -164,6 +164,9 @@ function EventFilters(
     const [categoryOptions, setCategoryOptions] = useState<Array<string>>([]);
     const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
 
+    const [accommodationOptions, setAccommodationOptions] = useState<Array<string>>([]);
+    const [selectedAccommodations, setSelectedAccommodations] = useState<Set<string>>(new Set());
+
     const [calendarVisible, setCalendarVisible] = useState<boolean>(false);
 
     const handleSubmit = () => {
@@ -206,6 +209,9 @@ function EventFilters(
         if(selectedCategories && selectedCategories.size) {
             result.categories = [...selectedCategories];
         }
+        if(selectedAccommodations && selectedAccommodations.size) {
+            result.accommodations = [...selectedAccommodations];
+        }
         setFilters(result);
     }
 
@@ -225,14 +231,31 @@ function EventFilters(
         }
     }
 
+    async function retrieveAccommodations() {
+        try {
+            const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/config/accommodations`, { method: 'GET' });
+            const data = await response.json();
+
+            if(!response.ok) {
+                throw new Error(data.error || "Failed to fetch accommodations");
+            }
+            setAccommodationOptions(Array.isArray(data.accommodation) ? data.accommodation : []);
+        }
+        catch (error: any) {
+            console.log(error instanceof Error ? error.message : "Failed to fetch accommodations");
+        }
+    }
+
     useEffect(() => {        
-        retrieveCategories();  // grab categories from backend
+        retrieveCategories();       // grab categories from backend
+        retrieveAccommodations();   // grab accommodations from backend
     }, []);
 
     return(
         <SafeAreaView style={{flex: 1, backgroundColor: 'white', paddingTop: 20, paddingHorizontal: 20}}>
             <View>
                 <Text style={filterStyles.filterTitle}>Filter</Text>
+                
                 {dateOptions && dateOptions.length >= 0 &&
                     <FilterSection
                         header='Date'
@@ -276,6 +299,16 @@ function EventFilters(
                         setSelectedOptions={setSelectedCategories}
                     />
                 }
+
+                {accommodationOptions && accommodationOptions.length >= 0 &&
+                    <FilterSection
+                        header='Accommodations'
+                        options={accommodationOptions}
+                        selectedOptions={selectedAccommodations}
+                        setSelectedOptions={setSelectedAccommodations}
+                    />
+                }
+
                 <TouchableOpacity
                     style={filterStyles.submit}
                     onPress={handleSubmit}
