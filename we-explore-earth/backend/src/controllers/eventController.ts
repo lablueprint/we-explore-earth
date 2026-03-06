@@ -3,11 +3,6 @@ import { Request, Response } from "express";
 import admin from "firebase-admin";
 import { FirestoreEventData, EventRSVP, RSVPStatus } from "@shared/types/event";
 
-function ensureStringArray(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-  return value.filter((v): v is string => typeof v === "string");
-}
-
 // create event
 export async function createEvent(req: Request, res: Response) {
   try {
@@ -39,9 +34,6 @@ export async function createEvent(req: Request, res: Response) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
-    const categoryArr = ensureStringArray(category);
-    const accommodationArr = ensureStringArray(accommodation);
-
     const eventData: FirestoreEventData = {
       title,
       description,
@@ -50,8 +42,8 @@ export async function createEvent(req: Request, res: Response) {
       timeEnd: new Date(timeEnd),
       rsvpDeadline: new Date(rsvpDeadline),
       hostedBy,
-      category: categoryArr,
-      accommodation: accommodationArr,
+      category: (category ?? []) as string[],
+      accommodation: (accommodation ?? []) as string[],
       price: typeof price === "string" ? parseInt(price, 10) : price,
       maxAttendees:
         typeof maxAttendees === "string"
@@ -150,8 +142,6 @@ export async function updateEvent(req: Request, res: Response) {
       return res.status(404).json({ error: "Event not found" });
     }
 
-    const categoryArr = ensureStringArray(category);
-    const accommodationArr = ensureStringArray(accommodation);
     const existingData = eventDoc.data();
     const existingAttendees: EventRSVP[] = existingData?.attendees || [];
 
@@ -163,8 +153,8 @@ export async function updateEvent(req: Request, res: Response) {
       timeEnd: new Date(timeEnd),
       rsvpDeadline: new Date(rsvpDeadline),
       hostedBy,
-      category: categoryArr,
-      accommodation: accommodationArr,
+      category: (category ?? []) as string[],
+      accommodation: (accommodation ?? []) as string[],
       price: typeof price === "string" ? parseInt(price, 10) : price,
       maxAttendees:
         typeof maxAttendees === "string"
