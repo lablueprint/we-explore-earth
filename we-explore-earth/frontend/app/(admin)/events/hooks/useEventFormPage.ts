@@ -179,24 +179,30 @@ export function useEventFormPage(id: string | undefined) {
     })();
   }, [eventId, isCreate]);
 
-  // --- Fetch event options (category, accommodation) ---
+  // --- Fetch categories and accommodations ---
   useEffect(() => {
     (async () => {
       try {
-        const response = await fetch(`${API_URL}/config/event-options`, {
-          method: "GET",
-        });
-        if (!response.ok) {
-          console.error("Failed to fetch event options");
-          return;
+        const [categoriesRes, accommodationsRes] = await Promise.all([
+          fetch(`${API_URL}/config/categories`, { method: "GET" }),
+          fetch(`${API_URL}/config/accommodations`, { method: "GET" }),
+        ]);
+        if (categoriesRes.ok) {
+          const data = await categoriesRes.json();
+          setCategoryOptions(Array.isArray(data.category) ? data.category : []);
+        } else {
+          console.error("Failed to fetch categories");
         }
-        const data = await response.json();
-        setCategoryOptions(Array.isArray(data.category) ? data.category : []);
-        setAccommodationOptions(
-          Array.isArray(data.accommodation) ? data.accommodation : []
-        );
+        if (accommodationsRes.ok) {
+          const data = await accommodationsRes.json();
+          setAccommodationOptions(
+            Array.isArray(data.accommodation) ? data.accommodation : []
+          );
+        } else {
+          console.error("Failed to fetch accommodations");
+        }
       } catch (e) {
-        console.error("Unable to get event options", e);
+        console.error("Unable to get categories/accommodations", e);
       }
     })();
   }, []);

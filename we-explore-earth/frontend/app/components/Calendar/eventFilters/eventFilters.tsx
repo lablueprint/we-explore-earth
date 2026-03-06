@@ -191,7 +191,7 @@ function EventFilters() {
 
     async function retrieveCategories() {
         try {
-            const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/config/event-options`, { method: 'GET' });
+            const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/config/categories`, { method: 'GET' });
             const data = await response.json();
 
             if(!response.ok) {
