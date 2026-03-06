@@ -7,6 +7,8 @@ import { useUser } from '../../../../hooks/useUser';
 import EventAttendees from '../eventAttendees/eventAttendees';
 import type { User } from '@shared/types/user';
 
+// NOTE: This component currently also shows a placeholder for the profile pictures of 5 attendees, if we decide not to 
+// implement that feature, we can remove the attendeesPreview state and the fetchAttendees function, and just show the total number of attendees.
 
 type Props = {
   selectedEvent: Event | null;
@@ -55,7 +57,6 @@ export default function EventAttendeesSummary({ selectedEvent }: Props) {
 
   return (
     <>
-      <Text style = {styles.title}>RSVP List: </Text>
       <Text style = {styles.meta}>{selectedEvent?.attendees?.length ?? 0} attendees </Text>
       {attendeesPreview.map((user) => (
         <Text key={user.id}>
