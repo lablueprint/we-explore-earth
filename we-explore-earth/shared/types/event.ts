@@ -20,21 +20,19 @@ export interface EventRSVP {
 
 // Event interface for reading from Firestore (uses FirestoreTimestamp)
 export interface Event {
-  id: string;
-  title: string;
-  description: string;
-  location: string;
-  timeStart: FirestoreTimestamp;
-  timeEnd: FirestoreTimestamp;
-  category: string[];
-  accommodation: string[];
-  price: number;
-  maxAttendees: number;
-  attendees: EventRSVP[];
-  /** Stored when creating/updating; may be missing on older events */
-  hostedBy?: string;
-  /** Stored when creating/updating; may be missing on older events */
-  rsvpDeadline?: FirestoreTimestamp | Date;
+id: string;
+title: string;
+description: string;
+location: string;
+timeStart: FirestoreTimestamp;
+timeEnd: FirestoreTimestamp;
+category: string[];
+accommodation: string[];
+price: number;
+maxAttendees: number;
+attendees: EventRSVP[];
+/** Stored when creating/updating; may be missing on older events */
+hostedBy?: string;
 }
 
 /** Form state for event create/edit UI. Uses split date/time and string inputs for pickers. */
@@ -51,7 +49,6 @@ export interface EventFormState {
   category: string[];
   accommodation: string[];
   maxAttendees: string;
-  rsvpDeadline: Date;
   imageUri: string | null;
 }
 
@@ -64,7 +61,6 @@ export interface FirestoreEventData {
   timeEnd: Date;
   price: number;
   maxAttendees: number;
-  rsvpDeadline: Date;
   hostedBy: string;
   category: string[];
   accommodation: string[];

@@ -22,7 +22,6 @@ function getEmptyFormState(): EventFormState {
     category: [],
     accommodation: [],
     maxAttendees: "",
-    rsvpDeadline: now,
     imageUri: null,
   };
 }
@@ -131,7 +130,6 @@ export function useEventFormPage(id: string | undefined) {
         const missing: string[] = [];
         if (!event.timeStart) missing.push("timeStart");
         if (!event.timeEnd) missing.push("timeEnd");
-        if (!event.rsvpDeadline) missing.push("rsvpDeadline");
         if ((event.maxAttendees as number) == null) missing.push("maxAttendees");
 
         if (missing.length > 0) {
@@ -145,7 +143,6 @@ export function useEventFormPage(id: string | undefined) {
 
         const start = splitTimestamp(event.timeStart as FirestoreTimestamp | number);
         const end = splitTimestamp(event.timeEnd as FirestoreTimestamp | number);
-        const rsvp = timestampToDate(event.rsvpDeadline as FirestoreTimestamp | number);
 
         setForm({
           title: (event.title as string) || "",
@@ -160,7 +157,6 @@ export function useEventFormPage(id: string | undefined) {
           hostedBy: (event.hostedBy as string) || "",
           maxAttendees:
             event.maxAttendees != null ? String(event.maxAttendees) : "",
-          rsvpDeadline: rsvp,
           category: Array.isArray(event.category) ? event.category : [],
           accommodation: Array.isArray(event.accommodation)
             ? event.accommodation
@@ -228,7 +224,6 @@ export function useEventFormPage(id: string | undefined) {
       category: form.category,
       accommodation: form.accommodation,
       maxAttendees: form.maxAttendees,
-      rsvpDeadline: form.rsvpDeadline.toISOString(),
     };
 
     const onSuccess = () => {

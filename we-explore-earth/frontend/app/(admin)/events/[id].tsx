@@ -53,8 +53,6 @@ export default function EventFormPage() {
       setHostedBy={withDirty((v) => updateField("hostedBy", v))}
       maxAttendees={form.maxAttendees}
       setMaxAttendees={withDirty((v) => updateField("maxAttendees", v))}
-      rsvpDeadline={form.rsvpDeadline}
-      setRsvpDeadline={withDirty((v) => updateField("rsvpDeadline", v))}
       imageUri={form.imageUri}
       setImageUri={withDirty((v) => updateField("imageUri", v))}
       onSubmit={handleSubmit}

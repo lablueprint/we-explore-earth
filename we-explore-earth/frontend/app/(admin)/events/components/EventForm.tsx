@@ -45,8 +45,6 @@ interface EventFormProps {
   setHostedBy: (text: string) => void;
   maxAttendees: string;
   setMaxAttendees: (text: string) => void;
-  rsvpDeadline: Date;
-  setRsvpDeadline: (date: Date) => void;
   imageUri: string|null;
   setImageUri: (text: string | null) => void;
   onSubmit: () => void;
@@ -82,8 +80,6 @@ export function EventForm({
   onSubmit,
   maxAttendees,
   setMaxAttendees,
-  rsvpDeadline,
-  setRsvpDeadline,
   imageUri,
   setImageUri,
   submitButtonText,
@@ -93,7 +89,6 @@ export function EventForm({
   const [showTimeStartPicker, setShowTimeStartPicker] = useState(false);
   const [showDateEndPicker, setShowDateEndPicker] = useState(false);
   const [showTimeEndPicker, setShowTimeEndPicker] = useState(false);
-  const [showRsvpDeadlinePicker, setShowRsvpDeadlinePicker] = useState(false);
 
   const isAndroid = Platform.OS === "android";
 
@@ -181,21 +176,6 @@ export function EventForm({
   const handleMaxAttendeesChange = (text: string) => {
     const numericValue = text.replace(/[^0-9]/g, '');
     setMaxAttendees(numericValue);
-  };  
-
- const handleRsvpDeadlineChange = (
-    event: DateTimePickerEvent,
-    selectedDate?: Date
-  ) => {
-    if (isAndroid) {
-      setShowRsvpDeadlinePicker(false);
-      if (event.type === "dismissed") {
-        return;
-      }
-    }
-    if (selectedDate) {
-      setRsvpDeadline(selectedDate);
-    }
   };  
 
   const pickImage = async () => {
@@ -376,25 +356,6 @@ export function EventForm({
           onChangeText={handleMaxAttendeesChange}
           keyboardType="number-pad" 
         />          
-
-        <Text style={styles.label}>RSVP Deadline</Text>
-        {isAndroid ? (
-          <TouchableOpacity
-            style={styles.input}
-            onPress={() => setShowRsvpDeadlinePicker(true)}
-          >
-            <Text>{formatDate(rsvpDeadline)}</Text>
-          </TouchableOpacity>
-        ) : null}
-        {(isAndroid && showRsvpDeadlinePicker) || !isAndroid ? (
-          <DateTimePicker
-            value={rsvpDeadline}
-            mode="date"
-            display="default"
-            maximumDate={dateStart}
-            onChange={handleRsvpDeadlineChange}
-          />
-        ) : null}
 
         <Text style={styles.label}>Cover Image</Text>
         <TouchableOpacity onPress={pickImage} style={styles.imageButton}>

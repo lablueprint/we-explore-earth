@@ -14,7 +14,6 @@ export async function createEvent(req: Request, res: Response) {
       timeEnd,
       price,
       maxAttendees,
-      rsvpDeadline,
       hostedBy,
       category,
       accommodation,
@@ -28,7 +27,6 @@ export async function createEvent(req: Request, res: Response) {
       !timeEnd ||
       price == null ||
       !maxAttendees ||
-      !rsvpDeadline ||
       !hostedBy
     ) {
       return res.status(400).json({ error: "All fields are required" });
@@ -40,7 +38,6 @@ export async function createEvent(req: Request, res: Response) {
       location,
       timeStart: new Date(timeStart),
       timeEnd: new Date(timeEnd),
-      rsvpDeadline: new Date(rsvpDeadline),
       hostedBy,
       category: (category ?? []) as string[],
       accommodation: (accommodation ?? []) as string[],
@@ -114,7 +111,6 @@ export async function updateEvent(req: Request, res: Response) {
       timeEnd,
       price,
       maxAttendees,
-      rsvpDeadline,
       hostedBy,
       category,
       accommodation,
@@ -128,7 +124,6 @@ export async function updateEvent(req: Request, res: Response) {
       !timeEnd ||
       price == null ||
       !maxAttendees ||
-      !rsvpDeadline ||
       !hostedBy
     ) {
       return res.status(400).json({ error: "All fields are required" });
@@ -151,7 +146,6 @@ export async function updateEvent(req: Request, res: Response) {
       location,
       timeStart: new Date(timeStart),
       timeEnd: new Date(timeEnd),
-      rsvpDeadline: new Date(rsvpDeadline),
       hostedBy,
       category: (category ?? []) as string[],
       accommodation: (accommodation ?? []) as string[],
