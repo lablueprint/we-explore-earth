@@ -1,7 +1,7 @@
 import { db } from "../firestore";
 import { Request, Response } from "express";
 import admin from "firebase-admin";
-import { FirestoreEventData, EventRSVP } from "@shared/types/event";
+import { FirestoreEventData, EventRSVP, RSVPStatus } from "@shared/types/event";
 
 // create event
 export async function createEvent(req: Request, res: Response) {
@@ -14,9 +14,9 @@ export async function createEvent(req: Request, res: Response) {
       timeEnd,
       price,
       maxAttendees,
-      rsvpDeadline,
       hostedBy,
-      tags,
+      category,
+      accommodation,
     } = req.body;
 
     if (
@@ -27,9 +27,7 @@ export async function createEvent(req: Request, res: Response) {
       !timeEnd ||
       price == null ||
       !maxAttendees ||
-      !rsvpDeadline ||
-      !hostedBy ||
-      !tags
+      !hostedBy
     ) {
       return res.status(400).json({ error: "All fields are required" });
     }
@@ -40,8 +38,9 @@ export async function createEvent(req: Request, res: Response) {
       location,
       timeStart: new Date(timeStart),
       timeEnd: new Date(timeEnd),
-      category: tags.category || [],
-      accommodation: tags.accommodation || [],
+      hostedBy,
+      category: (category ?? []) as string[],
+      accommodation: (accommodation ?? []) as string[],
       price: typeof price === "string" ? parseInt(price, 10) : price,
       maxAttendees:
         typeof maxAttendees === "string"
@@ -61,9 +60,12 @@ export async function createEvent(req: Request, res: Response) {
 
 export async function getEvent(req: Request, res: Response) {
   try {
-    const event = await db.collection("events").doc(req.params.id as string).get(); // did 'as string' to avoid type error on mannys system.
-    if (!event.exists){
-      return res.status(404).json({error: "Event not found"});
+    const event = await db
+      .collection("events")
+      .doc(req.params.id as string)
+      .get(); // did 'as string' to avoid type error on mannys system.
+    if (!event.exists) {
+      return res.status(404).json({ error: "Event not found" });
     }
     res.json({ id: event.id, ...event.data() });
   } catch (error) {
@@ -109,9 +111,9 @@ export async function updateEvent(req: Request, res: Response) {
       timeEnd,
       price,
       maxAttendees,
-      rsvpDeadline,
       hostedBy,
-      tags,
+      category,
+      accommodation,
     } = req.body;
 
     if (
@@ -122,9 +124,7 @@ export async function updateEvent(req: Request, res: Response) {
       !timeEnd ||
       price == null ||
       !maxAttendees ||
-      !rsvpDeadline ||
-      !hostedBy ||
-      !tags
+      !hostedBy
     ) {
       return res.status(400).json({ error: "All fields are required" });
     }
@@ -137,20 +137,24 @@ export async function updateEvent(req: Request, res: Response) {
       return res.status(404).json({ error: "Event not found" });
     }
 
+    const existingData = eventDoc.data();
+    const existingAttendees: EventRSVP[] = existingData?.attendees || [];
+
     const eventData: FirestoreEventData = {
       title,
       description,
       location,
       timeStart: new Date(timeStart),
       timeEnd: new Date(timeEnd),
+      hostedBy,
+      category: (category ?? []) as string[],
+      accommodation: (accommodation ?? []) as string[],
       price: typeof price === "string" ? parseInt(price, 10) : price,
-      category: tags.category || [],
-      accommodation: tags.accommodation || [],
       maxAttendees:
         typeof maxAttendees === "string"
           ? parseInt(maxAttendees, 10)
           : maxAttendees,
-      attendees: [] as EventRSVP[],
+      attendees: existingAttendees,
     };
 
     await eventRef.update(eventData as any);
@@ -171,7 +175,7 @@ export async function addOrUpdateRSVP(req: Request, res: Response) {
       return res.status(400).json({ error: "userID and status are required" });
     }
 
-    if (status !== 'YES' && status !== 'MAYBE') {
+    if (status !== "YES" && status !== "MAYBE") {
       return res.status(400).json({ error: "status must be 'YES' or 'MAYBE'" });
     }
 
@@ -184,7 +188,9 @@ export async function addOrUpdateRSVP(req: Request, res: Response) {
 
     const eventData = eventDoc.data()!;
     const attendees: EventRSVP[] = eventData.attendees || [];
-    const existingAttendeeIndex = attendees.findIndex((a) => a.userID === userID);
+    const existingAttendeeIndex = attendees.findIndex(
+      (a) => a.userID === userID,
+    );
     if (existingAttendeeIndex >= 0) {
       attendees[existingAttendeeIndex].status = status;
     } else {
@@ -219,7 +225,7 @@ export async function removeRSVP(req: Request, res: Response) {
 
     const eventData = eventDoc.data()!;
     const attendees: EventRSVP[] = (eventData.attendees || []).filter(
-      (a: EventRSVP) => a.userID !== userID
+      (a: EventRSVP) => a.userID !== userID,
     );
 
     await eventRef.update({ attendees });
