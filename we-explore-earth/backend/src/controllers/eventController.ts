@@ -1,7 +1,8 @@
 import { db } from "../firestore";
 import { Request, Response } from "express";
 import admin from "firebase-admin";
-import { FirestoreEventData, EventRSVP, RSVPStatus } from "@shared/types/event";
+import { FirestoreTimestamp, RSVPStatus, EventRSVP, Event, FirestoreEventData } from "@shared/types/event";
+import { Filter } from "@shared/types/filter";
 
 // create event
 export async function createEvent(req: Request, res: Response) {
@@ -96,6 +97,106 @@ export async function getAllEvents(req: Request, res: Response) {
     return res
       .status(500)
       .json({ error: "failed to fetch events from database" });
+  }
+}
+
+/**
+ * POST /events/filtered - get and filter events for home page
+ * 
+ * Note:
+ * - Using POST instead of GET to allow query parameters (filters) to scale.
+ * - If filters grows large, we may exceed url length when adding filters as query parameters to API endpoint.
+ */
+export async function getFilteredEvents(req: Request, res: Response) {
+  // Helper function for converting an event's startTime and endTime to Date objects
+  const convertFirestoreTimestampToDate = (timestamp: FirestoreTimestamp): Date => {
+    const milliseconds = (timestamp._seconds * 1000) + (timestamp._nanoseconds / 1000000);
+    return new Date(milliseconds);
+  };
+
+  try {
+    // Grab all events from database
+    const snapshot = await db.collection("events").get();
+
+    // Grab filters from query parameters
+    const filters: Filter = req.body;
+    let filterStartDate: Date | undefined = undefined;
+    let filterEndDate: Date | undefined = undefined;
+    let filterCategories: Set<string> | undefined = undefined;
+    let filterAccommodations: Set<string> | undefined = undefined;
+
+    // Prepare the filters
+    if (filters.startDate && filters.endDate) {
+      filterStartDate = new Date(filters.startDate);
+      filterEndDate = new Date(filters.endDate);
+      // normalize the dates since we are comparing dates not timestamps
+      filterStartDate.setHours(0, 0, 0, 0);
+      filterEndDate.setHours(0, 0, 0, 0);
+    }
+    if (filters.categories) {
+      filterCategories = new Set(filters.categories);
+    }
+    if (filters.accommodations) {
+      filterAccommodations = new Set(filters.accommodations);
+    }
+    // console.log('Filters: \n', 'Start date:     ' + filterStartDate + '\n', 'End date:       ' + filterEndDate + '\n', 'Categories:    ', filterCategories, '\n', 'Accommodations:', filterAccommodations, '\n');
+
+    // Filter events
+    const events: Event[] = [];
+    snapshot.docs.forEach((doc) => {
+      // Mapping
+      const event: Event = {
+        id: doc.id,
+        ...doc.data()
+      } as Event;
+
+      // Filtering
+      // If a valid date range is selected
+      if (filterStartDate && filterEndDate) {
+        // only compare event's start date with selected date range; ignore event's end date
+        const eventStartDate = convertFirestoreTimestampToDate(event.timeStart);
+        eventStartDate.setHours(0, 0, 0, 0); // normalize event's start date
+        if (eventStartDate < filterStartDate || filterEndDate < eventStartDate) {
+          return;
+        }
+      }
+      // If at least 1 category filter is selected
+      if (filterCategories) {
+        let containsCategory: Boolean = false;
+        const eventCategories = event.category;
+        for(let i=0; i<eventCategories.length; i++) {
+          if (filterCategories.has(eventCategories[i])) {
+            containsCategory = true;
+            break;
+          }
+        }
+        if (!containsCategory) {
+          return;
+        }
+      }
+      // If at least 1 accommodation is selected
+      if (filterAccommodations) {
+        let containsAccommodation: Boolean = false;
+        const eventAccommodations = event.accommodation;
+        for(let i=0; i<eventAccommodations.length; i++) {
+          if (filterAccommodations.has(eventAccommodations[i])) {
+            containsAccommodation = true;
+            break;
+          }
+        }
+        if (!containsAccommodation) {
+          return;
+        }
+      }
+      events.push(event);
+    });
+    
+    console.log(`Fetched ${events.length} filtered events successfully.`);
+    res.status(200).json(events);
+  }
+  catch (error: any) {
+    console.log("Error in getFilteredEvents:", error);
+    res.status(500).json({error: "Failed to fetch filtered events from database."});
   }
 }
 

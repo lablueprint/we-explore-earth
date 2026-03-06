@@ -4,7 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Checkbox } from 'expo-checkbox';
 import { Calendar } from 'react-native-calendars';
 import Feather from '@expo/vector-icons/Feather';
-import { filterStyles, calendarStyles } from './styles'
+import { Filter } from '@shared/types/filter';
+import { filterStyles, calendarStyles } from './styles';
 
 const RangeCalendar = () => {
     const [range, setRange] = useState({ start: '', end: '' });
@@ -131,7 +132,15 @@ function FilterOption(
     )
 }
 
-function EventFilters() {
+function EventFilters(
+    {
+        setFilters
+    }
+    :
+    {
+        setFilters: React.Dispatch<any>
+    }
+) {
     const [dateOptions, _] = useState<Array<string>>(['Today', 'Tomorrow', 'This Week', 'This Month']);
     const [selectedDates, setSelectedDates] = useState<Set<string>>(new Set());
 
@@ -142,8 +151,8 @@ function EventFilters() {
 
     const handleSubmit = () => {
         // Compute start and end dates.
-        let startDate : Date | null = null;
-        let endDate : Date | null = null;
+        let startDate : Date | undefined = undefined;
+        let endDate : Date | undefined = undefined;
         const today = new Date();
 
         selectedDates.forEach((option) => {
@@ -172,21 +181,15 @@ function EventFilters() {
             endDate = endDate ? new Date(Math.max(endDate.getTime(), newEndDate.getTime())) : newEndDate;
         })
 
-        // TODO: Pass the filter values (startDate, endDate, categories) to parent component. Placeholder below.
-        console.log('');
+        const result: Filter = {}
         if(startDate && endDate) {
-            console.log('start date', (startDate as Date).toString());
-            console.log('end date:', (endDate as Date).toString());
-        }
-        else {
-            console.log('No dates selected.');
+            result.startDate = startDate as Date;
+            result.endDate = endDate as Date;
         }
         if(selectedCategories && selectedCategories.size) {
-            console.log(selectedCategories);
+            result.categories = [...selectedCategories];
         }
-        else {
-            console.log('No categories selected.');
-        }
+        setFilters(result);
     }
 
     async function retrieveCategories() {

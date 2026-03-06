@@ -3,6 +3,7 @@ import {
   createEvent,
   getEvent,
   getAllEvents,
+  getFilteredEvents,
   updateEvent,
   addOrUpdateRSVP,
   removeRSVP,
@@ -12,6 +13,9 @@ const router = express.Router();
 
 // POST /events/create
 router.post("/create", createEvent);
+
+// POST /events/filtered (see note in eventController.ts)
+router.post("/filtered", getFilteredEvents);
 
 // PUT /events/:id
 router.put("/:id", updateEvent);
