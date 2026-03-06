@@ -12,6 +12,7 @@ import {
 // LOCAL COMPONENTS
 import EventView from "./eventView/eventView";
 import EventDetails from "./eventDetails/eventDetails";
+import EventAttendees from "./eventAttendees/eventAttendees";
 import RSVPModal from "./RSVPModal/RSVPModal";
 
 // TYPES

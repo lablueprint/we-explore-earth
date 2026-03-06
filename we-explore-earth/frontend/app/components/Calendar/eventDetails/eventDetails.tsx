@@ -7,6 +7,8 @@ import type {
   RSVPStatus,
   FirestoreTimestamp,
 } from "@shared/types/event";
+import EventAttendees from "../eventAttendees/eventAttendees";
+import EventAttendeesSummary from "../eventAttendeesSummary/eventAttendeesSummary";
 
 type Props = {
   visible: boolean;
@@ -58,6 +60,7 @@ export default function EventDetails({
               <Text style={styles.meta}>
                 End: {formatTimestamp(event.timeEnd)}
               </Text>
+              <EventAttendeesSummary selectedEvent={event} />
 
               {currentRSVP && (
                 <View style={styles.rsvpStatus}>
