@@ -1,181 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Modal, View, Text, TouchableOpacity } from 'react-native';
-import { Checkbox } from 'expo-checkbox';
-import { Calendar } from 'react-native-calendars';
 import Feather from '@expo/vector-icons/Feather';
+import FilterSection from '../filterSection/filterSection';
+import DateRangePickerModal from '../dateRangePickerModal/dateRangePickerModal';
 import { Filter } from '@shared/types/filter';
-import { filterStyles, calendarStyles } from './styles';
-
-const DateRangePickerModal = (
-    {
-        calendarVisible,
-        setCalendarVisible
-    }
-    :
-    {
-        calendarVisible: boolean,
-        setCalendarVisible: React.Dispatch<any>
-    }
-) => {
-    // TODO: When using this range, validate it. Must have a valid start and end date.
-    // TODO: Disable selecting dates before the current day.
-    // TODO: Disable submit button if the date range is invalid!
-    const [range, setRange] = useState({ start: '', end: '' });
-
-    const onDayPress = (day: any) => {
-        const { dateString } = day;
-
-        // Reset range if range is defined or if user picks a date before the start
-        if (!range.start || (range.start && range.end) || dateString < range.start) {
-            setRange({ start: dateString, end: '' });
-        } else {
-            setRange({ ...range, end: dateString });
-        }
-    };
-
-    const getMarkedDates = () => {
-        const marked: any = {}; // type MarkedDates: maps strings to type MarkingProps (in imported Calendar component's docs)
-        
-        // Start and end dates are both selected
-        if (range.start && range.end) {
-            // Single date range
-            if (range.start == range.end) {
-                marked[range.start] = { customStyles: calendarStyles.singleDay };
-            }
-            // Multi date range
-            else {
-                marked[range.start] = { customStyles: calendarStyles.startDay };
-                marked[range.end] = { customStyles: calendarStyles.endDay };
-                
-                // Fill in the gap between start and end
-                let start = new Date(range.start);
-                let end = new Date(range.end);
-                while (start < end) {
-                    start.setDate(start.getDate() + 1);
-                    const dateString = start.toISOString().split('T')[0];
-                    if (dateString !== range.end) {
-                        marked[dateString] = { customStyles: calendarStyles.middleDay };
-                    }
-                }
-            }
-        }
-        // Only start date is selected
-        else if (range.start) {
-            marked[range.start] = { customStyles: calendarStyles.startDay };
-        }
-
-        return marked;
-    };
-
-    return (
-        <Modal
-            animationType='slide'
-            transparent={true}
-            visible={calendarVisible}
-            onRequestClose={() => { setCalendarVisible(false); }}
-        >
-            <View style={filterStyles.centeredView}>
-                <View style={filterStyles.modalView}>
-                    <Calendar
-                        markingType={'custom'}
-                        markedDates={getMarkedDates()}
-                        onDayPress={onDayPress}
-                        theme={{
-                            todayTextColor: calendarStyles.todayColor,
-                            arrowColor: calendarStyles.arrowColor,
-                        }}
-                    />
-                    {/** TODO: Placeholder text with placeholder style for closing calendar picker. */}
-                    <TouchableOpacity onPress={() => { setCalendarVisible(false); }} style={filterStyles.submit}>
-                        <Text style={filterStyles.submitText}>Set date range</Text>
-                    </TouchableOpacity>
-                    {/** -------------------------------------------------------------------------- */}
-                </View>
-            </View>
-        </Modal>
-    );
-};
-
-function FilterSection(
-    {
-        header,
-        options,
-        selectedOptions,
-        setSelectedOptions
-    }
-    :
-    {
-        header: string,
-        options: string[],
-        selectedOptions: Set<string>,
-        setSelectedOptions: React.Dispatch<any>
-    }
-) {
-    const handleReset = () => {
-        setSelectedOptions(new Set());
-    }
-
-    return (
-        <>
-            {/** Filter header */}
-            <View style={filterStyles.filterHeaderWrapper}>
-                <Text style={filterStyles.filterHeader}>{header}</Text>
-                <TouchableOpacity onPress={handleReset}>
-                    <Text style={filterStyles.reset}>Reset</Text>
-                </TouchableOpacity>
-            </View>
-
-            {/** Filter options */}
-            {options.map((option, index) => 
-                <FilterOption
-                    key={index}
-                    option={option}
-                    selectedOptions={selectedOptions}
-                    setSelectedOptions={setSelectedOptions}
-                />
-            )}
-        </>
-    )
-}
-
-function FilterOption(
-    {
-        option,
-        selectedOptions,
-        setSelectedOptions
-    }
-    :
-    {
-        option: string,
-        selectedOptions: Set<string>,
-        setSelectedOptions: React.Dispatch<any>
-    }
-){
-    const handleCheck = () => {
-        const updated = new Set(selectedOptions);
-        // handle unchecking the box
-        if(selectedOptions.has(option)) {
-            updated.delete(option);
-            setSelectedOptions(updated);
-        }
-        // handle checking the box
-        else {
-            updated.add(option);
-            setSelectedOptions(updated);
-        }
-    }
-
-    return(
-        <View style={filterStyles.filterOptionWrapper}>
-            <Text style={filterStyles.filterOption}>{option}</Text>
-            <Checkbox
-                value={selectedOptions.has(option)}
-                onValueChange={handleCheck}
-                color={selectedOptions.has(option) ? 'black' : 'mediumgrey'}
-            />
-        </View>
-    )
-}
+import { styles } from './styles';
 
 function EventFiltersModal(
     {
@@ -306,7 +135,7 @@ function EventFiltersModal(
             onRequestClose={() => { setFilterModalVisible(false); }}
         >
             <View style={{flex: 1, backgroundColor: 'white', paddingTop: 80, paddingHorizontal: 20}}>
-                <Text style={filterStyles.filterTitle}>Filter</Text>
+                <Text style={styles.filterTitle}>Filter</Text>
                 
                 {dateOptions && dateOptions.length >= 0 &&
                     <FilterSection
@@ -318,8 +147,8 @@ function EventFiltersModal(
                 }
 
                 {/** Calendar Picker Modal */}
-                <View style={filterStyles.filterOptionWrapper}>
-                    <Text style={filterStyles.filterOption}>Choose a date range</Text>
+                <View style={styles.filterOptionWrapper}>
+                    <Text style={styles.filterOption}>Choose a date range</Text>
                     <TouchableOpacity onPress={() => { setCalendarVisible(true); }}>
                         <Feather name='chevron-right' size={24} color='black' />
                     </TouchableOpacity>
@@ -348,10 +177,10 @@ function EventFiltersModal(
                 }
 
                 <TouchableOpacity
-                    style={filterStyles.submit}
+                    style={styles.submit}
                     onPress={handleSubmit}
                 >
-                    <Text style={filterStyles.submitText}>Submit</Text>
+                    <Text style={styles.submitText}>Submit</Text>
                 </TouchableOpacity>
             </View>
         </Modal>
