@@ -17,7 +17,7 @@ export default function Calendar() {
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // TIME FILTERING - only upcoming events
+  // Time Filtering 
   const timeFiltering = useMemo(() => {
     const now = Date.now();
     return allEvents.filter((event) => {
