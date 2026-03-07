@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Modal, View, Text, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Checkbox } from 'expo-checkbox';
 import { Calendar } from 'react-native-calendars';
 import Feather from '@expo/vector-icons/Feather';
@@ -152,13 +151,17 @@ function FilterOption(
     )
 }
 
-function EventFilters(
+function EventFiltersModal(
     {
-        setFilters
+        setFilters,
+        filterModalVisible,
+        setFilterModalVisible,
     }
     :
     {
-        setFilters: React.Dispatch<any>
+        setFilters: React.Dispatch<any>,
+        filterModalVisible: boolean,
+        setFilterModalVisible: React.Dispatch<any>
     }
 ) {
     const [dateOptions, _] = useState<Array<string>>(['Today', 'Tomorrow', 'This Week', 'This Month']);
@@ -229,6 +232,8 @@ function EventFilters(
             result.accommodations = [...selectedAccommodations];
         }
         setFilters(result);
+
+        setFilterModalVisible(false); // close filter panel
     }
 
     async function retrieveCategories() {
@@ -268,8 +273,13 @@ function EventFilters(
     }, []);
 
     return(
-        <SafeAreaView style={{flex: 1, backgroundColor: 'white', paddingTop: 20, paddingHorizontal: 20}}>
-            <View>
+        <Modal
+            visible={filterModalVisible}
+            transparent={true}
+            animationType='slide'
+            onRequestClose={() => { setFilterModalVisible(false); }}
+        >
+            <View style={{flex: 1, backgroundColor: 'white', paddingTop: 80, paddingHorizontal: 20}}>
                 <Text style={filterStyles.filterTitle}>Filter</Text>
                 
                 {dateOptions && dateOptions.length >= 0 &&
@@ -332,8 +342,8 @@ function EventFilters(
                     <Text style={filterStyles.submitText}>Submit</Text>
                 </TouchableOpacity>
             </View>
-        </SafeAreaView>
+        </Modal>
     );
 }
 
-export default EventFilters;
+export default EventFiltersModal;

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Modal, TouchableOpacity} from 'react-native';
+import { View, Text, TouchableOpacity} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import EventFilters from './components/eventFilters/eventFilters';
+import EventFiltersModal from './components/eventFilters/eventFilters';
 import Calendar from '@/app/components/Calendar/calendar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Event } from '@shared/types/event';
@@ -9,9 +9,9 @@ import { Filter } from '@shared/types/filter';
 import { styles } from './styles';
 
 export default function HomeScreen() {
-  const [filters, setFilters] = useState<Filter>({});
   const [events, setEvents] = useState<Array<Event>>([]);
-  const [filterVisible, setFilterVisible] = useState<boolean>(false);
+  const [filters, setFilters] = useState<Filter>({});
+  const [filterModalVisible, setFilterModalVisible] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true); // for showing calendar or loading indicator
 
   useEffect(() => {
@@ -52,13 +52,12 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white', paddingTop: 20, paddingHorizontal: 20}}>
-      {/** TODO: Update padding and margin of safe area */}
 
       {/** Home Page */}
       <View style={styles.homeHeader}>
         <Text style={styles.upcoming}>Upcoming</Text>
         <TouchableOpacity
-          onPress={() => { setFilterVisible(true); }}
+          onPress={() => { setFilterModalVisible(true); }}
           style={styles.filterButtonWrapper}
         >
           <Text style={styles.filterButtonText}>Filters</Text>
@@ -71,24 +70,12 @@ export default function HomeScreen() {
         events={events}
       />
 
-      {/** Filters modal */}
-      <Modal
-        animationType='slide'
-        transparent={true}
-        visible={filterVisible}
-        onRequestClose={() => { setFilterVisible(false); }}
-      >
-        {/** TODO: Update padding and margin of safe area style={{flex: 1, paddingTop: 20, marginTop: 40}} */}
-        <SafeAreaView style={{flex: 1}}>
-          <TouchableOpacity
-            style={{marginLeft: 20}}
-            onPress={() => { setFilterVisible(false); }}
-          >
-            <Text>CLOSE</Text>
-          </TouchableOpacity>
-          <EventFilters setFilters={setFilters}/>
-        </SafeAreaView>
-      </Modal>
+      {/** Event filters modal */}
+      <EventFiltersModal
+        setFilters={setFilters}
+        filterModalVisible={filterModalVisible}
+        setFilterModalVisible={setFilterModalVisible}
+      />
 
     </SafeAreaView>
   );
