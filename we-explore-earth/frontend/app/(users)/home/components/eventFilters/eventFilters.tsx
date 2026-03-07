@@ -6,7 +6,17 @@ import Feather from '@expo/vector-icons/Feather';
 import { Filter } from '@shared/types/filter';
 import { filterStyles, calendarStyles } from './styles';
 
-const RangeCalendar = () => {
+const DateRangePickerModal = (
+    {
+        calendarVisible,
+        setCalendarVisible
+    }
+    :
+    {
+        calendarVisible: boolean,
+        setCalendarVisible: React.Dispatch<any>
+    }
+) => {
     // TODO: When using this range, validate it. Must have a valid start and end date.
     // TODO: Disable selecting dates before the current day.
     // TODO: Disable submit button if the date range is invalid!
@@ -58,15 +68,31 @@ const RangeCalendar = () => {
     };
 
     return (
-        <Calendar
-            markingType={'custom'}
-            markedDates={getMarkedDates()}
-            onDayPress={onDayPress}
-            theme={{
-                todayTextColor: calendarStyles.todayColor,
-                arrowColor: calendarStyles.arrowColor,
-            }}
-        />
+        <Modal
+            animationType='slide'
+            transparent={true}
+            visible={calendarVisible}
+            onRequestClose={() => { setCalendarVisible(false); }}
+        >
+            <View style={filterStyles.centeredView}>
+                <View style={filterStyles.modalView}>
+                    <Calendar
+                        markingType={'custom'}
+                        markedDates={getMarkedDates()}
+                        onDayPress={onDayPress}
+                        theme={{
+                            todayTextColor: calendarStyles.todayColor,
+                            arrowColor: calendarStyles.arrowColor,
+                        }}
+                    />
+                    {/** TODO: Placeholder text with placeholder style for closing calendar picker. */}
+                    <TouchableOpacity onPress={() => { setCalendarVisible(false); }} style={filterStyles.submit}>
+                        <Text style={filterStyles.submitText}>Set date range</Text>
+                    </TouchableOpacity>
+                    {/** -------------------------------------------------------------------------- */}
+                </View>
+            </View>
+        </Modal>
     );
 };
 
@@ -298,24 +324,10 @@ function EventFiltersModal(
                         <Feather name='chevron-right' size={24} color='black' />
                     </TouchableOpacity>
                 </View>
-
-                <Modal
-                    animationType='slide'
-                    transparent={true}
-                    visible={calendarVisible}
-                    onRequestClose={() => { setCalendarVisible(false); }}
-                >
-                    <View style={filterStyles.centeredView}>
-                        <View style={filterStyles.modalView}>
-                            <RangeCalendar/>
-                            {/** TODO: Placeholder text with placeholder style for closing calendar picker. */}
-                            <TouchableOpacity onPress={() => { setCalendarVisible(false); }} style={filterStyles.submit}>
-                                <Text style={filterStyles.submitText}>Set date range</Text>
-                            </TouchableOpacity>
-                            {/** -------------------------------------------------------------------------- */}
-                        </View>
-                    </View>
-                </Modal>
+                <DateRangePickerModal
+                    calendarVisible={calendarVisible}
+                    setCalendarVisible={setCalendarVisible}
+                />
 
                 {categoryOptions && categoryOptions.length >= 0 &&
                     <FilterSection
