@@ -8,6 +8,9 @@ import { Filter } from '@shared/types/filter';
 import { filterStyles, calendarStyles } from './styles';
 
 const RangeCalendar = () => {
+    // TODO: When using this range, validate it. Must have a valid start and end date.
+    // TODO: Disable selecting dates before the current day.
+    // TODO: Disable submit button if the date range is invalid!
     const [range, setRange] = useState({ start: '', end: '' });
 
     const onDayPress = (day: any) => {
@@ -202,13 +205,26 @@ function EventFilters(
         })
 
         const result: Filter = {}
+        // valid date range selected
         if(startDate && endDate) {
             result.startDate = startDate as Date;
+            result.startDate.setHours(0, 0, 0, 0);  // normalize start date
             result.endDate = endDate as Date;
+            result.endDate.setHours(0, 0, 0, 0);    // normalize end date
+
+            today.setHours(0, 0, 0, 0); // normalize current date
+
+            // lower bound = current date
+            if(result.startDate < today) {
+                result.startDate = today;
+            }
+            // end date will never precede current date
         }
+        // at least 1 category is selected
         if(selectedCategories && selectedCategories.size) {
             result.categories = [...selectedCategories];
         }
+        // at least 1 accommodation is selected
         if(selectedAccommodations && selectedAccommodations.size) {
             result.accommodations = [...selectedAccommodations];
         }

@@ -126,10 +126,14 @@ export async function getFilteredEvents(req: Request, res: Response) {
     let filterAccommodations: Set<string> | undefined = undefined;
 
     // Prepare the filters
-    if (filters.startDate && filters.endDate) {
+    if (!filters.startDate && !filters.startDate) { // default case: no date range selected
+      filterStartDate = new Date(); // set start date to current date
+      filterStartDate.setHours(0, 0, 0, 0); // normalize start date
+    }
+    else if (filters.startDate && filters.endDate) { // valid date range selected
       filterStartDate = new Date(filters.startDate);
       filterEndDate = new Date(filters.endDate);
-      // normalize the dates since we are comparing dates not timestamps
+      // redundant but for fallback reasons: normalize dates since we are comparing dates not timestamps
       filterStartDate.setHours(0, 0, 0, 0);
       filterEndDate.setHours(0, 0, 0, 0);
     }
@@ -151,9 +155,18 @@ export async function getFilteredEvents(req: Request, res: Response) {
       } as Event;
 
       // Filtering
-      // If a valid date range is selected
-      if (filterStartDate && filterEndDate) {
+      // If default case (no date range is selected), only include events that start on or after today
+      // Only default case has a start date but no end date because all valid date ranges will have both start and end dates.
+      if (filterStartDate && !filterEndDate) {
+        const eventStartDate = convertFirestoreTimestampToDate(event.timeStart)
+        eventStartDate.setHours(0, 0, 0, 0); // normalize event's start date
         // only compare event's start date with selected date range; ignore event's end date
+        if (eventStartDate < filterStartDate) {
+          return;
+        }
+      }
+      // If a valid date range is selected (via date filter options or calendar picker)
+      else if (filterStartDate && filterEndDate) {
         const eventStartDate = convertFirestoreTimestampToDate(event.timeStart);
         eventStartDate.setHours(0, 0, 0, 0); // normalize event's start date
         if (eventStartDate < filterStartDate || filterEndDate < eventStartDate) {

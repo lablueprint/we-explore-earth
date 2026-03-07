@@ -10,27 +10,39 @@ import { styles } from './styles';
 
 export default function HomeScreen() {
   const [filters, setFilters] = useState<Filter>({});
-  const [events, setEvents] = useState<Array<Event>>([]); // TODO: Use events to populate the home page (calendar component)
+  const [events, setEvents] = useState<Array<Event>>([]);
   const [filterVisible, setFilterVisible] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true); // for showing calendar or loading indicator
 
   useEffect(() => {
     async function fetchFilteredEvents() {
+      const baseUrl = process.env.EXPO_PUBLIC_API_URL;
+
+      if (!baseUrl) {
+        console.log("Config Error", "EXPO_PUBLIC_API_URL is not set.");
+        setLoading(false);
+        return;
+      }
+
       try {
-        const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/events/filtered`, 
+        const response = await fetch(`${baseUrl}/events/filtered`, 
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(filters),
           }
         );
-        const data = await response.json();
         if(!response.ok) {
-          throw new Error(data.error || "Failed to fetch filtered events.");
+          throw new Error("Failed to fetch filtered events.");
         }
+        const data: Event[] = await response.json();
         setEvents(data);
       }
       catch (error: any) {
         console.log(error instanceof Error ? error.message : "Failed to fetch filtered events.");
+      }
+      finally {
+        setLoading(false);
       }
     }
     
@@ -54,7 +66,10 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
       
-      <Calendar />
+      <Calendar
+        loading={loading}
+        events={events}
+      />
 
       {/** Filters modal */}
       <Modal
