@@ -301,16 +301,8 @@ export async function addOrUpdateRSVP(req: Request, res: Response) {
     }
 
     const eventData = eventDoc.data()!;
-    const attendees: EventRSVP[] = eventData.attendees || [];
-    const existingAttendeeIndex = attendees.findIndex(
-      (a) => a.userID === userID,
-    );
-    if (existingAttendeeIndex >= 0) {
-      attendees[existingAttendeeIndex].status = status;
-    } else {
-      const newRSVP: EventRSVP = { userID, status, checkedIn: false };
-      attendees.push(newRSVP);
-    }
+    const attendees: EventRSVP[] = eventData.attendees.filter((a: EventRSVP) => a.userID !== userID);
+    attendees.push({ userID, status, checkedIn: false });
 
     await eventRef.update({ attendees });
 
@@ -338,8 +330,8 @@ export async function removeRSVP(req: Request, res: Response) {
     }
 
     const eventData = eventDoc.data()!;
-    const attendees: EventRSVP[] = (eventData.attendees || []).filter(
-      (a: EventRSVP) => a.userID !== userID,
+    const attendees: EventRSVP[] = eventData.attendees.filter(
+      (a: EventRSVP) => a.userID !== userID
     );
 
     await eventRef.update({ attendees });

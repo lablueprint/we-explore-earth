@@ -9,7 +9,9 @@ import { store } from './redux/store';
 export default function RootLayout() {
  return (
     <Provider store={store}>
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack 
+      screenOptions={{ headerShown: false }}
+      >
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="(users)" />
         <Stack.Screen name="(admin)" />

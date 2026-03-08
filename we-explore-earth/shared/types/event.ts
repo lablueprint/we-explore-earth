@@ -52,6 +52,9 @@ export interface EventFormState {
   imageUri: string | null;
 }
 
+/** Event with user's RSVP status (e.g. from GET /users/:id/events) */
+export type EventWithStatus = Event & { status?: RSVPStatus };
+
 // Event data for writing to Firestore (uses Date - Firestore converts to FirestoreTimestamp)
 export interface FirestoreEventData {
   title: string;
