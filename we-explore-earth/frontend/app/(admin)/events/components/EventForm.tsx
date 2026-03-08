@@ -13,8 +13,7 @@ import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import { styles } from "./styles";
-import { EventTagsConfig, EventTagsSelection } from "../../../types/eventTags";
-import TagsSection from "./TagsSection";
+import { CategoryAccommodationSection } from "./CategoryAccommodationSection";
 import * as ImagePicker from 'expo-image-picker';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 // import { storage } from "@/firebase.config";
@@ -34,17 +33,18 @@ interface EventFormProps {
   setDateEnd: (date: Date) => void;
   timeEnd: Date;
   setTimeEnd: (date: Date) => void;
-  eventTagsConfig: EventTagsConfig | null;
-  tagsSelection: EventTagsSelection;
-  onTagsChange: (newSelection: EventTagsSelection) => void;
+  categoryOptions: string[];
+  accommodationOptions: string[];
+  category: string[];
+  accommodation: string[];
+  onCategoryChange: (category: string[]) => void;
+  onAccommodationChange: (accommodation: string[]) => void;
   price: string;
   setPrice: (text: string) => void;
   hostedBy: string;
   setHostedBy: (text: string) => void;
   maxAttendees: string;
   setMaxAttendees: (text: string) => void;
-  rsvpDeadline: Date;
-  setRsvpDeadline: (date: Date) => void;
   imageUri: string|null;
   setImageUri: (text: string | null) => void;
   onSubmit: () => void;
@@ -52,7 +52,7 @@ interface EventFormProps {
   formTitle: string;
 }
 
-export default function EventForm({
+export function EventForm({
   title,
   setTitle,
   description,
@@ -67,9 +67,12 @@ export default function EventForm({
   setDateEnd,
   timeEnd,
   setTimeEnd,
-  eventTagsConfig,
-  tagsSelection,
-  onTagsChange,
+  categoryOptions,
+  accommodationOptions,
+  category,
+  accommodation,
+  onCategoryChange,
+  onAccommodationChange,
   price,
   setPrice,
   hostedBy,
@@ -77,8 +80,6 @@ export default function EventForm({
   onSubmit,
   maxAttendees,
   setMaxAttendees,
-  rsvpDeadline,
-  setRsvpDeadline,
   imageUri,
   setImageUri,
   submitButtonText,
@@ -88,7 +89,6 @@ export default function EventForm({
   const [showTimeStartPicker, setShowTimeStartPicker] = useState(false);
   const [showDateEndPicker, setShowDateEndPicker] = useState(false);
   const [showTimeEndPicker, setShowTimeEndPicker] = useState(false);
-  const [showRsvpDeadlinePicker, setShowRsvpDeadlinePicker] = useState(false);
 
   const isAndroid = Platform.OS === "android";
 
@@ -176,21 +176,6 @@ export default function EventForm({
   const handleMaxAttendeesChange = (text: string) => {
     const numericValue = text.replace(/[^0-9]/g, '');
     setMaxAttendees(numericValue);
-  };  
-
- const handleRsvpDeadlineChange = (
-    event: DateTimePickerEvent,
-    selectedDate?: Date
-  ) => {
-    if (isAndroid) {
-      setShowRsvpDeadlinePicker(false);
-      if (event.type === "dismissed") {
-        return;
-      }
-    }
-    if (selectedDate) {
-      setRsvpDeadline(selectedDate);
-    }
   };  
 
   const pickImage = async () => {
@@ -354,10 +339,13 @@ export default function EventForm({
           />
         </View>
 
-        <TagsSection
-          eventTagsConfig={eventTagsConfig}
-          tagsSelection={tagsSelection}
-          onTagsChange={onTagsChange}
+        <CategoryAccommodationSection
+          categoryOptions={categoryOptions}
+          accommodationOptions={accommodationOptions}
+          category={category}
+          accommodation={accommodation}
+          onCategoryChange={onCategoryChange}
+          onAccommodationChange={onAccommodationChange}
         />
          
 
@@ -368,25 +356,6 @@ export default function EventForm({
           onChangeText={handleMaxAttendeesChange}
           keyboardType="number-pad" 
         />          
-
-        <Text style={styles.label}>RSVP Deadline</Text>
-        {isAndroid ? (
-          <TouchableOpacity
-            style={styles.input}
-            onPress={() => setShowRsvpDeadlinePicker(true)}
-          >
-            <Text>{formatDate(rsvpDeadline)}</Text>
-          </TouchableOpacity>
-        ) : null}
-        {(isAndroid && showRsvpDeadlinePicker) || !isAndroid ? (
-          <DateTimePicker
-            value={rsvpDeadline}
-            mode="date"
-            display="default"
-            maximumDate={dateStart}
-            onChange={handleRsvpDeadlineChange}
-          />
-        ) : null}
 
         <Text style={styles.label}>Cover Image</Text>
         <TouchableOpacity onPress={pickImage} style={styles.imageButton}>

@@ -1,20 +1,4 @@
-import { EventTagsConfig, EventTagsSelection } from "@shared/types/event";
-
-// Initialize tags selection with all options set to false
-export const initializeTagsSelection = (
-  config: EventTagsConfig,
-): EventTagsSelection => {
-  const selection: EventTagsSelection = {};
-  for (const [fieldName, options] of Object.entries(config)) {
-    if (Array.isArray(options)) {
-      selection[fieldName] = {};
-      for (const option of options) {
-        selection[fieldName][option] = false;
-      }
-    }
-  }
-  return selection;
-};
+import { FirestoreTimestamp } from "@shared/types/event";
 
 // Helper function to combine date and time into a Date object
 export const combineDateAndTime = (date: Date, time: Date): Date => {
@@ -27,26 +11,36 @@ export const combineDateAndTime = (date: Date, time: Date): Date => {
 };
 
 // Convert FirestoreTimestamp to Date
-// Handles FirestoreTimestamp format or ISO string format
-export const timestampToDate = (timestamp: any): Date => {
+// Handles FirestoreTimestamp format, ISO string, or Unix timestamp (seconds)
+export const timestampToDate = (
+  timestamp: FirestoreTimestamp | Date | string | number | null | undefined,
+): Date => {
   if (!timestamp) {
     return new Date(); // Return current date as fallback
   }
 
-  // If it's a FirestoreTimestamp object with _seconds
-  if (timestamp._seconds !== undefined) {
-    return new Date(timestamp._seconds * 1000);
+  if (typeof timestamp === "number") {
+    return new Date(timestamp > 1e12 ? timestamp : timestamp * 1000);
   }
 
-  // If it's already a Date object or ISO string
+  // If it's a FirestoreTimestamp object with _seconds
+  if (
+    typeof timestamp === "object" &&
+    "_seconds" in timestamp &&
+    typeof (timestamp as FirestoreTimestamp)._seconds === "number"
+  ) {
+    return new Date((timestamp as FirestoreTimestamp)._seconds * 1000);
+  }
+
+  // If it's already a Date object
   if (timestamp instanceof Date) {
     return timestamp;
   }
 
   // Try parsing as ISO string
-  const parsed = new Date(timestamp);
-  if (!isNaN(parsed.getTime())) {
-    return parsed;
+  if (typeof timestamp === "string") {
+    const parsed = new Date(timestamp);
+    if (!isNaN(parsed.getTime())) return parsed;
   }
 
   // Fallback to current date

@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
 import { View, TouchableOpacity, Text, ActivityIndicator, Alert } from 'react-native';
 import { useUser } from '../../../hooks/useUser';
+import type { RSVPStatus } from '@shared/types/event';
 
 type Props = {
   eventId: string;
 };
-
-type Status = 'YES' | 'MAYBE';
 
 export default function RsvpActions({ eventId }: Props) {
   const { user } = useUser();
   const userId = user?.id ?? null;
   const [loading, setLoading] = useState(false);
 
-  const sendRsvp = async (status: Status) => {
+  const sendRsvp = async (status: RSVPStatus) => {
     if (!userId) {
       Alert.alert('Sign in required', 'Please sign in to RSVP.');
       return;

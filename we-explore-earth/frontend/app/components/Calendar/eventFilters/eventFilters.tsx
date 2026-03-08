@@ -198,7 +198,7 @@ function EventFilters() {
                 throw new Error(data.error || "Failed to fetch categories");
             }
 
-            setCategoryOptions(data);
+            setCategoryOptions(Array.isArray(data.category) ? data.category : []);
         }
         catch (error: any) {
             console.log(error instanceof Error ? error.message : "Failed to fetch categories");

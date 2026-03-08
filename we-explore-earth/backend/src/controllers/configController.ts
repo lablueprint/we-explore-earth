@@ -74,7 +74,7 @@ export async function removeAdmin(req: Request, res: Response) {
   }
 }
 
-// GET /config/categories - Get all categories (for Filter Form component)
+// GET /config/categories - Get categories for event form/filters
 export async function getCategories(req: Request, res: Response) {
   try {
     const snapshot = await db.collection("config").doc("shared").get();
@@ -82,14 +82,32 @@ export async function getCategories(req: Request, res: Response) {
       return res.status(404).json({ error: "No config found" });
     }
 
-    const categories = snapshot.data()?.category;
-    if(!categories) {
-      return res.status(404).json({ error: "No categories found" });
-    }
-    
-    return res.json(categories);
+    const data = snapshot.data();
+    const category: string[] = Array.isArray(data?.category) ? data.category : [];
+
+    return res.json({ category });
+  } catch (e: any) {
+    return res.status(500).json({ error: e.message });
   }
-  catch (e: any) {
+}
+
+// GET /config/accommodations - Get accommodations for event form
+export async function getAccommodations(req: Request, res: Response) {
+  try {
+    const snapshot = await db.collection("config").doc("shared").get();
+    if (!snapshot.exists) {
+      return res.status(404).json({ error: "No config found" });
+    }
+
+    const data = snapshot.data();
+    const accommodation: string[] = Array.isArray(data?.accommodation)
+      ? data.accommodation
+      : Array.isArray(data?.accommodations)
+        ? data.accommodations
+        : [];
+
+    return res.json({ accommodation });
+  } catch (e: any) {
     return res.status(500).json({ error: e.message });
   }
 }
