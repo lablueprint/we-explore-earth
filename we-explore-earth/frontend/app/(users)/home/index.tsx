@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import EventFiltersModal from './components/eventFiltersModal/eventFiltersModal';
+
+// LOCAL COMPONENTS
 import Calendar from '@/app/components/Calendar/calendar';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Event } from '@shared/types/event';

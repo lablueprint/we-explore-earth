@@ -39,15 +39,18 @@ export default function LoginPage() {
         if (!response.ok) {
           throw new Error(data.error || "Login failed");
         }
-    
+
         dispatch(setUserState(data));
-    
+        //console.log("DATA RIGHT NOW:", data);
+        if(data.hasOnboarded) {
         if (data.isAdmin) {
           router.replace('/(admin)/home');
         } else {
           router.replace('/(users)/home');
         }
-
+      } else {
+        router.replace('/(onboarding)/discover');
+      }
         //router.replace('/(onboarding)/discover')
       } catch (error) {
         console.error("Login error:", error);
