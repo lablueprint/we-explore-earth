@@ -13,6 +13,7 @@ export interface NewUser {
   notificationToken: string | null;
   isAdmin: boolean;
   events: UserRSVP[];
+  hasOnboarded: boolean;
 }
 
 export interface User extends NewUser {
