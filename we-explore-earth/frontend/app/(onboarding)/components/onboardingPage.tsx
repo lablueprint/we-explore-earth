@@ -7,16 +7,21 @@ interface OnboardingPageProps {
   description?: string;
   nextRoute: string;
   buttonText?: string;
+  onFinish?: () => Promise<void>;
 }
 
 export default function OnboardingPage({ 
   title, 
   description, 
   nextRoute, 
-  buttonText = "Continue" 
+  buttonText = "Continue",
+  onFinish
 }: OnboardingPageProps) {
 
-  function handleNext() {
+  async function handleNext() {
+    if(onFinish) {
+      await onFinish();
+    }
     router.push(nextRoute as any);
   }
 

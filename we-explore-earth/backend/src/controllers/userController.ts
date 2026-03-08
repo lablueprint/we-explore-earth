@@ -122,6 +122,7 @@ export async function signupUser(req: Request, res: Response) {
       isAdmin: isAdmin,
       events: [],
       avatar: null,
+      hasOnboarded: false
     };
 
     //Part 3: POST user document to Firestore collection
@@ -142,7 +143,7 @@ export async function signupUser(req: Request, res: Response) {
 export async function updateUser(req: Request, res:Response) {
   try {
     const { id } = req.params;
-    const { username, email, firstName, lastName, notificationToken, isAdmin } = req.body;
+    const { username, email, firstName, lastName, notificationToken, isAdmin, hasOnboarded } = req.body;
 
     if (!id) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -156,6 +157,7 @@ export async function updateUser(req: Request, res:Response) {
 
     const userData = userDocument.data() as NewUser;  
     if (notificationToken !== undefined) userData.notificationToken = notificationToken;
+    if (hasOnboarded !== undefined) userData.hasOnboarded = hasOnboarded;
   
     await db.collection("users").doc(id as string).set(userData);
     
