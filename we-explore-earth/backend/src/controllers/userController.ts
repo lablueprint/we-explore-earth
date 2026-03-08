@@ -121,6 +121,7 @@ export async function signupUser(req: Request, res: Response) {
       notificationToken: null,
       isAdmin: isAdmin,
       events: [],
+      avatar: null,
       hasOnboarded: false
     };
 
@@ -164,6 +165,32 @@ export async function updateUser(req: Request, res:Response) {
     
   } catch (e: any) {
     res.status(500).json({ error: e.message });
+  }
+}
+
+// PATCH /users/:id/avatar ;set the user's chosen avatar key
+export async function updateUserAvatar(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    const { avatarKey } = req.body;
+
+    if (!avatarKey) {
+      return res.status(400).json({ error: "avatarKey is required" });
+    }
+
+    const userRef = db.collection("users").doc(id);
+    const userDoc = await userRef.get();
+
+    if (!userDoc.exists) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    await userRef.update({ avatar: avatarKey });
+
+    return res.json({ id, avatar: avatarKey });
+  } catch (error: any) {
+    console.error("Error updating user avatar:", error);
+    return res.status(500).json({ error: "Failed to update user avatar" });
   }
 }
 
