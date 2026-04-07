@@ -39,6 +39,7 @@ export default function HomeScreen() {
         }
         const data: Event[] = await response.json();
         setEvents(data);
+        console.log("Successfully fetched filtered events.");
       }
       catch (error: any) {
         console.log(error instanceof Error ? error.message : "Failed to fetch filtered events.");
