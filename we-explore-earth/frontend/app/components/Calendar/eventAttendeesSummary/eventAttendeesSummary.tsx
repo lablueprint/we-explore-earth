@@ -58,11 +58,11 @@ export default function EventAttendeesSummary({ selectedEvent }: Props) {
   return (
     <>
       <Text style = {styles.meta}>{selectedEvent?.attendees?.length ?? 0} attendees </Text>
-      {attendeesPreview.map((user) => (
+      {/* {attendeesPreview.map((user) => (
         <Text key={user.id}>
           {user.firstName} {user.lastName}
         </Text>
-      ))}
+      ))} */}
       {isAdmin && 
         <TouchableOpacity style={styles.viewAllButton}  onPress={() => setShowAll(true)} >
           <Text style={styles.closeText}>View All</Text>

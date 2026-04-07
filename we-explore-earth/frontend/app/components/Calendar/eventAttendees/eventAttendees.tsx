@@ -118,17 +118,23 @@ export default function EventAttendees({eventId}: Props){
           </TouchableOpacity>
         </View>
 
+       {searchfilteredData.length === 0 ? (
+        <Text style={styles.attendeeName}>No attendees that meet this criteria</Text>
+        ) : ( 
         <FlatList
           data={searchfilteredData}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View style={styles.attendeeItem}>
-              <Text style={styles.attendeeName}>{item.firstName} {item.lastName}</Text>
+              <Text style={styles.attendeeName}>
+                {item.firstName} {item.lastName}
+              </Text>
               <Text style={styles.attendeeUsername}>{item.username}</Text>
               <Text style={styles.attendeeEmail}>{item.email}</Text>
             </View>
           )}
         />
+        )}
       </>
     )}
   </View>
