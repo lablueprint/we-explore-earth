@@ -71,13 +71,13 @@ export async function signupUser(req: Request, res: Response) {
     if (!configSnap.exists) {
       return res.status(500).json({ error: "Config not found" });
     }
-    
-    const admins: string[] = configSnap.data()?.admins ?? [];
-    
-    const isAdmin = admins.includes(normalizedEmail);
-    
 
-    
+    const admins: string[] = configSnap.data()?.admins ?? [];
+
+    const isAdmin = admins.includes(normalizedEmail);
+
+
+
 
     //Part 1: Validate the user using firebase Auth + Send email verification link
     const userRecord = await admin.auth().createUser({
@@ -111,7 +111,7 @@ export async function signupUser(req: Request, res: Response) {
         <p>${verificationLink}</p>
       `
     });
-      
+
     //Part 2: Create user document
     const userData: NewUser = {
       username,
@@ -120,13 +120,15 @@ export async function signupUser(req: Request, res: Response) {
       lastName,
       notificationToken: null,
       isAdmin: isAdmin,
-      events: []
+      events: [],
+      avatar: null,
+      hasOnboarded: false
     };
 
     //Part 3: POST user document to Firestore collection
     await db.collection("users").doc(userRecord.uid).set(userData);
 
-    res.status(201).json({ 
+    res.status(201).json({
       message: "User created successfully",
       uid: userRecord.uid,
       admin: isAdmin,
@@ -141,27 +143,54 @@ export async function signupUser(req: Request, res: Response) {
 export async function updateUser(req: Request, res:Response) {
   try {
     const { id } = req.params;
-    const { username, email, firstName, lastName, notificationToken, isAdmin } = req.body;
+    const { username, email, firstName, lastName, notificationToken, isAdmin, hasOnboarded } = req.body;
 
     if (!id) {
       return res.status(400).json({ error: "Missing required fields" });
     }
-    
+
     const userDocument = await db.collection("users").doc(id as string).get();
 
     if (!userDocument.exists) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const userData = userDocument.data() as NewUser;  
+    const userData = userDocument.data() as NewUser;
     if (notificationToken !== undefined) userData.notificationToken = notificationToken;
+    if (hasOnboarded !== undefined) userData.hasOnboarded = hasOnboarded;
   
     await db.collection("users").doc(id as string).set(userData);
-    
+
     res.json({ id: id, ...userData });
-    
+
   } catch (e: any) {
     res.status(500).json({ error: e.message });
+  }
+}
+
+// PATCH /users/:id/avatar ;set the user's chosen avatar key
+export async function updateUserAvatar(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    const { avatarKey } = req.body;
+
+    if (!avatarKey) {
+      return res.status(400).json({ error: "avatarKey is required" });
+    }
+
+    const userRef = db.collection("users").doc(id as string);
+    const userDoc = await userRef.get();
+
+    if (!userDoc.exists) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    await userRef.update({ avatar: avatarKey });
+
+    return res.json({ id, avatar: avatarKey });
+  } catch (error: any) {
+    console.error("Error updating user avatar:", error);
+    return res.status(500).json({ error: "Failed to update user avatar" });
   }
 }
 
@@ -188,11 +217,11 @@ export async function loginUser(req: Request, res: Response) {
     });
 
     const data = await response.json();
-    
+
     if (!response.ok) {
       // Log the specific error for debugging
       console.log('Firebase Auth Error:', data);
-      
+
       if (data.error?.message?.includes('EMAIL_NOT_FOUND')) {
         return res.status(401).json({ error: "No account found with this email" });
       } else if (data.error?.message?.includes('INVALID_PASSWORD')) {
@@ -209,8 +238,8 @@ export async function loginUser(req: Request, res: Response) {
 
     // Check if user is authenticated
     if (!user.emailVerified) {
-      return res.status(400).json({ 
-        error: "Please verify your email before logging in" 
+      return res.status(400).json({
+        error: "Please verify your email before logging in"
       });
     }
 
@@ -222,7 +251,7 @@ export async function loginUser(req: Request, res: Response) {
     }
 
     res.json({ id: userDoc.id, ...userDoc.data() });
-  
+
   } catch (e: any) {
     res.status(500).json({ error: e.message });
   }
@@ -288,14 +317,8 @@ export async function addOrUpdateUserRSVP(req: Request, res: Response) {
     }
 
     const userData = userDoc.data()!;
-    const userEvents: UserRSVP[] = userData.events || [];
-    const existingEventIndex = userEvents.findIndex((e) => e.eventID === eventID);
-    if (existingEventIndex >= 0) {
-      userEvents[existingEventIndex].status = status;
-    } else {
-      const newRSVP: UserRSVP = { eventID, status };
-      userEvents.push(newRSVP);
-    }
+    const userEvents: UserRSVP[] = userData.events.filter((e: UserRSVP) => e.eventID !== eventID);
+    userEvents.push({ eventID, status });
 
     await userRef.update({ events: userEvents });
 
@@ -324,7 +347,7 @@ export async function removeUserRSVP(req: Request, res: Response) {
     }
 
     const userData = userDoc.data()!;
-    const userEvents: UserRSVP[] = (userData.events || []).filter(
+    const userEvents: UserRSVP[] = userData.events.filter(
       (e: UserRSVP) => e.eventID !== eventID
     );
 
@@ -349,7 +372,7 @@ export async function getUserRSVPs(req: Request, res: Response) {
     }
 
     const userData = userDoc.data()!;
-    const userEvents: UserRSVP[] = userData.events || [];
+    const userEvents: UserRSVP[] = userData.events;
 
     if (userEvents.length === 0) {
       return res.json([]);

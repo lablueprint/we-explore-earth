@@ -6,6 +6,7 @@ import {
   addOrUpdateUserRSVP,
   removeUserRSVP,
   updateUser,
+  updateUserAvatar,
   signupUser,
   loginUser,
   resetPassword,
@@ -24,6 +25,9 @@ router.post("/:id/rsvp", addOrUpdateUserRSVP);
 
 // DELETE /users/:id/rsvp
 router.delete("/:id/rsvp", removeUserRSVP);
+
+// PATCH /users/:id/avatar
+router.patch("/:id/avatar", updateUserAvatar);
 
 // GET /users/:id
 router.get("/:id", getUser);

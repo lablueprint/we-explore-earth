@@ -13,8 +13,10 @@ export interface NewUser {
   notificationToken: string | null;
   isAdmin: boolean;
   events: UserRSVP[];
+  avatar: string | null;
+  hasOnboarded: boolean;
 }
 
 export interface User extends NewUser {
-  id: string; 
+  id: string;
 }

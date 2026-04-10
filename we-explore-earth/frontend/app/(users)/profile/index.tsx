@@ -2,19 +2,23 @@ import React from 'react';
 import { View, Text, Alert } from 'react-native';
 import { useState, useEffect} from 'react';
 import { TouchableOpacity } from 'react-native';
+import { SvgUri } from 'react-native-svg';
 
 //LOCAL FILES
 import { styles } from './styles';
 import { User } from "@shared/types/user";
 import { useUser } from '../../../hooks/useUser';
+import { useAppSelector } from '@/app/redux/hooks';
 
 export default function ProfileScreen() {
   //REACT HOOKS
   const { userId } = useUser();
+  const reduxUser = useAppSelector(state => state.user);
   //STATE VARIABLES
   const [user, setUser] = useState<User | null>(null);
   const [notificationTokenEnabled, setNotificationTokenEnabled] = useState<boolean>(false);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   //HANDLERS
   const fetchUser = async (userId: string) => {
@@ -83,6 +87,14 @@ export default function ProfileScreen() {
     }
   }, [userId]);
 
+  useEffect(() => {
+    if (!reduxUser?.avatar) return;
+    fetch(`${process.env.EXPO_PUBLIC_API_URL}/avatars/signed-url?key=${encodeURIComponent(reduxUser.avatar)}`)
+      .then(res => res.json())
+      .then(data => setAvatarUrl(data.url))
+      .catch(err => console.error("Failed to fetch avatar URL:", err));
+  }, [reduxUser?.avatar]);
+
 
   //RENDER
   return (
@@ -92,6 +104,13 @@ export default function ProfileScreen() {
         <Text style={styles.infoText}>Email: {user?.email}</Text>
         <Text style={styles.infoText}>First Name: {user?.firstName}</Text>
         <Text style={styles.infoText}>Last Name: {user?.lastName}</Text>
+        {avatarUrl ? (
+          <View style={styles.avatarContainer}>
+            <SvgUri uri={avatarUrl} width={100} height={100} />
+          </View>
+        ) : (
+          <Text style={styles.infoText}>Avatar: none</Text>
+        )}
 
         <View style={styles.notificationContainer}>
           <Text style={styles.label}>Enable Notifications:</Text>

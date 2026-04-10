@@ -1,5 +1,5 @@
 //STANDARD LIBRARY
-import { useEffect, useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -11,18 +11,29 @@ import {
 } from 'react-native';
 
 //THIRD-PARTY LIBRARIES
+import { useFocusEffect } from 'expo-router';
 
 //LOCAL FILES
 import { useUser } from '../../../hooks/useUser';
-import EventView from '../../components/Calendar/eventView/eventView';
 import EventDetails from '../../components/Calendar/eventDetails/eventDetails';
 import type { Event, EventWithStatus } from '@shared/types/event';
-import { styles } from './styles';
+import { styles, eventCardActiveOpacity, activityIndicatorSize } from './styles';
 
-type Filter = 'All' | 'Yes' | 'Maybe';
+type Tab = 'Upcoming' | 'Past';
+
+const getEventDate = (e: EventWithStatus) => e.timeStart._seconds * 1000;
+
+function formatEventDate(ms: number) {
+  return new Date(ms).toLocaleString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+}
 
 export default function MyEventsScreen() {
-
   //REACT HOOKS
   const { user } = useUser();
   const userId = user?.id ?? null;
@@ -30,7 +41,7 @@ export default function MyEventsScreen() {
   //STATE VARIABLES
   const [events, setEvents] = useState<EventWithStatus[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<Filter>('All');
+  const [tab, setTab] = useState<Tab>('Upcoming');
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -45,27 +56,23 @@ export default function MyEventsScreen() {
     setModalVisible(false);
   };
 
-  //EFFECTS
   const fetchMyEvents = useCallback(async () => {
     if (!userId) {
       setLoading(false);
       return;
     }
-
     const baseUrl = process.env.EXPO_PUBLIC_API_URL;
     if (!baseUrl) {
       Alert.alert('Config Error', 'EXPO_PUBLIC_API_URL is not set.');
       setLoading(false);
       return;
     }
-
     try {
       const res = await fetch(`${baseUrl}/users/${userId}/events`);
       if (!res.ok) {
         Alert.alert('Error', `Failed to fetch events (${res.status})`);
         return;
       }
-
       const data: EventWithStatus[] = await res.json();
       setEvents(data);
     } catch {
@@ -75,19 +82,29 @@ export default function MyEventsScreen() {
     }
   }, [userId]);
 
-  useEffect(() => {
-    fetchMyEvents();
-  }, [fetchMyEvents]);
+  //EFFECTS
+  useFocusEffect(
+    useCallback(() => {
+      fetchMyEvents();
+    }, [fetchMyEvents])
+  );
+
+  //FILTERING AND SORTING
+  const now = Date.now();
+  const list = useMemo(() => {
+    const filtered =
+      tab === 'Upcoming'
+        ? events.filter((e) => getEventDate(e) >= now)
+        : events.filter((e) => getEventDate(e) < now);
+    return [...filtered].sort((a, b) => {
+      const ta = getEventDate(a);
+      const tb = getEventDate(b);
+      if (tab === 'Upcoming') return ta - tb;
+      return tb - ta; 
+    });
+  }, [events, tab]);
 
   //RENDER
-  const filtered = events.filter((e) => {
-    const s = (e.status ?? '').toUpperCase();
-    if (filter === 'All') return true;
-    if (filter === 'Yes') return s === 'YES';
-    if (filter === 'Maybe') return s === 'MAYBE';
-    return true;
-  });
-
   if (!userId) {
     return (
       <SafeAreaView style={styles.screenCenter}>
@@ -99,40 +116,70 @@ export default function MyEventsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>
-          Your Events
-        </Text>
+        <Text style={styles.title}>Your Events</Text>
 
-        <View style={styles.filterRow}>
-          {(['All', 'Yes', 'Maybe'] as const).map((f) => (
+        <View style={styles.tabRow}>
+          {(['Upcoming', 'Past'] as const).map((t) => (
             <TouchableOpacity
-              key={f}
-              onPress={() => setFilter(f)}
-              style={[
-                styles.filterButton,
-                filter === f ? styles.filterButtonActive : styles.filterButtonInactive,
-              ]}
+              key={t}
+              onPress={() => setTab(t)}
+              style={[styles.tabButton, tab === t ? styles.tabButtonActive : styles.tabButtonInactive]}
             >
-              <Text style={filter === f ? styles.filterTextActive : styles.filterTextInactive}>
-                {f}
-              </Text>
+              <Text style={tab === t ? styles.tabTextActive : styles.tabTextInactive}>{t}</Text>
             </TouchableOpacity>
           ))}
         </View>
 
         {loading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" />
+            <ActivityIndicator size={activityIndicatorSize} />
           </View>
         ) : (
-          <ScrollView>
-            {filtered.map((event) => (
-              <EventView
-                key={event.id}
-                event={event}
-                onPress={handleEventPress}
-              />
-            ))}
+          <ScrollView style={styles.scroll}>
+            {list.length === 0 ? (
+              <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>
+                  {tab === 'Upcoming'
+                    ? "You don't have any upcoming events."
+                    : "You don't have any past events."}
+                </Text>
+              </View>
+            ) : (
+              list.map((event) => {
+                const status = event.status ?? null;
+                //RENDER EACH EVENT CARD
+                return (
+                  <TouchableOpacity
+                    key={event.id}
+                    style={styles.eventCard}
+                    onPress={() => handleEventPress(event)}
+                    activeOpacity={eventCardActiveOpacity}
+                  >
+                    <View style={styles.eventThumbnail} />
+                    <View style={styles.eventCardContent}>
+                      <Text style={styles.eventTitle} numberOfLines={2}>
+                        {event.title}
+                      </Text>
+                      <Text style={styles.eventDate}>
+                        {formatEventDate(getEventDate(event))}
+                      </Text>
+                      {status && (
+                        <View
+                          style={[
+                            styles.rsvpPill,
+                            status === 'YES' ? styles.rsvpGoing : styles.rsvpMaybe,
+                          ]}
+                        >
+                          <Text style={styles.rsvpPillText}>
+                            {status === 'YES' ? 'Going' : 'Maybe'}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                  </TouchableOpacity>
+                );
+              })
+            )}
           </ScrollView>
         )}
 
@@ -140,8 +187,7 @@ export default function MyEventsScreen() {
           visible={modalVisible && !!selectedEvent}
           event={selectedEvent}
           onClose={handleCloseModal}
-          currentRSVP={"YES" as 'YES' | 'MAYBE' | null} // Placeholder, remove this prop once currentRSVP is implement within EventDetails
-          onRSVPPress={handleCloseModal} // Placeholder, same thing as above
+          onRSVPChange={fetchMyEvents}
         />
       </View>
     </SafeAreaView>

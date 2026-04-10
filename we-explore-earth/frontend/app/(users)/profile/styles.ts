@@ -70,4 +70,13 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
+  avatarContainer: {
+    alignItems: 'center',
+    marginVertical: 12,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    overflow: 'hidden',
+    alignSelf: 'center',
+  },
 });
