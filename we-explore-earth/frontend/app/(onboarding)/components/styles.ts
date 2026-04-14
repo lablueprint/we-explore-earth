@@ -1,35 +1,77 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
+
+const { width } = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#E6EFE1',
+  },
+  backgroundImage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    opacity: 0.3, 
+    zIndex: -1, 
+  },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    padding: 20,
-    justifyContent: 'space-between', 
+    paddingHorizontal: 24,
+    justifyContent: 'space-between',
   },
-  imagePlaceholder: {
-    flex: 0.5,
-    backgroundColor: '#e0e0e0',
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 60,
+  progressContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+    width: '100%',
+    gap: 8,
   },
-  placeholderText: { color: '#888' },
+  progressDash: {
+    flex: 1,
+    height: 4,
+    borderRadius: 2,
+  },
+  activeDash: {
+    backgroundColor: '#355E2B', 
+  },
+  inactiveDash: {
+    backgroundColor: '#FFFFFF',
+    opacity: 0.5,
+  },
   contentContainer: {
-    flex: 0.4,
-    alignItems: 'center',
-    gap: 20,
+    flex: 1,
+    justifyContent: 'center', 
+    width: '100%',
   },
-  title: { fontSize: 24, fontWeight: 'bold', textAlign: 'center' },
-  description: { fontSize: 16, textAlign: 'center', color: '#666' },
+  title: { 
+    fontSize: 42, 
+    fontWeight: '400', 
+    color: '#0A1207', 
+    marginBottom: 8,
+    fontFamily: 'serif', 
+  },
+  description: { 
+    fontSize: 18, 
+    color: '#0A1207', 
+    lineHeight: 26,
+  },
+  footerContainer: {
+    width: '100%',
+    paddingBottom: 40,
+  },
   button: {
-    backgroundColor: '#D3D3D3',
-    paddingVertical: 15,
-    paddingHorizontal: 80,
+    backgroundColor: '#355E2B', 
+    width: '100%',
+    paddingVertical: 18,
     borderRadius: 30,
-    marginTop: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  buttonText: { fontSize: 16, fontWeight: '600' },
+  buttonText: { 
+    fontSize: 18, 
+    fontWeight: '600', 
+    color: '#FFFFFF',
+  },
 });
-

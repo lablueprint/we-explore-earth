@@ -6,6 +6,8 @@ export default function DiscoverPage() {
       title="Discover trails and events near you"
       description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
       nextRoute="/(onboarding)/join"
+      currentPage={1} 
+      totalPages={5}
     />
   );
 }
