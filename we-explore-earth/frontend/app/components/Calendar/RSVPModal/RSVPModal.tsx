@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { router, type Href } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -193,20 +194,25 @@ export default function RSVPModal({ visible, event, currentRSVP, onClose, onRSVP
               onChangeText={setNotes}
             />
 
-            {/* Terms checkbox */}
-            <TouchableOpacity
-              style={styles.termsRow}
-              onPress={() => setAgreedToTerms((v) => !v)}
-              activeOpacity={0.7}
-            >
-              <View style={[styles.checkbox, agreedToTerms && styles.checkboxChecked]}>
-                {agreedToTerms && <Ionicons name="checkmark" size={12} color="#fff" />}
-              </View>
+            <View style={styles.termsRow}>
+              <TouchableOpacity onPress={() => setAgreedToTerms((v) => !v)} activeOpacity={0.7}>
+                <View style={[styles.checkbox, agreedToTerms && styles.checkboxChecked]}>
+                  {agreedToTerms && <Ionicons name="checkmark" size={12} color="#fff" />}
+                </View>
+              </TouchableOpacity>
               <Text style={[typography.body, styles.termsText]}>
-                By selecting this check box, you agree to our{" "}
-                <Text style={[typography.body, styles.termsLink]}>terms and conditions</Text>
+                By selecting this check box, you agree to our{' '}
+                <Text
+                  style={[typography.body, styles.termsLink]}
+                  onPress={() => {
+                    onClose();
+                    setTimeout(() => router.push('/rsvp-terms-placeholder' as Href), 0);
+                  }}
+                >
+                  terms and conditions
+                </Text>
               </Text>
-            </TouchableOpacity>
+            </View>
 
             {/* RSVP button */}
             {isSubmitting ? (
