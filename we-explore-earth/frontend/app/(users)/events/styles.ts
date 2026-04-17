@@ -2,12 +2,18 @@ import { StyleSheet } from 'react-native';
 
 export const eventCardActiveOpacity = 0.85;
 export const activityIndicatorSize = 'large' as const;
+export const clockIconSize = 16;
+export const clockIconColor = '#777';
 
 export const styles = StyleSheet.create({
   screenCenter: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  signInMessage: {
+    fontSize: 16,
+    color: '#333',
   },
   container: {
     flex: 1,

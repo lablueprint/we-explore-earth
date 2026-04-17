@@ -1,7 +1,12 @@
+//STANDARD LIBRARY
 import React from 'react';
+
+//THIRD-PARTY LIBRARIES
 import { TouchableOpacity, Text, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { styles } from './styles';
+
+//LOCAL FILES
+import { styles, clockIconSize, clockIconColor, cardActiveOpacity } from './styles';
 import type { Event } from '@shared/types/event';
 import { typography } from '@shared/typography/typography';
 import { useUser } from '../../../../hooks/useUser';
@@ -27,16 +32,19 @@ function formatEventDate(seconds: number): string {
 }
 
 export default function EventView({ event, onPress }: Props) {
+  //REACT HOOKS
   const { userId } = useUser();
 
-  const rsvp = userId
-    ? event.attendees?.find((a) => a.userID === userId)
-    : undefined;
-
+  const rsvp = userId ? event.attendees?.find((a) => a.userID === userId) : undefined;
   const rsvpStatus = rsvp?.status ?? null;
 
+  //RENDER
   return (
-    <TouchableOpacity style={styles.card} onPress={() => onPress(event)} activeOpacity={0.85}>
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => onPress(event)}
+      activeOpacity={cardActiveOpacity}
+    >
       <View style={styles.imageWrap}>
         <View style={styles.imagePlaceholder} />
       </View>
@@ -46,15 +54,18 @@ export default function EventView({ event, onPress }: Props) {
           {event.title}
         </Text>
 
-        {/* Date pill */}
         <View style={styles.datePill}>
-          <Ionicons name="time-outline" size={16} color="#777" style={styles.clockIcon} />
+          <Ionicons
+            name="time-outline"
+            size={clockIconSize}
+            color={clockIconColor}
+            style={styles.clockIcon}
+          />
           <Text style={[typography.body, styles.dateText]}>
             {formatEventDate(event.timeStart._seconds)}
           </Text>
         </View>
 
-        {/* RSVP badge */}
         {rsvpStatus && (
           <View style={[styles.rsvpBadge, rsvpStatus === 'YES' ? styles.rsvpGoing : styles.rsvpMaybe]}>
             <Text style={[typography.body, styles.rsvpText]}>

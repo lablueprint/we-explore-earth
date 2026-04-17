@@ -1,5 +1,19 @@
 import { StyleSheet } from 'react-native';
 
+export const closeIconSize = 18;
+export const closeIconColor = '#555';
+export const checkmarkIconSize = 12;
+export const checkmarkIconColor = '#fff';
+export const activityIndicatorColor = '#285F00';
+export const notesPlaceholderColor = '#aaa';
+export const gradientColors = ['#ffffff', '#eaf1e2', '#d2e6c8'] as const;
+export const gradientLocations = [0, 0.42, 1] as const;
+export const scrollPaddingTopExtra = 52;
+export const scrollPaddingBottomMin = 24;
+export const scrollPaddingBottomExtra = 12;
+export const closeButtonTopExtra = 10;
+export const closeButtonRightExtra = 16;
+
 export const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
@@ -21,7 +35,10 @@ export const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingTop: 16,
+    paddingHorizontal: 20,
+  },
+  submittingIndicator: {
+    marginTop: 20,
   },
   title: {
     fontSize: 32,

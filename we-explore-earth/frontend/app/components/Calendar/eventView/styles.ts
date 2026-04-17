@@ -1,5 +1,9 @@
 import { StyleSheet } from 'react-native';
 
+export const clockIconSize = 16;
+export const clockIconColor = '#777';
+export const cardActiveOpacity = 0.85;
+
 export const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',

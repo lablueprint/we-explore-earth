@@ -19,7 +19,13 @@ import { useUser } from '../../../hooks/useUser';
 import EventDetails from '../../components/Calendar/eventDetails/eventDetails';
 import type { Event, EventWithStatus } from '@shared/types/event';
 import { typography } from '@shared/typography/typography';
-import { styles, eventCardActiveOpacity, activityIndicatorSize } from './styles';
+import {
+  styles,
+  eventCardActiveOpacity,
+  activityIndicatorSize,
+  clockIconSize,
+  clockIconColor,
+} from './styles';
 
 type Tab = 'Upcoming' | 'Past';
 
@@ -43,7 +49,6 @@ function formatEventDate(ms: number) {
 export default function MyEventsScreen() {
   //REACT HOOKS
   const { user } = useUser();
-  const userId = user?.id ?? null;
 
   //STATE VARIABLES
   const [events, setEvents] = useState<EventWithStatus[]>([]);
@@ -51,6 +56,22 @@ export default function MyEventsScreen() {
   const [tab, setTab] = useState<Tab>('Upcoming');
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+
+  const userId = user?.id ?? null;
+
+  const list = useMemo(() => {
+    const now = Date.now();
+    const filtered =
+      tab === 'Upcoming'
+        ? events.filter((e) => getEventDate(e) >= now)
+        : events.filter((e) => getEventDate(e) < now);
+    return [...filtered].sort((a, b) => {
+      const ta = getEventDate(a);
+      const tb = getEventDate(b);
+      if (tab === 'Upcoming') return ta - tb;
+      return tb - ta;
+    });
+  }, [events, tab]);
 
   //HANDLERS
   const handleEventPress = (event: Event) => {
@@ -93,29 +114,14 @@ export default function MyEventsScreen() {
   useFocusEffect(
     useCallback(() => {
       fetchMyEvents();
-    }, [fetchMyEvents])
+    }, [fetchMyEvents]),
   );
-
-  //FILTERING AND SORTING
-  const now = Date.now();
-  const list = useMemo(() => {
-    const filtered =
-      tab === 'Upcoming'
-        ? events.filter((e) => getEventDate(e) >= now)
-        : events.filter((e) => getEventDate(e) < now);
-    return [...filtered].sort((a, b) => {
-      const ta = getEventDate(a);
-      const tb = getEventDate(b);
-      if (tab === 'Upcoming') return ta - tb;
-      return tb - ta; 
-    });
-  }, [events, tab]);
 
   //RENDER
   if (!userId) {
     return (
       <SafeAreaView style={styles.screenCenter}>
-        <Text>Sign in to see your events.</Text>
+        <Text style={styles.signInMessage}>Sign in to see your events.</Text>
       </SafeAreaView>
     );
   }
@@ -154,7 +160,6 @@ export default function MyEventsScreen() {
             ) : (
               list.map((event) => {
                 const status = event.status ?? null;
-                //RENDER EACH EVENT CARD
                 return (
                   <TouchableOpacity
                     key={event.id}
@@ -172,8 +177,8 @@ export default function MyEventsScreen() {
                       <View style={styles.datePill}>
                         <Ionicons
                           name="time-outline"
-                          size={16}
-                          color="#777"
+                          size={clockIconSize}
+                          color={clockIconColor}
                           style={styles.clockIcon}
                         />
                         <Text style={[typography.body, styles.eventDate]}>

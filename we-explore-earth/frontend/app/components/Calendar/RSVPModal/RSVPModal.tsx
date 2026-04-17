@@ -1,4 +1,7 @@
+//STANDARD LIBRARY
 import React, { useState } from 'react';
+
+//THIRD-PARTY LIBRARIES
 import {
   Modal,
   View,
@@ -15,7 +18,24 @@ import { router, type Href } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { styles } from './styles';
+
+//LOCAL FILES
+import {
+  styles,
+  gradientColors,
+  gradientLocations,
+  scrollPaddingTopExtra,
+  scrollPaddingBottomMin,
+  scrollPaddingBottomExtra,
+  closeButtonTopExtra,
+  closeButtonRightExtra,
+  closeIconSize,
+  closeIconColor,
+  checkmarkIconSize,
+  checkmarkIconColor,
+  activityIndicatorColor,
+  notesPlaceholderColor,
+} from './styles';
 import type { Event, RSVPStatus } from '@shared/types/event';
 import { typography } from '@shared/typography/typography';
 import { useUser } from '../../../../hooks/useUser';
@@ -31,15 +51,19 @@ type Props = {
 };
 
 export default function RSVPModal({ visible, event, currentRSVP, onClose, onRSVPChange }: Props) {
+  //REACT HOOKS
   const insets = useSafeAreaInsets();
   const { user, userId } = useUser();
   const dispatch = useAppDispatch();
+
+  //STATE VARIABLES
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<RSVPStatus | null>(currentRSVP);
   const [attendeeCount, setAttendeeCount] = useState(0);
   const [notes, setNotes] = useState('');
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
+  //HANDLERS
   const handleSubmit = async () => {
     if (!selectedStatus) {
       Alert.alert('Selection Required', 'Please select Yes or Maybe.');
@@ -95,6 +119,7 @@ export default function RSVPModal({ visible, event, currentRSVP, onClose, onRSVP
     }
   };
 
+  //RENDER
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <KeyboardAvoidingView
@@ -102,18 +127,21 @@ export default function RSVPModal({ visible, event, currentRSVP, onClose, onRSVP
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <LinearGradient
-          colors={['#ffffff', '#eaf1e2', '#d2e6c8']}
-          locations={[0, 0.42, 1]}
+          colors={gradientColors}
+          locations={gradientLocations}
           style={styles.gradient}
         >
           <TouchableOpacity
             style={[
               styles.closeButton,
-              { top: insets.top + 10, right: insets.right + 16 },
+              {
+                top: insets.top + closeButtonTopExtra,
+                right: insets.right + closeButtonRightExtra,
+              },
             ]}
             onPress={onClose}
           >
-            <Ionicons name="close" size={18} color="#555" />
+            <Ionicons name="close" size={closeIconSize} color={closeIconColor} />
           </TouchableOpacity>
 
           <ScrollView
@@ -121,16 +149,14 @@ export default function RSVPModal({ visible, event, currentRSVP, onClose, onRSVP
             contentContainerStyle={[
               styles.scrollContent,
               {
-                paddingTop: insets.top + 52,
-                paddingBottom: Math.max(insets.bottom, 24) + 12,
-                paddingHorizontal: 20,
+                paddingTop: insets.top + scrollPaddingTopExtra,
+                paddingBottom: Math.max(insets.bottom, scrollPaddingBottomMin) + scrollPaddingBottomExtra,
               },
             ]}
             keyboardShouldPersistTaps="handled"
           >
             <Text style={[typography.h1, styles.title]}>Are you going?</Text>
 
-            {/* Yes / Maybe */}
             <View style={styles.optionRow}>
               <TouchableOpacity
                 style={[styles.optionButton, selectedStatus === 'YES' && styles.optionButtonSelected]}
@@ -165,7 +191,6 @@ export default function RSVPModal({ visible, event, currentRSVP, onClose, onRSVP
               </TouchableOpacity>
             </View>
 
-            {/* Attendee count */}
             <Text style={[typography.body, styles.label]}>Attendee count</Text>
             <View style={styles.countRow}>
               <TouchableOpacity
@@ -183,12 +208,11 @@ export default function RSVPModal({ visible, event, currentRSVP, onClose, onRSVP
               </TouchableOpacity>
             </View>
 
-            {/* Additional notes */}
             <Text style={[typography.body, styles.label]}>Additional notes</Text>
             <TextInput
               style={[typography.body, styles.notesInput]}
               placeholder="Have special needs, need a ride, bringing equipment, etc"
-              placeholderTextColor="#aaa"
+              placeholderTextColor={notesPlaceholderColor}
               multiline
               value={notes}
               onChangeText={setNotes}
@@ -197,7 +221,9 @@ export default function RSVPModal({ visible, event, currentRSVP, onClose, onRSVP
             <View style={styles.termsRow}>
               <TouchableOpacity onPress={() => setAgreedToTerms((v) => !v)} activeOpacity={0.7}>
                 <View style={[styles.checkbox, agreedToTerms && styles.checkboxChecked]}>
-                  {agreedToTerms && <Ionicons name="checkmark" size={12} color="#fff" />}
+                  {agreedToTerms && (
+                    <Ionicons name="checkmark" size={checkmarkIconSize} color={checkmarkIconColor} />
+                  )}
                 </View>
               </TouchableOpacity>
               <Text style={[typography.body, styles.termsText]}>
@@ -214,9 +240,12 @@ export default function RSVPModal({ visible, event, currentRSVP, onClose, onRSVP
               </Text>
             </View>
 
-            {/* RSVP button */}
             {isSubmitting ? (
-              <ActivityIndicator size="large" color="#285F00" style={{ marginTop: 20 }} />
+              <ActivityIndicator
+                size="large"
+                color={activityIndicatorColor}
+                style={styles.submittingIndicator}
+              />
             ) : (
               <TouchableOpacity style={styles.rsvpButton} onPress={handleSubmit} activeOpacity={0.85}>
                 <Text style={[typography.body, styles.rsvpButtonText]}>RSVP</Text>
