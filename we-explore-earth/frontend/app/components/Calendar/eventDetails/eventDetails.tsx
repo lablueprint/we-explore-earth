@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { Modal, View, Text, TouchableOpacity, Alert } from "react-native";
-import { useRouter, useSegments } from "expo-router";
+import {
+  Modal,
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+  ScrollView,
+  Image,
+} from "react-native";
 import { styles } from "./styles";
-import type {
-  Event,
-  RSVPStatus,
-  FirestoreTimestamp,
-} from "@shared/types/event";
-import EventAttendees from "../eventAttendees/eventAttendees";
-import EventAttendeesSummary from "../eventAttendeesSummary/eventAttendeesSummary";
-import RSVPModal from '../RSVPModal/RSVPModal';
-import { useUser } from '../../../../hooks/useUser';
+import type { Event, FirestoreTimestamp } from "@shared/types/event";
+import RSVPModal from "../RSVPModal/RSVPModal";
+import { useUser } from "../../../../hooks/useUser";
+import { typography } from "../../../../../shared/typography/typography";
 
 type Props = {
   visible: boolean;
@@ -19,107 +21,149 @@ type Props = {
   onRSVPChange?: () => void;
 };
 
-const formatTimestamp = (ts: FirestoreTimestamp) => {
-  return new Date(ts._seconds * 1000).toLocaleString();
+const formatDate = (ts: FirestoreTimestamp) => {
+  return new Date(ts._seconds * 1000).toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "short",
+    day: "numeric",
+  });
 };
 
-export default function EventDetails({ visible, event, onClose, onRSVPChange }: Props) {
+const formatTime = (ts: FirestoreTimestamp) => {
+  return new Date(ts._seconds * 1000).toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+};
+
+export default function EventDetails({
+  visible,
+  event,
+  onClose,
+  onRSVPChange,
+}: Props) {
   const { user } = useUser();
   const [rsvpModalVisible, setRsvpModalVisible] = useState(false);
-  const [localRSVP, setLocalRSVP] = useState<'YES' | 'MAYBE' | null>(null);
-  const router = useRouter();
-  const segments = useSegments();
-  const isAdmin = segments[0] === "(admin)";
+  const [localRSVP, setLocalRSVP] = useState<"YES" | "MAYBE" | null>(null);
 
-  const handleEdit = () => {
-    if (event?.id) {
-      onClose();
-      router.push(`/(admin)/events/${event.id}` as const);
-    }
-  };
-
-  // Derive current RSVP from user.events when event or user changes
-  const currentRSVP = event && user?.events
-    ? (user.events.find((e) => e.eventID === event.id)?.status as 'YES' | 'MAYBE' | undefined) ?? null
-    : null;
+  const currentRSVP =
+    event && user?.events
+      ? (user.events.find((e) => e.eventID === event.id)?.status as
+          | "YES"
+          | "MAYBE"
+          | undefined) ?? null
+      : null;
 
   useEffect(() => {
     setLocalRSVP(currentRSVP ?? null);
   }, [currentRSVP]);
 
-  // When details close, reset RSVP modal so next open is clean
   useEffect(() => {
     if (!visible) setRsvpModalVisible(false);
   }, [visible]);
 
   const handleRSVPPress = () => {
     if (!user) {
-      Alert.alert('Sign In Required', 'Please sign in to RSVP to events.');
+      Alert.alert("Sign In Required", "Please sign in to RSVP to events.");
       return;
     }
     setRsvpModalVisible(true);
   };
 
-  const handleCloseRSVPModal = () => {
-    setRsvpModalVisible(false);
-  };
-
-  const handleRSVPChange = (status: 'YES' | 'MAYBE' | null) => {
+  const handleRSVPChange = (status: "YES" | "MAYBE" | null) => {
     setLocalRSVP(status);
     onRSVPChange?.();
   };
 
   const displayRSVP = rsvpModalVisible ? localRSVP : currentRSVP;
 
+  if (!event) return null;
+
   return (
     <>
       <Modal
-      visible={visible && !rsvpModalVisible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-    >
+        visible={visible && !rsvpModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={onClose}
+      >
         <View style={styles.backdrop}>
-          <View style={styles.modalCard}>
-            {event ? (
-              <>
-                <Text style={styles.title}>{event.title}</Text>
-                <Text style={styles.body}>{event.description}</Text>
-                <Text style={styles.meta}>Location: {event.location}</Text>
-                <Text style={styles.meta}>
-                Start: {formatTimestamp(event.timeStart)}
-              </Text>
-                <Text style={styles.meta}>
-                End: {formatTimestamp(event.timeEnd)}
-              </Text>
-              <EventAttendeesSummary selectedEvent={event} />
+          <View style={styles.sheet}>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <View style={styles.topRow}>
+              <TouchableOpacity onPress={onClose} style={styles.backButton}>
+                <Text style={styles.backArrow}>←</Text>
+                <Text style={styles.backText}>Back</Text>
+              </TouchableOpacity>
 
-                {displayRSVP && (
-                  <View style={styles.rsvpStatus}>
-                    <Text style={styles.rsvpStatusText}>
-                      Your RSVP: <Text style={styles.rsvpStatusValue}>{displayRSVP}</Text>
-                    </Text>
-                  </View>
-                )}
-
-                <TouchableOpacity onPress={handleRSVPPress} style={styles.rsvpButton}>
-                  <Text style={styles.rsvpButtonText}>
-                    {displayRSVP ? 'Update RSVP' : 'RSVP'}
-                  </Text>
+                <TouchableOpacity style={styles.shareButton}>
+                  <Text style={styles.shareIcon}>↥</Text>
                 </TouchableOpacity>
-              </>
-            ) : (
-              <Text style={styles.title}>No event selected.</Text>
-            )}
+              </View>
 
-          {isAdmin && event && (
-            <TouchableOpacity onPress={handleEdit} style={styles.closeButton}>
-              <Text style={styles.closeText}>Edit</Text>
-            </TouchableOpacity>
-          )}
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Text style={styles.closeText}>Close</Text>
-            </TouchableOpacity>
+
+              <Text style={typography.h1}>{event.title}</Text>
+
+              <View style={styles.tagRow}>
+                <View style={styles.tagPill}>
+                  <Text style={styles.tagText}>Westwood</Text>
+                </View>
+                <View style={styles.tagPill}>
+                  <Text style={styles.tagText}>Hiking & Nature Walks</Text>
+                </View>
+              </View>
+
+              <View style={styles.infoRow}>
+                <Text style={styles.infoIcon}>🗓️</Text>
+                <View>
+                  <Text style={styles.infoTitle}>{formatDate(event.timeStart)}</Text>
+                  <Text style={styles.infoSub}>
+                    {formatTime(event.timeStart)} to {formatTime(event.timeEnd)}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.infoRow}>
+                <Text style={styles.infoIcon}>📍</Text>
+                <View>
+                  <Text style={styles.infoTitle}>{event.location}</Text>
+                  <Text style={styles.infoSub}>1155 N Lemon St, CA 92832</Text>
+                </View>
+              </View>
+
+              <Text style={styles.sectionLabel}>ATTENDEES</Text>
+
+              <View style={styles.attendeeHeader}>
+                <Text style={styles.attendeeCount}>30 People on the List</Text>
+                <Text style={styles.viewAll}>View all</Text>
+              </View>
+
+              <View style={styles.avatarRow}>
+                {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+                  <View key={i} style={styles.avatar} />
+                ))}
+              </View>
+
+              <TouchableOpacity onPress={handleRSVPPress} style={styles.rsvpButton}>
+                <Text style={styles.rsvpButtonText}>
+                  {displayRSVP ? "Update RSVP" : "RSVP"}
+                </Text>
+              </TouchableOpacity>
+
+              <View style={styles.divider} />
+
+              <Text style={styles.sectionLabel}>OVERVIEW</Text>
+              <Text style={styles.body}>{event.description}</Text>
+
+              <Text style={styles.sectionLabel}>DESCRIPTION</Text>
+              <Text style={styles.body}>
+                We’ll move through riparian and chaparral woodland habitats,
+                stopping frequently to explore edible properties of local species.
+              </Text>
+
+              <Text style={styles.sectionLabel}>WHAT TO BRING</Text>
+              <Text style={styles.body}>• Water{"\n"}• Comfortable closed-toe shoes</Text>
+            </ScrollView>
           </View>
         </View>
       </Modal>
@@ -128,7 +172,7 @@ export default function EventDetails({ visible, event, onClose, onRSVPChange }: 
         visible={rsvpModalVisible && !!event}
         event={event}
         currentRSVP={localRSVP}
-        onClose={handleCloseRSVPModal}
+        onClose={() => setRsvpModalVisible(false)}
         onRSVPChange={handleRSVPChange}
       />
     </>
