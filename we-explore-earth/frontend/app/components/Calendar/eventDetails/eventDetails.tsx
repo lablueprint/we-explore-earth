@@ -75,7 +75,10 @@ export default function EventDetails({
     onRSVPChange?.();
   };
 
-  const displayRSVP = rsvpModalVisible ? localRSVP : currentRSVP;
+  //EFFECTS
+  useEffect(() => {
+    setLocalRSVP(currentRSVP ?? null);
+  }, [currentRSVP]);
 
   if (!event) return null;
 
