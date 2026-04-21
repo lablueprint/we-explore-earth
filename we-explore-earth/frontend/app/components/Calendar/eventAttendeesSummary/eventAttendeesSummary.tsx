@@ -28,13 +28,21 @@ export default function EventAttendeesSummary({ selectedEvent }: Props) {
   
   return (
     <>
-      <Text style = {styles.meta}>{selectedEvent?.attendees?.length ?? 0} attendees </Text>
-      {isAdmin && 
-        <TouchableOpacity style={styles.viewAllButton}  onPress={() => setShowAll(true)} >
+      <Text style={styles.meta}>
+        {selectedEvent?.attendees?.length ?? 0} attendees
+      </Text>
+
+      {user?.isAdmin && (
+        <TouchableOpacity style={styles.viewAllButton} onPress={() => setShowAll(true)}>
           <Text style={styles.closeText}>View All</Text>
         </TouchableOpacity>
       )}
-      <Modal visible={showAll} animationType="slide" onRequestClose={() => setShowAll(false)}>
+
+      <Modal 
+        visible={showAll} 
+        animationType="slide" 
+        onRequestClose={() => setShowAll(false)}
+      >
         <View>
           <TouchableOpacity style={styles.closeButton} onPress={() => setShowAll(false)}>
             <Text style={styles.closeText}>Close</Text>
