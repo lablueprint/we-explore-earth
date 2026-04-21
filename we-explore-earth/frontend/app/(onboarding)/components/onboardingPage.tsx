@@ -1,4 +1,5 @@
-import { View, Text, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { View, Text, TouchableOpacity, SafeAreaView, Image, ImageBackground } from 'react-native';
 import { router } from 'expo-router';
 import { styles } from './styles';
 
@@ -8,6 +9,8 @@ interface OnboardingPageProps {
   nextRoute: string;
   buttonText?: string;
   onFinish?: () => Promise<void>;
+  currentPage: number;
+  totalPages: number;
 }
 
 export default function OnboardingPage({ 
@@ -15,34 +18,59 @@ export default function OnboardingPage({
   description, 
   nextRoute, 
   buttonText = "Continue",
-  onFinish
+  onFinish,
+  currentPage,
+  totalPages
 }: OnboardingPageProps) {
-
+  
   async function handleNext() {
     if(onFinish) {
       await onFinish();
     }
     router.push(nextRoute as any);
   }
-
+  
   return (
-    <View style={styles.container}>
-      {/* Image Placeholder */}
-      <View style={styles.imagePlaceholder}>
-        <Text style={styles.placeholderText}>[Image Placeholder]</Text>
-      </View>
-
-      {/* Text Content */}
-      <View style={styles.contentContainer}>
-        <Text style={styles.title}>{title}</Text>
-        {description && <Text style={styles.description}>{description}</Text>}
-
-        <TouchableOpacity style={styles.button} onPress={handleNext}>
-          <Text style={styles.buttonText}>{buttonText}</Text>
-        </TouchableOpacity>
+    <ImageBackground 
+      source={require('../../../assets/images/onboarding-gradient.png')} 
+      style={styles.fullBackground}
+      resizeMode="cover"
+    >
+      <SafeAreaView style={styles.safeArea}>
         
-      </View>
-    </View>
+        <Image 
+          source={require('../../../assets/images/lines.png')} 
+          style={styles.vectorLines}
+          resizeMode="cover"
+        />
+
+        <View style={styles.container}>
+          
+          <View style={styles.progressContainer}>
+            {Array.from({ length: totalPages }).map((_, index) => (
+              <View 
+                key={index} 
+                style={[
+                  styles.progressDash, 
+                  currentPage === index + 1 ? styles.activeDash : styles.inactiveDash
+                ]} 
+              />
+            ))}
+          </View>
+
+          <View style={styles.contentContainer}>
+            <Text style={styles.title}>{title}</Text>
+            {description && <Text style={styles.description}>{description}</Text>}
+          </View>
+
+          <View style={styles.footerContainer}>
+            <TouchableOpacity style={styles.button} onPress={handleNext}>
+              <Text style={styles.buttonText}>{buttonText}</Text>
+            </TouchableOpacity>
+          </View>
+          
+        </View>
+      </SafeAreaView>
+    </ImageBackground>
   );
 }
-
