@@ -1,8 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, Image } from 'react-native';
-
+import { View, Text, TouchableOpacity, SafeAreaView, Image, ImageBackground } from 'react-native';
 import { router } from 'expo-router';
-
 import { styles } from './styles';
 
 interface OnboardingPageProps {
@@ -32,42 +30,47 @@ export default function OnboardingPage({
     router.push(nextRoute as any);
   }
   
-
   return (
-    <SafeAreaView style={styles.safeArea}>
-      
-      <Image 
-        source={require('../../../assets/images/lines.png')} 
-        style={styles.backgroundImage}
-        resizeMode="cover"
-      />
-
-      <View style={styles.container}>
+    <ImageBackground 
+      source={require('../../../assets/images/onboarding-gradient.png')} 
+      style={styles.fullBackground}
+      resizeMode="cover"
+    >
+      <SafeAreaView style={styles.safeArea}>
         
-        <View style={styles.progressContainer}>
-          {Array.from({ length: totalPages }).map((_, index) => (
-            <View 
-              key={index} 
-              style={[
-                styles.progressDash, 
-                currentPage === index + 1 ? styles.activeDash : styles.inactiveDash
-              ]} 
-            />
-          ))}
-        </View>
+        <Image 
+          source={require('../../../assets/images/lines.png')} 
+          style={styles.vectorLines}
+          resizeMode="cover"
+        />
 
-        <View style={styles.contentContainer}>
-          <Text style={styles.title}>{title}</Text>
-          {description && <Text style={styles.description}>{description}</Text>}
-        </View>
+        <View style={styles.container}>
+          
+          <View style={styles.progressContainer}>
+            {Array.from({ length: totalPages }).map((_, index) => (
+              <View 
+                key={index} 
+                style={[
+                  styles.progressDash, 
+                  currentPage === index + 1 ? styles.activeDash : styles.inactiveDash
+                ]} 
+              />
+            ))}
+          </View>
 
-        <View style={styles.footerContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleNext}>
-            <Text style={styles.buttonText}>{buttonText}</Text>
-          </TouchableOpacity>
+          <View style={styles.contentContainer}>
+            <Text style={styles.title}>{title}</Text>
+            {description && <Text style={styles.description}>{description}</Text>}
+          </View>
+
+          <View style={styles.footerContainer}>
+            <TouchableOpacity style={styles.button} onPress={handleNext}>
+              <Text style={styles.buttonText}>{buttonText}</Text>
+            </TouchableOpacity>
+          </View>
+          
         </View>
-        
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </ImageBackground>
   );
 }

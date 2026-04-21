@@ -1,19 +1,22 @@
-import { StyleSheet, Dimensions } from 'react-native';
-
-const { width } = Dimensions.get('window');
+import { StyleSheet } from 'react-native';
+import { typography } from '../../../../shared/typography/typography';
 
 export const styles = StyleSheet.create({
+  fullBackground: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
   safeArea: {
     flex: 1,
-    backgroundColor: '#E6EFE1',
   },
-  backgroundImage: {
+  vectorLines: {
     position: 'absolute',
     top: 0,
     left: 0,
     width: '100%',
     height: '100%',
-    opacity: 0.3, 
+    opacity: 0.6,
     zIndex: -1, 
   },
   container: {
@@ -26,7 +29,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 20,
     width: '100%',
-    gap: 8,
+    gap: 8, 
   },
   progressDash: {
     flex: 1,
@@ -46,14 +49,12 @@ export const styles = StyleSheet.create({
     width: '100%',
   },
   title: { 
-    fontSize: 42, 
-    fontWeight: '400', 
+    ...typography.h1,
     color: '#0A1207', 
     marginBottom: 8,
-    fontFamily: 'serif', 
   },
   description: { 
-    fontSize: 18, 
+    ...typography.body,
     color: '#0A1207', 
     lineHeight: 26,
   },
@@ -70,8 +71,8 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonText: { 
-    fontSize: 18, 
-    fontWeight: '600', 
+    ...typography.body,
     color: '#FFFFFF',
+    fontWeight: '600',
   },
 });
