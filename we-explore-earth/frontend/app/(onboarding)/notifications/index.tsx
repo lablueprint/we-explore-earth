@@ -45,6 +45,8 @@ async function completeOnboarding() {
       title="Turn on Notifications"
       nextRoute={route}
       onFinish={completeOnboarding}
+      currentPage={5} 
+      totalPages={5}
     />
   );
 }
