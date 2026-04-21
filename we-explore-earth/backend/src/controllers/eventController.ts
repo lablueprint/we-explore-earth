@@ -203,6 +203,22 @@ export async function getFilteredEvents(req: Request, res: Response) {
       }
       events.push(event);
     });
+
+    // Sort filtered events
+    events.sort((a: Event, b: Event) => {
+      // derive start and end dates
+      const eventStartDateA = convertFirestoreTimestampToDate(a.timeStart);
+      const eventStartDateB = convertFirestoreTimestampToDate(b.timeStart);
+      const eventEndDateA = convertFirestoreTimestampToDate(a.timeEnd);
+      const eventEndDateB = convertFirestoreTimestampToDate(b.timeEnd);
+
+      // 1. Sort by start date (ascending).
+      // 2. If start dates are the same, sort by end date (ascending).
+      // 3. If end dates are the same, sort by title (alphabetical).
+      return (eventStartDateA.getTime() - eventStartDateB.getTime()) || 
+             (eventEndDateA.getTime() - eventEndDateB.getTime()) || 
+             a.title.localeCompare(b.title);
+    })
     
     console.log(`Fetched ${events.length} filtered events successfully.`);
     res.status(200).json(events);

@@ -178,7 +178,7 @@ export async function updateUserAvatar(req: Request, res: Response) {
       return res.status(400).json({ error: "avatarKey is required" });
     }
 
-    const userRef = db.collection("users").doc(id);
+    const userRef = db.collection("users").doc(id as string);
     const userDoc = await userRef.get();
 
     if (!userDoc.exists) {

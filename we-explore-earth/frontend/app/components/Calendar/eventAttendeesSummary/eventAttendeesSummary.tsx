@@ -1,8 +1,13 @@
-import React from 'react';
+//STANDARD LIBRARY
+import React, { useState, useEffect } from 'react';
+
+//THIRD-PARTY LIBRARIES
 import { Modal, View, Text, TouchableOpacity } from 'react-native';
+
+//LOCAL FILES
 import { styles } from './styles';
 import type { Event } from '@shared/types/event';
-import { useState, useEffect} from 'react';
+import type { User } from '@shared/types/user';
 import { useUser } from '../../../../hooks/useUser';
 import EventAttendees from '../eventAttendees/eventAttendees';
 
@@ -15,8 +20,10 @@ type Props = {
 };
 
 export default function EventAttendeesSummary({ selectedEvent }: Props) {
+  //REACT HOOKS
   const { user } = useUser();
-  const isAdmin = user?.isAdmin;
+
+  //STATE VARIABLES
   const [showAll, setShowAll] = useState(false);
   
   return (
@@ -25,17 +32,16 @@ export default function EventAttendeesSummary({ selectedEvent }: Props) {
       {isAdmin && 
         <TouchableOpacity style={styles.viewAllButton}  onPress={() => setShowAll(true)} >
           <Text style={styles.closeText}>View All</Text>
-        </TouchableOpacity> 
-      }
+        </TouchableOpacity>
+      )}
       <Modal visible={showAll} animationType="slide" onRequestClose={() => setShowAll(false)}>
         <View>
           <TouchableOpacity style={styles.closeButton} onPress={() => setShowAll(false)}>
-            <Text style={styles.closeText}>Close</Text>     
+            <Text style={styles.closeText}>Close</Text>
           </TouchableOpacity>
         </View>
-        {selectedEvent && ( <EventAttendees eventId={selectedEvent.id} />)}
+        {selectedEvent && <EventAttendees eventId={selectedEvent.id} />}
       </Modal>
     </>
   );
 }
-
