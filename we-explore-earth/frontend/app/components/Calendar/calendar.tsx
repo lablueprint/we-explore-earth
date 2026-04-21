@@ -1,35 +1,28 @@
-// STANDARD / THIRD-PARTY IMPORTS
+//STANDARD LIBRARY
 import { useState } from 'react';
-import {
-  View,
-  ActivityIndicator,
-  ScrollView,
-} from "react-native";
+
+//THIRD-PARTY LIBRARIES
+import { View, ActivityIndicator, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-// LOCAL COMPONENTS
-import EventView from "./eventView/eventView";
-import EventDetails from "./eventDetails/eventDetails";
+//LOCAL FILES
+import EventView from './eventView/eventView';
+import EventDetails from './eventDetails/eventDetails';
+import { styles } from './styles';
+import type { Event } from '@shared/types/event';
 
-// TYPES
-import type { Event } from "@shared/types/event";
-
-export default function Calendar(
-  {
-    loading,
-    events
-  }
-  :
-  {
-    loading: boolean,
-    events: Event[]
-  }
-) {
-  // STATE VARIABLES
+export default function Calendar({
+  loading,
+  events,
+}: {
+  loading: boolean;
+  events: Event[];
+}) {
+  //STATE VARIABLES
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
 
-  // HANDLERS
+  //HANDLERS
   const handleEventPress = (event: Event | null) => {
     if (!event) return;
     setSelectedEvent(event);
@@ -40,14 +33,12 @@ export default function Calendar(
     setDetailsModalVisible(false);
   };
 
-  // RENDER
+  //RENDER
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
-      <View style={{ flex: 1 }}>
+    <SafeAreaView style={styles.screen}>
+      <View style={styles.flexFill}>
         {loading ? (
-          <View
-            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-          >
+          <View style={styles.loadingCenter}>
             <ActivityIndicator size="large" />
           </View>
         ) : (
@@ -55,11 +46,7 @@ export default function Calendar(
             {/** TODO: Group events by MONTH. Label groups with MONTH. */}
             <ScrollView>
               {events.filter(Boolean).map((event) => (
-                <EventView
-                  key={event.id}
-                  event={event}
-                  onPress={handleEventPress}
-                />
+                <EventView key={event.id} event={event} onPress={handleEventPress} />
               ))}
             </ScrollView>
 
