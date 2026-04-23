@@ -86,6 +86,8 @@ function EventFiltersModal(
         if(selectedCategories && selectedCategories.size) {
             result.categories = [...selectedCategories];
         }
+        // 1 event price option selected at all times (default = any price)
+        result.eventPrice = selectedEventPrice;
         // at least 1 accommodation is selected
         if(selectedAccommodations && selectedAccommodations.size) {
             result.accommodations = [...selectedAccommodations];

@@ -1,7 +1,6 @@
 import { db } from "../firestore";
 import { Request, Response } from "express";
-import admin from "firebase-admin";
-import { FirestoreTimestamp, RSVPStatus, EventRSVP, Event, FirestoreEventData } from "@shared/types/event";
+import { FirestoreTimestamp, EventRSVP, Event, FirestoreEventData } from "@shared/types/event";
 import { Filter } from "@shared/types/filter";
 
 // create event
@@ -123,6 +122,7 @@ export async function getFilteredEvents(req: Request, res: Response) {
     let filterStartDate: Date | undefined = undefined;
     let filterEndDate: Date | undefined = undefined;
     let filterCategories: Set<string> | undefined = undefined;
+    let filterEventPrice: string | undefined = undefined;
     let filterAccommodations: Set<string> | undefined = undefined;
 
     // Prepare the filters
@@ -139,6 +139,9 @@ export async function getFilteredEvents(req: Request, res: Response) {
     }
     if (filters.categories) {
       filterCategories = new Set(filters.categories);
+    }
+    if (filters.eventPrice) { // redundant but for fallback reasons: 1 event price option is selected at all times (default = any price)
+      filterEventPrice = filters.eventPrice;
     }
     if (filters.accommodations) {
       filterAccommodations = new Set(filters.accommodations);
@@ -184,6 +187,18 @@ export async function getFilteredEvents(req: Request, res: Response) {
           }
         }
         if (!containsCategory) {
+          return;
+        }
+      }
+      // Redundant: 1 event price option is selected at all times (default = any price)
+      if (filterEventPrice) {
+        if (filterEventPrice == 'Free events only' && event.price != 0) {
+          return;
+        }
+        if (filterEventPrice == 'Up to $25' && event.price > 25) {
+          return;
+        }
+        if (filterEventPrice == 'Up to $50' && event.price > 50) {
           return;
         }
       }
