@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Modal, View, Text, TouchableOpacity } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import FilterSection from '../filterSection/filterSection';
+import FilterSectionRadio from '../filterSectionRadio/filterSectionRadio';
 import DateRangePickerModal from '../dateRangePickerModal/dateRangePickerModal';
 import { Filter } from '@shared/types/filter';
 import { styles } from './styles';
@@ -19,11 +20,14 @@ function EventFiltersModal(
         setFilterModalVisible: React.Dispatch<any>
     }
 ) {
-    const [dateOptions, _] = useState<Array<string>>(['Today', 'Tomorrow', 'This Week', 'This Month']);
+    const dateOptions : Array<string> = ['Today', 'Tomorrow', 'This Week', 'This Month'];
     const [selectedDates, setSelectedDates] = useState<Set<string>>(new Set());
 
     const [categoryOptions, setCategoryOptions] = useState<Array<string>>([]);
     const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
+
+    const eventPriceOptions : Array<string> = ['Any price', 'Free events only', 'Up to $25', 'Up to $50']; // default option = first option
+    const [selectedEventPrice, setSelectedEventPrice] = useState<string>(eventPriceOptions[0]);
 
     const [accommodationOptions, setAccommodationOptions] = useState<Array<string>>([]);
     const [selectedAccommodations, setSelectedAccommodations] = useState<Set<string>>(new Set());
@@ -164,6 +168,16 @@ function EventFiltersModal(
                         options={categoryOptions}
                         selectedOptions={selectedCategories}
                         setSelectedOptions={setSelectedCategories}
+                    />
+                }
+
+                {eventPriceOptions && eventPriceOptions.length >= 0 &&
+                    <FilterSectionRadio
+                        header='Event Price'
+                        defaultOption={eventPriceOptions[0]}
+                        options={eventPriceOptions}
+                        selectedOption={selectedEventPrice}
+                        setSelectedOption={setSelectedEventPrice}
                     />
                 }
 
