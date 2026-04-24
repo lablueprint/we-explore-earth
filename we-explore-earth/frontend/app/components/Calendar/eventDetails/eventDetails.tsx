@@ -74,12 +74,9 @@ export default function EventDetails({
     setLocalRSVP(status);
     onRSVPChange?.();
   };
-
-  //EFFECTS
-  useEffect(() => {
-    setLocalRSVP(currentRSVP ?? null);
-  }, [currentRSVP]);
-
+  
+  const displayRSVP = rsvpModalVisible ? localRSVP : currentRSVP;
+  
   if (!event) return null;
 
   return (
@@ -103,7 +100,7 @@ export default function EventDetails({
                   <Text style={styles.shareIcon}>↥</Text>
                 </TouchableOpacity>
               </View>
-              
+
               <View style={styles.imagePlaceholder}>
                 <Text style={styles.imagePlaceholderText}>Image</Text>
               </View>
