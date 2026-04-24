@@ -103,7 +103,10 @@ export default function EventDetails({
                   <Text style={styles.shareIcon}>↥</Text>
                 </TouchableOpacity>
               </View>
-
+              
+              <View style={styles.imagePlaceholder}>
+                <Text style={styles.imagePlaceholderText}>Image</Text>
+              </View>
 
               <Text style={typography.h1}>{event.title}</Text>
 

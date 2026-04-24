@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: "#F3F1EE",
+    backgroundColor: 'rgba(248, 249, 247, 1)',
   },
 
   sheet: {
@@ -53,11 +53,19 @@ export const styles = StyleSheet.create({
     color: "#1D1D1B",
   },
 
-  heroImage: {
-    width: "100%",
-    height: 265,
-    borderRadius: 26,
-    marginBottom: 18,
+  imagePlaceholder: {
+    width: '100%',
+    height: 240,
+    borderRadius: 24,
+    backgroundColor: '#E6E7E3',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  
+  imagePlaceholderText: {
+    color: '#9A9A94',
+    fontSize: 16,
   },
 
   title: {
