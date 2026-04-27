@@ -1,9 +1,8 @@
-
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Checkbox } from 'expo-checkbox';
 import { styles } from './styles';
 
-function FilterOption(
+function FilterOptionCheckbox(
     {
         option,
         selectedOptions,
@@ -42,7 +41,7 @@ function FilterOption(
     )
 }
 
-function FilterSection(
+function FilterSectionCheckbox(
     {
         header,
         options,
@@ -73,7 +72,7 @@ function FilterSection(
 
             {/** Filter options */}
             {options.map((option, index) => 
-                <FilterOption
+                <FilterOptionCheckbox
                     key={index}
                     option={option}
                     selectedOptions={selectedOptions}
@@ -84,4 +83,4 @@ function FilterSection(
     )
 }
 
-export default FilterSection;
+export default FilterSectionCheckbox;
