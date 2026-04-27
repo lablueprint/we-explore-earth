@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Modal, View, Text, TouchableOpacity } from 'react-native';
+import { Modal, ScrollView, View, Text, TouchableOpacity } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import FilterSection from '../filterSection/filterSection';
 import FilterSectionRadio from '../filterSectionRadio/filterSectionRadio';
@@ -20,8 +20,8 @@ function EventFiltersModal(
         setFilterModalVisible: React.Dispatch<any>
     }
 ) {
-    const dateOptions : Array<string> = ['Today', 'Tomorrow', 'This Week', 'This Month'];
-    const [selectedDates, setSelectedDates] = useState<Set<string>>(new Set());
+    const dateOptions : Array<string> = ['Any date', 'Today', 'Tomorrow', 'This week', 'This weekend'];
+    const [selectedDate, setSelectedDate] = useState<string>(dateOptions[0]);
 
     const [categoryOptions, setCategoryOptions] = useState<Array<string>>([]);
     const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
@@ -36,42 +36,41 @@ function EventFiltersModal(
 
     const handleSubmit = () => {
         // Compute start and end dates.
-        let startDate : Date | undefined = undefined;
-        let endDate : Date | undefined = undefined;
+        const startDate : Date = new Date();
+        var endDate : Date | undefined = new Date();
         const today = new Date();
 
-        selectedDates.forEach((option) => {
-            let newStartDate : Date = new Date();
-            let newEndDate : Date = new Date();
-            switch (option) {
-                case 'Today':
-                    break;
-                case 'Tomorrow':
-                    newStartDate.setDate(today.getDate() + 1);
-                    newEndDate.setDate(today.getDate() + 1);
-                    break;
-                case 'This Week':
-                    const day = today.getDay();
-                    newStartDate.setDate(today.getDate() - day);    // Start of the week (Sunday)
-                    newEndDate.setDate(today.getDate() + (6-day));  // End of the week (Saturday)
-                    break;
-                case 'This Month':
-                    newStartDate.setDate(1);            // First day of the month
-                    const numberOfDays = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-                    newEndDate.setDate(numberOfDays);   // Last day of the month
-                default:
-                    break;
-            }
-            startDate = startDate ? new Date(Math.min(startDate.getTime(), newStartDate.getTime())) : newStartDate;
-            endDate = endDate ? new Date(Math.max(endDate.getTime(), newEndDate.getTime())) : newEndDate;
-        })
+        switch (selectedDate) {
+            case 'Any date':  // startDate == current day, endDate == undefined (range = today and on)
+                endDate = undefined;
+                break;
+            case 'Today':  // startDate == endDate == current day
+                break;
+            case 'Tomorrow':  // startDate == endDate == next day
+                startDate.setDate(today.getDate() + 1);
+                endDate.setDate(today.getDate() + 1);
+                break;
+            case 'This week':  // Monday to Sunday of current week
+                var day = today.getDay();
+                startDate.setDate(today.getDate() - day + 1);    // Start of the week (Monday)
+                endDate.setDate(today.getDate() + (6-day) + 1);  // End of the week (Sunday)
+                break;
+            case 'This weekend':  // Saturday to Sunday of current week
+                var day = today.getDay();
+                startDate.setDate(today.getDate() + (7-day-1));
+                endDate.setDate(today.getDate() + (7-day));
+                break;
+            default:
+                break;
+        }
 
         const result: Filter = {}
         // valid date range selected
+        console.log(selectedDate, '  Start Date:', startDate.toDateString(), '  End Date:', endDate?.toDateString())
         if(startDate && endDate) {
-            result.startDate = startDate as Date;
+            result.startDate = startDate;
             result.startDate.setHours(0, 0, 0, 0);  // normalize start date
-            result.endDate = endDate as Date;
+            result.endDate = endDate;
             result.endDate.setHours(0, 0, 0, 0);    // normalize end date
 
             today.setHours(0, 0, 0, 0); // normalize current date
@@ -140,15 +139,16 @@ function EventFiltersModal(
             animationType='slide'
             onRequestClose={() => { setFilterModalVisible(false); }}
         >
-            <View style={{flex: 1, backgroundColor: 'white', paddingTop: 80, paddingHorizontal: 20}}>
+            <ScrollView style={{flex: 1, backgroundColor: 'white', paddingTop: 80, paddingHorizontal: 20}}>
                 <Text style={styles.filterTitle}>Filter</Text>
                 
                 {dateOptions && dateOptions.length >= 0 &&
-                    <FilterSection
+                    <FilterSectionRadio
                         header='Date'
+                        defaultOption={dateOptions[0]}
                         options={dateOptions}
-                        selectedOptions={selectedDates}
-                        setSelectedOptions={setSelectedDates}
+                        selectedOption={selectedDate}
+                        setSelectedOption={setSelectedDate}
                     />
                 }
 
@@ -198,7 +198,7 @@ function EventFiltersModal(
                 >
                     <Text style={styles.submitText}>Submit</Text>
                 </TouchableOpacity>
-            </View>
+            </ScrollView>
         </Modal>
     );
 }
