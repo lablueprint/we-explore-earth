@@ -122,7 +122,7 @@ export async function getFilteredEvents(req: Request, res: Response) {
     let filterStartDate: Date | undefined = undefined;
     let filterEndDate: Date | undefined = undefined;
     let filterCategories: Set<string> | undefined = undefined;
-    let filterEventPrice: string | undefined = undefined;
+    let filterMaxEventPrice: number | undefined = undefined;
     let filterAccommodations: Set<string> | undefined = undefined;
 
     // Prepare the filters
@@ -140,13 +140,20 @@ export async function getFilteredEvents(req: Request, res: Response) {
     if (filters.categories) {
       filterCategories = new Set(filters.categories);
     }
-    if (filters.eventPrice) { // redundant but for fallback reasons: 1 event price option is selected at all times (default = any price)
-      filterEventPrice = filters.eventPrice;
+    if (filters.maxEventPrice != undefined) {  // compared with undefined because maxEventPrice of 0 is falsy (0 == false)
+      filterMaxEventPrice = filters.maxEventPrice;
     }
     if (filters.accommodations) {
       filterAccommodations = new Set(filters.accommodations);
     }
-    // console.log('Filters: \n', 'Start date:     ' + filterStartDate + '\n', 'End date:       ' + filterEndDate + '\n', 'Categories:    ', filterCategories, '\n', 'Accommodations:', filterAccommodations, '\n');
+    // console.log(
+    //   'Filters: \n',
+    //   'Start date:      ' + filterStartDate + '\n', 
+    //   'End date:        ' + filterEndDate + '\n',
+    //   'Categories:      ', filterCategories +'\n',
+    //   'Max event price: ', filterMaxEventPrice + '\n',
+    //   'Accommodations:  ', filterAccommodations + '\n'
+    // );
 
     // Filter events
     const events: Event[] = [];
@@ -190,17 +197,10 @@ export async function getFilteredEvents(req: Request, res: Response) {
           return;
         }
       }
-      // Redundant: 1 event price option is selected at all times (default = any price)
-      if (filterEventPrice) {
-        if (filterEventPrice == 'Free events only' && event.price != 0) {
-          return;
-        }
-        if (filterEventPrice == 'Up to $25' && event.price > 25) {
-          return;
-        }
-        if (filterEventPrice == 'Up to $50' && event.price > 50) {
-          return;
-        }
+      // If a max event price is set
+      // compared with undefined because maxEventPrice of 0 is falsy (0 == false)
+      if (filterMaxEventPrice != undefined && event.price > filterMaxEventPrice) {
+        return;
       }
       // If at least 1 accommodation is selected
       if (filterAccommodations) {

@@ -35,6 +35,9 @@ function EventFiltersModal(
     const [calendarVisible, setCalendarVisible] = useState<boolean>(false);
 
     const handleSubmit = () => {
+        // ===========================================================================================
+        // Date Filter
+        // ===========================================================================================
         // Compute start and end dates.
         const startDate : Date = new Date();
         var endDate : Date | undefined = new Date();
@@ -81,12 +84,38 @@ function EventFiltersModal(
             }
             // end date will never precede current date
         }
+
+        // ===========================================================================================
+        // Category Filter
+        // ===========================================================================================
         // at least 1 category is selected
         if(selectedCategories && selectedCategories.size) {
             result.categories = [...selectedCategories];
         }
-        // 1 event price option selected at all times (default = any price)
-        result.eventPrice = selectedEventPrice;
+
+        // ===========================================================================================
+        // Event Price Filter
+        // ===========================================================================================
+        // Convert selected event price option to numerical inclusive upper bound
+        switch (selectedEventPrice) {
+            case 'Free events only':
+                result.maxEventPrice = 0;
+                break;
+            case 'Up to $25':
+                result.maxEventPrice = 25;
+                break;
+            case 'Up to $50':
+                result.maxEventPrice = 50;
+                break;
+            case 'Any price':
+            default: // (default == any price)
+                result.maxEventPrice = undefined;
+                break;
+        }
+        
+        // ===========================================================================================
+        // Accommodation Filter
+        // ===========================================================================================
         // at least 1 accommodation is selected
         if(selectedAccommodations && selectedAccommodations.size) {
             result.accommodations = [...selectedAccommodations];

@@ -2,6 +2,6 @@ export interface Filter {
     startDate?: Date;
     endDate?: Date;
     categories?: string[];
-    eventPrice?: string;
+    maxEventPrice?: number;
     accommodations?: string[];
 }
