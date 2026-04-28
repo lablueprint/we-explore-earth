@@ -2,7 +2,7 @@
 import { useState } from 'react';
 
 //THIRD-PARTY LIBRARIES
-import { View, ActivityIndicator, ScrollView } from 'react-native';
+import { Text, View, ActivityIndicator, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 //LOCAL FILES
@@ -44,11 +44,18 @@ export default function Calendar({
         ) : (
           <>
             {/** TODO: Group events by MONTH. Label groups with MONTH. */}
-            <ScrollView>
-              {events.filter(Boolean).map((event) => (
-                <EventView key={event.id} event={event} onPress={handleEventPress} />
-              ))}
-            </ScrollView>
+            {events && events.length > 0
+              ?
+              <ScrollView>
+                {events.filter(Boolean).map((event) => (
+                  <EventView key={event.id} event={event} onPress={handleEventPress} />
+                ))}
+              </ScrollView>
+              :
+              <View>
+                <Text style={styles.noEventsMessage}>No events found for these dates.</Text>
+              </View>
+            }
 
             <EventDetails
               visible={detailsModalVisible && !!selectedEvent}
