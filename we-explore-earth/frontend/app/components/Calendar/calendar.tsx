@@ -14,9 +14,11 @@ import type { Event } from '@shared/types/event';
 export default function Calendar({
   loading,
   events,
+  embedded = false,
 }: {
   loading: boolean;
   events: Event[];
+  embedded?: boolean;
 }) {
   //STATE VARIABLES
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -33,7 +35,36 @@ export default function Calendar({
     setDetailsModalVisible(false);
   };
 
-  //RENDER
+  const eventList = events.filter(Boolean).map((event) => (
+    <EventView key={event.id} event={event} onPress={handleEventPress} />
+  ));
+
+  const details = (
+    <EventDetails
+      visible={detailsModalVisible && !!selectedEvent}
+      event={selectedEvent}
+      onClose={handleCloseDetailsModal}
+    />
+  );
+
+  if (embedded) {
+    return (
+      <View>
+        {loading ? (
+          <View style={styles.embeddedLoading}>
+            <ActivityIndicator size="large" />
+          </View>
+        ) : (
+          <>
+            {/* Set up calendar to group events by MONTH. Label groups with MONTH. Add filters to the calendar when ready. */}
+            {eventList}
+            {details}
+          </>
+        )}
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.flexFill}>
@@ -44,17 +75,10 @@ export default function Calendar({
         ) : (
           <>
             {/** TODO: Group events by MONTH. Label groups with MONTH. */}
-            <ScrollView>
-              {events.filter(Boolean).map((event) => (
-                <EventView key={event.id} event={event} onPress={handleEventPress} />
-              ))}
+            <ScrollView contentContainerStyle={styles.scrollContent}>
+              {eventList}
             </ScrollView>
-
-            <EventDetails
-              visible={detailsModalVisible && !!selectedEvent}
-              event={selectedEvent}
-              onClose={handleCloseDetailsModal}
-            />
+            {details}
           </>
         )}
       </View>
