@@ -6,8 +6,8 @@ export default function JoinPage() {
       title="Join Events"
       description="And help the Earth"
       nextRoute="/(onboarding)/unlock"
-      currentPage={2} 
-      totalPages={5}
+      currentPage={3} 
+      totalPages={4}
     />
   );
 }

@@ -1,3 +1,4 @@
+import React from 'react';
 import OnboardingPage from '../components/onboardingPage';
 
 export default function DiscoverPage() {
@@ -6,8 +7,8 @@ export default function DiscoverPage() {
       title="Discover"
       description="Trails near you"
       nextRoute="/(onboarding)/join"
-      currentPage={1} 
-      totalPages={5}
+      currentPage={2} 
+      totalPages={4}
     />
   );
 }
