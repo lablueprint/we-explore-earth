@@ -1,95 +1,103 @@
-import { useState } from 'react';
-import { Modal, View, Text, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { calendarStyles, modalStyles } from './styles';
 
 function DateRangePickerModal (
     {
+        startDate,
+        endDate,
+        setStartDate,
+        setEndDate,
+        setSelectedDate, // selected date option (not a date)
         calendarVisible,
         setCalendarVisible
     }
     :
     {
+        startDate: Date,
+        endDate: Date | undefined,
+        setStartDate: React.Dispatch<any>,
+        setEndDate: React.Dispatch<any>,
+        setSelectedDate: React.Dispatch<any>,
         calendarVisible: boolean,
         setCalendarVisible: React.Dispatch<any>
     }
 ) {
     // TODO: When using this range, validate it. Must have a valid start and end date.
     // TODO: Disable selecting dates before the current day.
-    // TODO: Disable submit button if the date range is invalid!
-    const [range, setRange] = useState({ start: '', end: '' });
 
-    const onDayPress = (day: any) => {
-        const { dateString } = day;
+    // TODO: Replace status by checking existence of startDate and endDate? May fix bug where getMarkedDates is called twice every time the selected date option changes.
+    const [status, setStatus] = useState({ start: true, end: !!endDate });
+
+    useEffect(() => {
+        setStatus({ start: true, end: !!endDate });  // to capture changes to selected date option filter
+    }, [endDate])
+
+    const onDayPress = (selectedDate: any) => {
+        // TODO: bug: Any date -> Custom: next selected date should be start, not end date
+        setSelectedDate('Custom');
+        const { dateString } = selectedDate;
 
         // Reset range if range is defined or if user picks a date before the start
-        if (!range.start || (range.start && range.end) || dateString < range.start) {
-            setRange({ start: dateString, end: '' });
+        if ((status.start && status.end) || dateString < startDate.toISOString().split('T')[0]) {
+            setStartDate(new Date(dateString));
+            setEndDate(undefined);
+            setStatus({ start: true, end: false });
         } else {
-            setRange({ ...range, end: dateString });
+            setEndDate(new Date(dateString));
+            setStatus({ start: true, end: true });
         }
     };
 
     const getMarkedDates = () => {
-        const marked: any = {}; // type MarkedDates: maps strings to type MarkingProps (in imported Calendar component's docs)
+        const marked: any = {}; // type MarkedDates: maps date strings in "YYYY-MM-DD" format to type MarkingProps (in imported Calendar component's docs)
+        const startKey = startDate.toISOString().split('T')[0];
+        const endKey = endDate?.toISOString().split('T')[0] || '';
         
         // Start and end dates are both selected
-        if (range.start && range.end) {
+        if (status.start && status.end) {
             // Single date range
-            if (range.start == range.end) {
-                marked[range.start] = { customStyles: calendarStyles.singleDay };
+            if (startKey == endKey) {
+                marked[startKey] = { customStyles: calendarStyles.singleDay };
             }
             // Multi date range
             else {
-                marked[range.start] = { customStyles: calendarStyles.startDay };
-                marked[range.end] = { customStyles: calendarStyles.endDay };
-                
                 // Fill in the gap between start and end
-                let start = new Date(range.start);
-                let end = new Date(range.end);
-                while (start < end) {
-                    start.setDate(start.getDate() + 1);
-                    const dateString = start.toISOString().split('T')[0];
-                    if (dateString !== range.end) {
-                        marked[dateString] = { customStyles: calendarStyles.middleDay };
-                    }
+                const middleDate = new Date(startDate);
+                while (middleDate < endDate!) {
+                    middleDate.setDate(middleDate.getDate() + 1);
+                    const middleKey = middleDate.toISOString().split('T')[0];
+                    marked[middleKey] = { customStyles: calendarStyles.middleDay };
                 }
+                
+                // Start and end date have unique styles
+                marked[startKey] = { customStyles: calendarStyles.startDay };
+                marked[endKey] = { customStyles: calendarStyles.endDay };
             }
         }
         // Only start date is selected
-        else if (range.start) {
-            marked[range.start] = { customStyles: calendarStyles.startDay };
+        else if (status.start) {
+            marked[startKey] = { customStyles: calendarStyles.startDay };
         }
-
+        
         return marked;
     };
 
     return (
-        <Modal
-            animationType='slide'
-            transparent={true}
-            visible={calendarVisible}
-            onRequestClose={() => { setCalendarVisible(false); }}
-        >
-            <View style={modalStyles.centeredView}>
-                <View style={modalStyles.modalView}>
-                    <Calendar
-                        markingType={'custom'}
-                        markedDates={getMarkedDates()}
-                        onDayPress={onDayPress}
-                        theme={{
-                            todayTextColor: calendarStyles.todayColor,
-                            arrowColor: calendarStyles.arrowColor,
-                        }}
-                    />
-                    {/** TODO: Placeholder text with placeholder style for closing calendar picker. */}
-                    <TouchableOpacity onPress={() => { setCalendarVisible(false); }} style={modalStyles.submit}>
-                        <Text style={modalStyles.submitText}>Set date range</Text>
-                    </TouchableOpacity>
-                    {/** -------------------------------------------------------------------------- */}
-                </View>
+        <View style={modalStyles.centeredView}>
+            <View style={modalStyles.modalView}>
+                <Calendar
+                    markingType={'custom'}
+                    markedDates={getMarkedDates()}
+                    onDayPress={onDayPress}
+                    theme={{
+                        todayTextColor: calendarStyles.todayColor,
+                        arrowColor: calendarStyles.arrowColor,
+                    }}
+                />
             </View>
-        </Modal>
+        </View>
     );
 };
 

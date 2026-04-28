@@ -20,8 +20,10 @@ function EventFiltersModal(
         setFilterModalVisible: React.Dispatch<any>
     }
 ) {
-    const dateOptions : Array<string> = ['Any date', 'Today', 'Tomorrow', 'This week', 'This weekend'];
+    const dateOptions : Array<string> = ['Any date', 'Today', 'Tomorrow', 'This week', 'This weekend', 'Custom'];
     const [selectedDate, setSelectedDate] = useState<string>(dateOptions[0]);
+    const [startDate, setStartDate] = useState<Date>(new Date());
+    const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 
     const [categoryOptions, setCategoryOptions] = useState<Array<string>>([]);
     const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
@@ -35,54 +37,15 @@ function EventFiltersModal(
     const [calendarVisible, setCalendarVisible] = useState<boolean>(false);
 
     const handleSubmit = () => {
+        const result: Filter = {}
+
         // ===========================================================================================
         // Date Filter
         // ===========================================================================================
-        // Compute start and end dates.
-        const startDate : Date = new Date();
-        var endDate : Date | undefined = new Date();
-        const today = new Date();
-
-        switch (selectedDate) {
-            case 'Any date':  // startDate == current day, endDate == undefined (range = today and on)
-                endDate = undefined;
-                break;
-            case 'Today':  // startDate == endDate == current day
-                break;
-            case 'Tomorrow':  // startDate == endDate == next day
-                startDate.setDate(today.getDate() + 1);
-                endDate.setDate(today.getDate() + 1);
-                break;
-            case 'This week':  // Monday to Sunday of current week
-                var day = today.getDay();
-                startDate.setDate(today.getDate() - day + 1);    // Start of the week (Monday)
-                endDate.setDate(today.getDate() + (6-day) + 1);  // End of the week (Sunday)
-                break;
-            case 'This weekend':  // Saturday to Sunday of current week
-                var day = today.getDay();
-                startDate.setDate(today.getDate() + (7-day-1));
-                endDate.setDate(today.getDate() + (7-day));
-                break;
-            default:
-                break;
-        }
-
-        const result: Filter = {}
         // valid date range selected
-        console.log(selectedDate, '  Start Date:', startDate.toDateString(), '  End Date:', endDate?.toDateString())
         if(startDate && endDate) {
             result.startDate = startDate;
-            result.startDate.setHours(0, 0, 0, 0);  // normalize start date
             result.endDate = endDate;
-            result.endDate.setHours(0, 0, 0, 0);    // normalize end date
-
-            today.setHours(0, 0, 0, 0); // normalize current date
-
-            // lower bound = current date
-            if(result.startDate < today) {
-                result.startDate = today;
-            }
-            // end date will never precede current date
         }
 
         // ===========================================================================================
@@ -161,6 +124,53 @@ function EventFiltersModal(
         retrieveAccommodations();   // grab accommodations from backend
     }, []);
 
+    useEffect(() => {
+        // Compute start and end dates.
+        var newStartDate : Date = new Date();
+        var newEndDate : Date | undefined = new Date();
+        const today = new Date();
+
+        switch (selectedDate) {
+            case 'Today':  // startDate == endDate == current day
+                break;
+            case 'Tomorrow':  // startDate == endDate == next day
+                newStartDate.setDate(today.getDate() + 1);
+                newEndDate.setDate(today.getDate() + 1);
+                break;
+            case 'This week':  // Monday to Sunday of current week
+                var day = today.getDay();
+                newStartDate.setDate(today.getDate() - day + 1);    // Start of the week (Monday)
+                newEndDate.setDate(today.getDate() + (6-day) + 1);  // End of the week (Sunday)
+                break;
+            case 'This weekend':  // Saturday to Sunday of current week
+                var day = today.getDay();
+                newStartDate.setDate(today.getDate() + (7-day-1));
+                newEndDate.setDate(today.getDate() + (7-day));
+                break;
+            case 'Custom':
+                // TODO: Check 'custom' functionality
+                return;
+            case 'Any date':  // startDate == current day, endDate == undefined (range = today and on)
+            default:
+                newEndDate = undefined;
+                break;
+        }
+
+        newStartDate.setHours(0, 0, 0, 0);   // normalize start date
+        newEndDate?.setHours(0, 0, 0, 0);    // normalize end date
+        today.setHours(0, 0, 0, 0);          // normalize current date
+
+        // lower bound = current date
+        if(newStartDate < today) {
+            newStartDate = today;
+        }
+        // end date will never precede current date
+
+        setStartDate(newStartDate);
+        setEndDate(newEndDate);
+        // console.log(selectedDate, '  Start Date:', newStartDate.toDateString(), '  End Date:', newEndDate?.toDateString())
+    }, [selectedDate]);
+
     return(
         <Modal
             visible={filterModalVisible}
@@ -183,12 +193,17 @@ function EventFiltersModal(
 
                 {/** Calendar Picker Modal */}
                 <View style={styles.filterOptionWrapper}>
-                    <Text style={styles.filterOption}>Choose a date range</Text>
+                    <Text style={styles.filterOption}>Select a date</Text>
                     <TouchableOpacity onPress={() => { setCalendarVisible(true); }}>
                         <Feather name='chevron-right' size={24} color='black' />
                     </TouchableOpacity>
                 </View>
                 <DateRangePickerModal
+                    startDate={startDate}
+                    endDate={endDate}
+                    setStartDate={setStartDate}
+                    setEndDate={setEndDate}
+                    setSelectedDate={setSelectedDate}
                     calendarVisible={calendarVisible}
                     setCalendarVisible={setCalendarVisible}
                 />
