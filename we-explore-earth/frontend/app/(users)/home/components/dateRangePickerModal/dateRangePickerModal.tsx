@@ -10,8 +10,6 @@ function DateRangePickerModal (
         setStartDate,
         setEndDate,
         setSelectedDate, // selected date option (not a date)
-        calendarVisible,
-        setCalendarVisible
     }
     :
     {
@@ -20,8 +18,6 @@ function DateRangePickerModal (
         setStartDate: React.Dispatch<any>,
         setEndDate: React.Dispatch<any>,
         setSelectedDate: React.Dispatch<any>,
-        calendarVisible: boolean,
-        setCalendarVisible: React.Dispatch<any>
     }
 ) {
     // TODO: When using this range, validate it. Must have a valid start and end date.

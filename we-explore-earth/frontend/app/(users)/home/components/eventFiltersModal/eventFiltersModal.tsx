@@ -192,21 +192,28 @@ function EventFiltersModal(
                 }
 
                 {/** Calendar Picker Modal */}
-                <View style={styles.filterOptionWrapper}>
-                    <Text style={styles.filterOption}>Select a date</Text>
-                    <TouchableOpacity onPress={() => { setCalendarVisible(true); }}>
-                        <Feather name='chevron-right' size={24} color='black' />
+                <View>
+                    <TouchableOpacity
+                        onPress={() => { setCalendarVisible(!calendarVisible); }}
+                        style={styles.filterOptionWrapper}
+                    >
+                        <Text style={styles.filterOption}>Select a date</Text>
+                        {calendarVisible ?
+                            <Feather name='chevron-up' size={24} color='black' />
+                        :
+                            <Feather name='chevron-down' size={24} color='black' />
+                        }
                     </TouchableOpacity>
                 </View>
-                <DateRangePickerModal
-                    startDate={startDate}
-                    endDate={endDate}
-                    setStartDate={setStartDate}
-                    setEndDate={setEndDate}
-                    setSelectedDate={setSelectedDate}
-                    calendarVisible={calendarVisible}
-                    setCalendarVisible={setCalendarVisible}
-                />
+                {calendarVisible && 
+                    <DateRangePickerModal
+                        startDate={startDate}
+                        endDate={endDate}
+                        setStartDate={setStartDate}
+                        setEndDate={setEndDate}
+                        setSelectedDate={setSelectedDate}
+                    />
+                }
 
                 {categoryOptions && categoryOptions.length >= 0 &&
                     <FilterSectionCheckbox
