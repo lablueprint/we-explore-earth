@@ -21,7 +21,6 @@ function DateRangePickerModal (
     }
 ) {
     // TODO: When using this range, validate it. Must have a valid start and end date.
-    // TODO: Disable selecting dates before the current day.
 
     // TODO: Replace status by checking existence of startDate and endDate? May fix bug where getMarkedDates is called twice every time the selected date option changes.
     const [status, setStatus] = useState({ start: true, end: !!endDate });
@@ -84,6 +83,9 @@ function DateRangePickerModal (
         <View style={modalStyles.centeredView}>
             <View style={modalStyles.modalView}>
                 <Calendar
+                    minDate={(new Date()).toISOString().split('T')[0]}
+                    disableAllTouchEventsForDisabledDays={true}
+                    hideExtraDays={true}
                     markingType={'custom'}
                     markedDates={getMarkedDates()}
                     onDayPress={onDayPress}
