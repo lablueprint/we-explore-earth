@@ -24,32 +24,33 @@ export const styles = StyleSheet.create({
     padding: 16,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
+    alignSelf: 'flex-start',
+    marginBottom: 20,
   },
   tabRow: {
     flexDirection: 'row',
-    gap: 12,
+    justifyContent: 'center',
+    alignItems: 'stretch',
+    gap: 8,
     marginBottom: 20,
   },
-  tabButton: {
+  tab: {
     paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
+    paddingHorizontal: 28,
+    borderBottomWidth: 2,
+    borderBottomColor: 'transparent',
   },
-  tabButtonActive: {
-    backgroundColor: '#2196F3',
+  tabActive: {
+    borderBottomColor: '#000',
   },
-  tabButtonInactive: {
-    backgroundColor: '#eee',
+  tabLabel: {
+    fontSize: 16,
+    lineHeight: 22,
+    color: '#888',
+    textAlign: 'center',
   },
-  tabTextActive: {
-    color: '#fff',
-    fontWeight: '600',
-  },
-  tabTextInactive: {
-    color: '#666',
+  tabLabelActive: {
+    color: '#000',
   },
   loadingContainer: {
     flex: 1,
@@ -129,10 +130,10 @@ export const styles = StyleSheet.create({
     borderRadius: 999,
   },
   rsvpGoing: {
-    backgroundColor: '#3d5a1a',
+    backgroundColor: '#285F00',
   },
   rsvpMaybe: {
-    backgroundColor: '#b8860b',
+    backgroundColor: '#E6AB34',
   },
   rsvpPillText: {
     fontSize: 14,
