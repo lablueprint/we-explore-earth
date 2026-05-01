@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   ScrollView,
@@ -12,35 +12,46 @@ import { Checkbox } from "expo-checkbox";
 
 import { styles } from "../events/components/styles";
 
-/** Hardcoded audience choices for the dropdown (expand later). */
-const AUDIENCE_OPTIONS = [
-  { id: "beach-cleanup", label: "Beach Cleanup" },
-  { id: "hike-club", label: "Weekend Hikers" },
-  { id: "everybody", label: "Everybody" },
-];
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
+
+type AudienceOption = { id: string; label: string };
+
+async function fetchAudience(): Promise<AudienceOption[]> {
+  const res = await fetch(`${API_URL}/events`);
+  if (!res.ok) throw new Error("Failed to fetch events");
+  const events: { id: string; title: string }[] = await res.json();
+  const eventOptions = events.map((e) => ({ id: e.id, label: e.title }));
+  return [{ id: "", label: "Everybody" }, ...eventOptions];
+}
 
 /** Placeholder until recipients come from the API. */
 const HARDCODED_RECIPIENTS = "124 users";
 
-function audienceSummaryLine(
-  option: (typeof AUDIENCE_OPTIONS)[number],
-): string {
-  if (option.id === "everybody") return "Everybody";
+function audienceSummaryLine(option: AudienceOption): string {
+  if (option.id === "") return "Everybody";
   return `${option.label} Attendees`;
 }
 
 export default function AdminNotificationsPage() {
   const [audienceMenuOpen, setAudienceMenuOpen] = useState(false);
-  const [selectedAudienceId, setSelectedAudienceId] = useState(
-    AUDIENCE_OPTIONS[0]?.id ?? "",
-  );
+  const [audienceOptions, setAudienceOptions] = useState<AudienceOption[]>([
+    { id: "", label: "Everybody" },
+  ]);
+  const [selectedAudienceId, setSelectedAudienceId] = useState("");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [sendModalVisible, setSendModalVisible] = useState(false);
   const [confirmSend, setConfirmSend] = useState(false);
 
+  useEffect(() => {
+    fetchAudience()
+      .then(setAudienceOptions)
+      .catch((err) => console.error("Failed to load audience options:", err));
+  }, []);
+
   const selectedAudience =
-    AUDIENCE_OPTIONS.find((o) => o.id === selectedAudienceId)!;
+    audienceOptions.find((o) => o.id === selectedAudienceId) ??
+    audienceOptions[0]!;
 
   const formComplete =
     title.trim().length > 0 && content.trim().length > 0;
@@ -72,7 +83,7 @@ export default function AdminNotificationsPage() {
         </TouchableOpacity>
         {audienceMenuOpen ? (
           <View style={localStyles.audienceOptionsWrap}>
-            {AUDIENCE_OPTIONS.map((opt) => (
+            {audienceOptions.map((opt) => (
               <TouchableOpacity
                 key={opt.id}
                 style={styles.modalOptionRow}
