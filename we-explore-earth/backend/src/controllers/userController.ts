@@ -4,6 +4,21 @@ import admin from "firebase-admin";
 import { User, NewUser, UserRSVP } from "@shared/types/user";
 import nodemailer from 'nodemailer';
 
+// GET /users - get all users
+export async function getAllUsers(req: Request, res: Response) {
+  try {
+    const usersCollection = await db.collection("users").get();
+    const users = usersCollection.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    return res.status(200).json(users);
+  } catch (error) {
+    console.error("Error fetching all users:", error);
+    return res.status(500).json({ error: "Failed to fetch users" });
+  }
+}
+
 // GET /users/:id/events - get all events for a user
 export async function getUserEvents(req: Request, res: Response) {
   try {
