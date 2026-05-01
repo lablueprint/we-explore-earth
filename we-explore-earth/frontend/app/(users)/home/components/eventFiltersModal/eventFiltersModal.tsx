@@ -37,6 +37,14 @@ function EventFiltersModal(
 
     const [calendarVisible, setCalendarVisible] = useState<boolean>(false);
 
+    const handleClear = () => {
+        // Reset all filters: deselect all options or select default options
+        setSelectedDate(dateOptions[0]);
+        setSelectedCategories(new Set());
+        setSelectedEventPrice(eventPriceOptions[0]);
+        setSelectedAccommodations(new Set());
+    }
+
     const handleSubmit = () => {
         const result: Filter = {}
 
@@ -244,12 +252,18 @@ function EventFiltersModal(
                     />
                 }
 
-                <TouchableOpacity
-                    style={styles.submit}
-                    onPress={handleSubmit}
-                >
-                    <Text style={styles.submitText}>Submit</Text>
-                </TouchableOpacity>
+                <View style={styles.clearSubmitWrapper}>
+                    <TouchableOpacity onPress={handleClear}>
+                        <Text style={styles.clearText}>Clear filters</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={styles.submit}
+                        onPress={handleSubmit}
+                    >
+                        <Text style={styles.submitText}>Apply filters</Text>
+                    </TouchableOpacity>
+                </View>
             </ScrollView>
         </Modal>
     );

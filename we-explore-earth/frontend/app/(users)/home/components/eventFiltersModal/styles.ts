@@ -9,23 +9,38 @@ export const styles = StyleSheet.create({
         marginTop: 12,
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        gap: 6,
         alignItems: 'center',
     },
     filterOption: {
         fontWeight: 600, /** semi-bold */
         fontSize: 16,
     },
+    clearSubmitWrapper: {
+        marginTop: 52,
+        marginBottom: 64,
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    clearText: {
+        fontSize: 16,
+        color: '#181818',
+        textDecorationLine: 'underline',
+    },
     submit: {
-        marginTop: 24,
+        justifyContent: 'center',
+        width: 120,
+        height: 35,
         padding: 4,
-        borderRadius: 4,
-        backgroundColor: 'lightgrey',
+        borderRadius: 100,
+        backgroundColor: '#285F00',
     },
     submitText: {
         textAlign: 'center',
         fontWeight: 700, /** bold */
         fontSize: 16,
-        color: '#3c3b3b',
+        color: '#FFFFFF',
     },
 });
