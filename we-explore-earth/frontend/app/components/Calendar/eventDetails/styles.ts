@@ -1,66 +1,191 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
+    backgroundColor: 'rgba(248, 249, 247, 1)',
+  },
+
+  sheet: {
+    flex: 1,
+    backgroundColor: "#F7F6F2",
+    paddingHorizontal: 24,
+    paddingTop: 18,
+  },
+
+  topRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 18,
+  },
+  backButton: {
+    flexDirection: 'row',
     alignItems: 'center',
+    gap: 6,
+    paddingVertical: 24,
+    paddingHorizontal: 8,
   },
-  modalCard: {
-    width: '90%',
-    padding: 16,
-    backgroundColor: '#fff',
-    borderRadius: 8,
+  
+  backArrow: {
+    fontSize: 20,
+    color: '#2F6B0C',
+    fontWeight: '600',
   },
-  title: {
+
+  backText: {
     fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 8,
+    color: "#2F6B0C",
+    fontWeight: "500",
   },
-  body: {
-    fontSize: 14,
-    marginBottom: 8,
+
+  shareButton: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: "#EFEDE8",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  meta: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 4,
+
+  shareIcon: {
+    fontSize: 18,
+    color: "#1D1D1B",
   },
-  rsvpStatus: {
-    marginTop: 12,
-    padding: 8,
-    backgroundColor: '#E8F5E9',
-    borderRadius: 6,
-  },
-  rsvpStatusText: {
-    fontSize: 14,
-    color: '#2E7D32',
-  },
-  rsvpStatusValue: {
-    fontWeight: '700',
-  },
-  rsvpButton: {
-    marginTop: 12,
-    padding: 12,
-    backgroundColor: '#4CAF50',
-    borderRadius: 6,
+
+  imagePlaceholder: {
+    width: '100%',
+    height: 240,
+    borderRadius: 24,
+    backgroundColor: '#E6E7E3',
     alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
   },
-  rsvpButtonText: {
-    color: '#fff',
-    fontWeight: '600',
+  
+  imagePlaceholderText: {
+    color: '#9A9A94',
     fontSize: 16,
   },
-  closeButton: {
-    marginTop: 12,
-    padding: 10,
-    backgroundColor: '#007AFF',
-    borderRadius: 6,
-    alignItems: 'center',
+
+  title: {
+    fontFamily: "PlayfairDisplay_400Regular",
+    fontSize: 34,
+    lineHeight: 40,
+    letterSpacing: -0.8,
+    color: "#1D1D1B",
+    marginBottom: 18,
   },
-  closeText: {
-    color: '#fff',
-    fontWeight: '600',
+
+  tagRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    marginBottom: 28,
   },
+
+  tagPill: {
+    borderWidth: 1,
+    borderColor: "#D7D5CF",
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    backgroundColor: "#F7F6F2",
+  },
+
+  tagText: {
+    fontSize: 16,
+    color: "#64645F",
+  },
+
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: 18,
+  },
+
+  infoIcon: {
+    fontSize: 22,
+    marginRight: 12,
+    lineHeight: 24,
+  },
+
+  infoTitle: {
+    fontSize: 18,
+    fontWeight: "500",
+    color: "#1D1D1B",
+    marginBottom: 2,
+  },
+
+  infoSub: {
+    fontSize: 16,
+    color: "#7A7A73",
+  },
+
+  sectionLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#A1A19A",
+    marginTop: 22,
+    marginBottom: 10,
+  },
+
+  attendeeHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+
+  attendeeCount: {
+    fontSize: 18,
+    color: "#2C2C28",
+  },
+
+  viewAll: {
+    fontSize: 16,
+    color: "#A7A7A0",
+  },
+
+  avatarRow: {
+    flexDirection: "row",
+    marginBottom: 24,
+  },
+
+  avatar: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: "#C8C8C2",
+    marginRight: 8,
+  },
+
+  rsvpButton: {
+    backgroundColor: "#2F6B0C",
+    borderRadius: 999,
+    paddingVertical: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 28,
+  },
+
+  rsvpButtonText: {
+    color: "#FFFFFF",
+    fontSize: 18,
+    fontWeight: "700",
+  },
+
+  divider: {
+    height: 1,
+    backgroundColor: "#D9D8D3",
+    marginBottom: 24,
+  },
+
+  body: {
+    fontSize: 17,
+    lineHeight: 29,
+    color: "#262622",
+    marginBottom: 14,
+  },
+  
 });
