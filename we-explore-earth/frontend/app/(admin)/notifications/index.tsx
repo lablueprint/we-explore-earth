@@ -198,8 +198,17 @@ export default function AdminNotificationsPage() {
                     !canSubmit && localStyles.sendDisabled,
                   ]}
                   disabled={!canSubmit}
-                  onPress={() => {
-                    /* wire send API later */
+                  onPress={async () => {
+                    try {
+                      await fetch(`${API_URL}/twilio/event-blast`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ eventID: selectedAudienceId }),
+                      });
+                      closeSendModal();
+                    } catch (err) {
+                      console.error("Failed to send notification:", err);
+                    }
                   }}
                   activeOpacity={0.8}
                 >
