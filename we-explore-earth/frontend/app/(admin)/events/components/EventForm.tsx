@@ -9,6 +9,8 @@ import {
   Alert,
   Image
 } from "react-native";
+
+import {MapPinPlus,FilePenLine, Plus, DollarSign, ChartPie, AlarmClock,} from "lucide-react-native";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
@@ -17,6 +19,8 @@ import { CategoryAccommodationSection } from "./CategoryAccommodationSection";
 import * as ImagePicker from 'expo-image-picker';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 // import { storage } from "@/firebase.config";
+import { LinearGradient } from "expo-linear-gradient";
+import { typography } from "../../../../../shared/typography/typography";
 
 interface EventFormProps {
   title: string;
@@ -218,31 +222,139 @@ export function EventForm({
 // }
 
   return (
+
     <View style={styles.container}>
+
+      <LinearGradient
+          colors={[
+            "#afc49e",  // green (top-left)
+            "#F8F9F7",  // light/blank (middle)
+            "#afc49e",  // green again (bottom-right)
+          ]}
+          locations={[0, 0.5, 1]} // controls where each color sits
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{ flex: 1 }}
+        >
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-      >
-        <Text style={styles.title}>{formTitle}</Text>
+        keyboardShouldPersistTaps="handled" >
 
-        <TextInput
-          style={styles.input}
-          placeholder="Title"
-          value={title}
-          onChangeText={setTitle}
-        />
+      <TouchableOpacity onPress={pickImage} style={styles.coverContainer}>
+        {imageUri ? (
+          <Image
+            source={{ uri: imageUri }}
+            style={styles.coverImage}
+            resizeMode="cover"
+          /> 
+        ) : (
+          <Text style={typography.body}>Add photo</Text>
+        )}
 
+        {imageUri && (
+          <TouchableOpacity style={styles.editButton} onPress={pickImage} >
+            <Text style={{ fontSize: 16 }}>✎</Text>
+          </TouchableOpacity>
+        )}
+      </TouchableOpacity>
+
+      {imageUri && (
+        <TouchableOpacity onPress={() => setImageUri(null)}>
+          <Text style={styles.removeImageText}>Remove photo</Text>
+        </TouchableOpacity>
+      )}
+
+      <TextInput
+        style={[styles.input, typography.h2]}
+        placeholder="Event title"
+        value={title}
+        onChangeText={setTitle}
+      />
+
+      <View style={styles.dateCard}>
+        <View style={styles.dateGrid}>
+          <View style={styles.timeline}>
+            <View style={styles.dot} />
+            <View style={styles.dottedLine} />
+            <View style={styles.dot} />
+          </View>
+
+          <View style={styles.dateLabels}>
+            <Text style={styles.dateLabel}>From</Text>
+            <Text style={styles.dateLabel}>To</Text>
+          </View>
+
+          <View style={styles.dateColumn}>
+            <TouchableOpacity onPress={() => setShowDateStartPicker(true)}>
+              <Text style={styles.dateText}>Start Date</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => setShowDateEndPicker(true)}>
+              <Text style={styles.dateText}>End Date</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.timeColumn}>
+            <TouchableOpacity onPress={() => setShowTimeStartPicker(true)}>
+              <Text style={styles.dateText}>Time</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => setShowTimeEndPicker(true)}>
+              <Text style={styles.dateText}>Time</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+
+      {isAndroid && showDateStartPicker && (
+        <DateTimePicker value={dateStart} mode="date" display="default" onChange={handleDateStartChange}/>
+      )}
+
+      {isAndroid && showTimeStartPicker && (
+        <DateTimePicker value={timeStart} mode="time" display="default" onChange={handleTimeStartChange}/>
+      )}
+
+      {isAndroid && showDateEndPicker && (
+        <DateTimePicker value={dateEnd} mode="date" display="default" onChange={handleDateEndChange} />
+      )}
+
+      {isAndroid && showTimeEndPicker && (
+        <DateTimePicker value={timeEnd} mode="time" display="default" onChange={handleTimeEndChange} />
+      )}
+    
+        <View style={styles.inputWithIcon}>
+          <MapPinPlus size={20} color="#7A7A7A" />
+          <TextInput
+            style={[styles.input, styles.inputInsideIcon, typography.body]}
+            placeholder="Add Location"
+            placeholderTextColor="#6B6B6B"
+          />
+        </View>
+      
         <TextInput
-          style={[styles.input, styles.textArea]}
-          placeholder="Description"
+          style={[styles.input, styles.textArea, typography.body]}
+          placeholder="Add Description"
           value={description}
           onChangeText={setDescription}
           multiline
           numberOfLines={4}
         />
+        
+        <View style= {[styles.input]}>
+          <CategoryAccommodationSection
+            categoryOptions={categoryOptions}
+            accommodationOptions={accommodationOptions}
+            category={category}
+            accommodation={accommodation}
+            onCategoryChange={onCategoryChange}
+            onAccommodationChange={onAccommodationChange}
+          />
+        </View>
 
-        <Text style={styles.label}>Start Date</Text>
+
+
+        {/* <Text style={styles.label}>Start Date</Text>
         {isAndroid ? (
           <TouchableOpacity
             style={styles.input}
@@ -312,21 +424,18 @@ export function EventForm({
             display="default"
             onChange={handleTimeEndChange}
           />
-        ) : null}
+        ) : null} */}
+
+        <View style={styles.divider} />
 
         <TextInput
-          style={styles.input}
-          placeholder="Location"
-          value={location}
-          onChangeText={setLocation}
-        />
-
-        <TextInput
-          style={styles.input}
+          style={[styles.input, typography.body]}
           placeholder="Hosted By"
           value={hostedBy}
           onChangeText={setHostedBy}
         />
+
+        <Text style = {typography.body}> LOGISTICS</Text>
 
         <View style={styles.priceContainer}>
           <Text style={styles.dollarSign}>$</Text>
@@ -339,45 +448,23 @@ export function EventForm({
           />
         </View>
 
-        <CategoryAccommodationSection
-          categoryOptions={categoryOptions}
-          accommodationOptions={accommodationOptions}
-          category={category}
-          accommodation={accommodation}
-          onCategoryChange={onCategoryChange}
-          onAccommodationChange={onAccommodationChange}
-        />
-         
-
          <TextInput
-          style={styles.input}
-          placeholder="Maximum Number of Attendees"
+          style={[styles.input, typography.body]}
+          placeholder="Maximum Capacity"
           value={maxAttendees}
           onChangeText={handleMaxAttendeesChange}
           keyboardType="number-pad" 
         />          
 
-        <Text style={styles.label}>Cover Image</Text>
-        <TouchableOpacity onPress={pickImage} style={styles.imageButton}>
-          <Text>{imageUri ? "Change photo" : "Add photo"}</Text>
-        </TouchableOpacity>
-        {imageUri && (
-          <>
-           <Image
-              source={{ uri: imageUri }}
-              style={styles.imagePreview}
-              resizeMode="cover"
-              />
-          <TouchableOpacity onPress={() => setImageUri(null)}>
-           <Text style={styles.removeImageText}>Remove photo</Text>
-          </TouchableOpacity>
-          </>
-        )}
-
-        <TouchableOpacity style={styles.submitButton} onPress={onSubmit}>
-          <Text style={styles.buttonText}>{submitButtonText}</Text>
+        <TouchableOpacity style={styles.launchButton} onPress={onSubmit}>
+          <Text style={styles.launchButtonText}>{submitButtonText}</Text>
         </TouchableOpacity>
       </ScrollView>
+      </LinearGradient>
     </View>
   );
 }
+
+
+//TODO  Fix dates
+//TODO Emojis

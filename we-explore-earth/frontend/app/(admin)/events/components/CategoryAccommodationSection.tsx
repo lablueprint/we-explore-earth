@@ -7,7 +7,7 @@ import {
   ScrollView,
 } from "react-native";
 import { styles } from "./styles";
-
+import { typography } from "../../../../../shared/typography/typography";
 export interface CategoryAccommodationSectionProps {
   categoryOptions: string[];
   accommodationOptions: string[];
@@ -25,28 +25,37 @@ export function CategoryAccommodationSection({
   onCategoryChange,
   onAccommodationChange,
 }: CategoryAccommodationSectionProps) {
-  const [activeModal, setActiveModal] = useState<"category" | "accommodation" | null>(null);
-  const [tempSelections, setTempSelections] = useState<Set<string>>(new Set());
+  const [modalVisible, setModalVisible] = useState(false);
+  const [tempCategories, setTempCategories] = useState<Set<string>>(new Set(category));
+  const [tempAccommodations, setTempAccommodations] = useState<Set<string>>(new Set(accommodation));
 
   useEffect(() => {
-    if (activeModal === "category") {
-      setTempSelections(new Set(category));
-    } else if (activeModal === "accommodation") {
-      setTempSelections(new Set(accommodation));
+    if (modalVisible) {
+      setTempCategories(new Set(category));
+      setTempAccommodations(new Set(accommodation));
     }
-  }, [activeModal, category, accommodation]);
+  }, [modalVisible, category, accommodation]);
 
   const handleSave = () => {
-    if (activeModal === "category") {
-      onCategoryChange(Array.from(tempSelections));
-    } else if (activeModal === "accommodation") {
-      onAccommodationChange(Array.from(tempSelections));
-    }
-    setActiveModal(null);
+    onCategoryChange(Array.from(tempCategories));
+    onAccommodationChange(Array.from(tempAccommodations));
+    setModalVisible(false);
   };
 
-  const toggleOption = (option: string) => {
-    setTempSelections((prev) => {
+  const toggleCategory = (option: string) => {
+    setTempCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(option)) {
+        next.delete(option);
+      } else {
+        next.add(option);
+      }
+      return next;
+    });
+  };
+
+  const toggleAccommodation = (option: string) => {
+    setTempAccommodations((prev) => {
       const next = new Set(prev);
       if (next.has(option)) {
         next.delete(option);
@@ -61,81 +70,96 @@ export function CategoryAccommodationSection({
     return null;
   }
 
-  return (
-    <View style={styles.categoryAccommodationContainer}>
-      <Text style={styles.categoryAccommodationTitle}>Category & Accommodations</Text>
-      <View style={styles.categoryAccommodationButtons}>
-        {categoryOptions.length > 0 && (
-          <TouchableOpacity
-            style={styles.categoryAccommodationButton}
-            onPress={() => setActiveModal("category")}
-          >
-            <Text style={styles.categoryAccommodationButtonText}>Category</Text>
-            <View style={styles.categoryAccommodationBadge}>
-              <Text style={styles.categoryAccommodationBadgeText}>
-                {category.length}/{categoryOptions.length}
-              </Text>
+return (
+  <>
+    <TouchableOpacity onPress={() => setModalVisible(true)}>
+      {category.length === 0 && accommodation.length === 0 ? (
+        <Text style={typography.body}>
+          + Add event tags
+        </Text>
+      ) : (
+        <View >
+          <Text style={typography.body}>
+            + Add event tags
+          </Text>
+          <View style={styles.tagContainer}>
+          {[...category, ...accommodation].map((tag) => (
+            <View key={tag} style={styles.tagPill}>
+              <Text style={styles.tagText}>{tag}</Text>
             </View>
-          </TouchableOpacity>
-        )}
-        {accommodationOptions.length > 0 && (
-          <TouchableOpacity
-            style={styles.categoryAccommodationButton}
-            onPress={() => setActiveModal("accommodation")}
-          >
-            <Text style={styles.categoryAccommodationButtonText}>Accommodations</Text>
-            <View style={styles.categoryAccommodationBadge}>
-              <Text style={styles.categoryAccommodationBadgeText}>
-                {accommodation.length}/{accommodationOptions.length}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        )}
-      </View>
-
-      <Modal
-        visible={activeModal !== null}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setActiveModal(null)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>
-              {activeModal === "category" ? "Category" : "Accommodations"}
-            </Text>
-            <ScrollView style={styles.modalOptionsList}>
-              {(activeModal === "category" ? categoryOptions : accommodationOptions).map((option) => (
-                <TouchableOpacity
-                  key={option}
-                  style={styles.modalOptionRow}
-                  onPress={() => toggleOption(option)}
-                >
-                  <View
-                    style={[
-                      styles.modalCheckbox,
-                      tempSelections.has(option) && styles.modalCheckboxChecked,
-                    ]}
-                  >
-                    {tempSelections.has(option) && (
-                      <Text style={styles.modalCheckmark}>✓</Text>
-                    )}
-                  </View>
-                  <Text style={styles.modalOptionText}>{option}</Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-            <View style={styles.modalButtonRow}>
-              <TouchableOpacity style={styles.modalCancelButton} onPress={() => setActiveModal(null)}>
-                <Text style={styles.modalCancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.modalSaveButton} onPress={handleSave}>
-                <Text style={styles.modalSaveButtonText}>Save</Text>
-              </TouchableOpacity>
-            </View>
+          ))}
           </View>
         </View>
-      </Modal>
-    </View>
-  );
+      )}
+    </TouchableOpacity>
+
+    <Modal
+      visible={modalVisible}
+      animationType="slide"
+      transparent
+      onRequestClose={() => setModalVisible(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+           <ScrollView >
+          <Text style={styles.modalTitle}> Category </Text>
+         
+            {categoryOptions.map((option) => (
+              <TouchableOpacity
+                key={option}
+                style={styles.modalOptionRow}
+                onPress={() => toggleCategory(option)}
+              >
+                <View
+                  style={[
+                    styles.modalCheckbox,
+                    tempCategories.has(option) && styles.modalCheckboxChecked,
+                  ]}
+                >
+                  {tempCategories.has(option) && (
+                    <Text style={styles.modalCheckmark}>✓</Text>
+                  )}
+                </View>
+                <Text style={styles.modalOptionText}>{option}</Text>
+              </TouchableOpacity>
+            ))}
+
+
+            <Text style={styles.modalTitle}> Accommodations</Text>
+         
+            {accommodationOptions.map((option) => (
+              <TouchableOpacity
+                key={option}
+                style={styles.modalOptionRow}
+                onPress={() => toggleAccommodation(option)}
+              >
+                <View
+                  style={[
+                    styles.modalCheckbox,
+                    tempAccommodations.has(option) && styles.modalCheckboxChecked,
+                  ]}
+                >
+                  {tempAccommodations.has(option) && (
+                    <Text style={styles.modalCheckmark}>✓</Text>
+                  )}
+                </View>
+                <Text style={styles.modalOptionText}>{option}</Text>
+              </TouchableOpacity>
+            ))}
+          
+          <View style={styles.modalButtonRow}>
+            <TouchableOpacity style={styles.modalCancelButton} onPress={() => setModalVisible(false)}>
+              <Text style={styles.modalCancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.modalSaveButton} onPress={handleSave}>
+              <Text style={styles.modalSaveButtonText}>Save</Text>
+            </TouchableOpacity>
+          </View>
+          </ScrollView>
+        </View>
+      </View>
+    </Modal>
+  </>
+);
+
 }
