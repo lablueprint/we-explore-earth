@@ -1,71 +1,157 @@
-import { useState, useEffect } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
+//STANDARD LIBRARY
+import { useState, useEffect, useCallback, useMemo } from 'react';
 
-import EventFiltersModal from "../../components/Home/components/eventFiltersModal/eventFiltersModal";
-import HomeCalendar from "@/app/components/Home/homeCalendar";
+//THIRD-PARTY LIBRARIES
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
-import type { Event } from "@shared/types/event";
-import type { Filter } from "@shared/types/filter";
+//LOCAL FILES
+import EventFiltersModal from '../../components/Home/components/eventFiltersModal/eventFiltersModal';
+import Calendar from '@/app/components/Calendar/calendar';
+import EventView from '@/app/components/Calendar/eventView/eventView';
+import EventDetails from '@/app/components/Calendar/eventDetails/eventDetails';
+import { Event } from '@shared/types/event';
+import { Filter } from '@shared/types/filter';
+import { styles, homeIcons, textStyles } from './styles';
+import { useUser } from '@/hooks/useUser';
 
 export default function HomeScreen() {
-  const [events, setEvents] = useState<Event[]>([]);
+  //REACT HOOKS
+  const { user } = useUser();
+  const router = useRouter();
+
+  //STATE VARIABLES
+  const [events, setEvents] = useState<Array<Event>>([]);
   const [filters, setFilters] = useState<Filter>({});
-  const [filterModalVisible, setFilterModalVisible] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [filterModalVisible, setFilterModalVisible] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [brewingDetailsVisible, setBrewingDetailsVisible] = useState(false);
+  const [brewingSelectedEvent, setBrewingSelectedEvent] = useState<Event | null>(null);
 
-  useEffect(() => {
-    async function fetchFilteredEvents() {
-      const baseUrl = process.env.EXPO_PUBLIC_API_URL;
+  const displayName = (user?.firstName?.trim() || 'there');
 
-      if (!baseUrl) {
-        console.log("Config Error", "EXPO_PUBLIC_API_URL is not set.");
-        setLoading(false);
-        return;
-      }
+  //HANDLERS
+  const fetchFilteredEvents = useCallback(async () => {
+    const baseUrl = process.env.EXPO_PUBLIC_API_URL;
 
-      try {
-        setLoading(true);
-
-        const response = await fetch(`${baseUrl}/events/filtered`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(filters),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch filtered events.");
-        }
-
-        const data: Event[] = await response.json();
-        setEvents(data);
-      } catch (error) {
-        console.log(
-          error instanceof Error
-            ? error.message
-            : "Failed to fetch filtered events."
-        );
-      } finally {
-        setLoading(false);
-      }
+    if (!baseUrl) {
+      console.log("Config Error", "EXPO_PUBLIC_API_URL is not set.");
+      setLoading(false);
+      return;
     }
 
-    fetchFilteredEvents();
+    try {
+      const response = await fetch(`${baseUrl}/events/filtered`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(filters),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch filtered events.");
+      }
+      const data: Event[] = await response.json();
+      setEvents(data);
+    } catch (error: unknown) {
+      console.log(error instanceof Error ? error.message : "Failed to fetch filtered events.");
+    } finally {
+      setLoading(false);
+    }
   }, [filters]);
 
+  //EFFECTS
+  useEffect(() => {
+    fetchFilteredEvents();
+  }, [fetchFilteredEvents]);
+
+  const brewingPreviewEvent = useMemo(() => {
+    if (!events.length) return null;
+    return [...events].sort(
+      (a, b) => a.timeStart._seconds - b.timeStart._seconds
+    )[0];
+  }, [events]);
+
+  const handleBrewingEventPress = (event: Event) => {
+    setBrewingSelectedEvent(event);
+    setBrewingDetailsVisible(true);
+  };
+
+  const handleCloseBrewingDetails = () => {
+    setBrewingDetailsVisible(false);
+  };
+
+  const goToMyEvents = () => {
+    router.push('/(users)/events' as const);
+  };
+
+  //RENDER
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        backgroundColor: "white",
-        paddingTop: 20,
-        paddingHorizontal: 20,
-      }}
-    >
-      <HomeCalendar
-        events={events}
-        loading={loading}
-        showFilters
-        onPressFilters={() => setFilterModalVisible(true)}
+    <SafeAreaView style={styles.screen}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator
+      >
+        {!user?.isAdmin && (
+          <>
+            <View style={styles.heroBlock}>
+              <View style={styles.heroRow}>
+                <View style={styles.avatar} accessibilityLabel="Profile avatar placeholder">
+                  <Ionicons {...homeIcons.avatarCamera} />
+                </View>
+                <Text style={textStyles.trailCalling} numberOfLines={2}>
+                  The trail is calling, {displayName}
+                </Text>
+              </View>
+              <View style={styles.heroFiltersRow}>
+                <TouchableOpacity
+                  onPress={() => { setFilterModalVisible(true); }}
+                  style={styles.filterButtonWrapper}
+                  accessibilityRole="button"
+                  accessibilityLabel="Open event filters"
+                >
+                  <Text style={textStyles.filters}>Filters</Text>
+                  <Ionicons {...homeIcons.filterOptions} />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={styles.brewingSection}>
+              <View style={styles.brewingHeaderRow}>
+                <Text style={styles.brewingTitleLine} numberOfLines={2}>
+                  <Text style={textStyles.brewingLead}>Brewing</Text>
+                  <Text style={textStyles.brewingTail}> next...</Text>
+                </Text>
+                <TouchableOpacity
+                  onPress={goToMyEvents}
+                  style={styles.viewAllButton}
+                  accessibilityRole="button"
+                  accessibilityLabel="View all my events"
+                >
+                  <Text style={textStyles.viewAll}>VIEW ALL {'>'}</Text>
+                </TouchableOpacity>
+              </View>
+              {brewingPreviewEvent ? (
+                <EventView event={brewingPreviewEvent} onPress={handleBrewingEventPress} />
+              ) : null}
+            </View>
+
+            <View style={styles.upcomingHeader}>
+              <Text style={textStyles.upcoming}>Upcoming</Text>
+            </View>
+
+            <Calendar embedded loading={loading} events={events} />
+          </>
+        )}
+      </ScrollView>
+
+      <EventDetails
+        visible={brewingDetailsVisible && !!brewingSelectedEvent}
+        event={brewingSelectedEvent}
+        onClose={handleCloseBrewingDetails}
+        onRSVPChange={fetchFilteredEvents}
       />
 
       <EventFiltersModal

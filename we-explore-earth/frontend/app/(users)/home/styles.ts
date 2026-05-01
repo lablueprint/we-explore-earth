@@ -29,6 +29,7 @@ export const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   heroBlock: {
+    marginTop: 16,
     marginBottom: 20,
   },
   heroRow: {
@@ -93,7 +94,7 @@ export const homeType = StyleSheet.create({
     letterSpacing: -0.2,
     color: '#000',
     flex: 1,
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
   },
   viewAll: {
     fontFamily: 'HankenGrotesk-Regular',
