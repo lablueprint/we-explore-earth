@@ -6,7 +6,6 @@ import {
   Modal,
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   Alert,
   ActivityIndicator,
@@ -29,15 +28,18 @@ import {
   scrollPaddingBottomExtra,
   closeButtonTopExtra,
   closeButtonRightExtra,
+  titleTextStyle,
+  getOptionTextStyle,
+  termsTextStyle,
+  termsLinkStyle,
+  rsvpButtonTextStyle,
   closeIconSize,
   closeIconColor,
   checkmarkIconSize,
   checkmarkIconColor,
   activityIndicatorColor,
-  notesPlaceholderColor,
 } from './styles';
 import type { Event, RSVPStatus } from '@shared/types/event';
-import { typography } from '@shared/typography/typography';
 import { useUser } from '../../../../hooks/useUser';
 import { useAppDispatch } from '../../../redux/hooks';
 import { updateUserState } from '../../../redux/slices/userSlice';
@@ -59,8 +61,7 @@ export default function RSVPModal({ visible, event, currentRSVP, onClose, onRSVP
   //STATE VARIABLES
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<RSVPStatus | null>(currentRSVP);
-  const [attendeeCount, setAttendeeCount] = useState(0);
-  const [notes, setNotes] = useState('');
+
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   //HANDLERS
@@ -150,12 +151,13 @@ export default function RSVPModal({ visible, event, currentRSVP, onClose, onRSVP
               styles.scrollContent,
               {
                 paddingTop: insets.top + scrollPaddingTopExtra,
-                paddingBottom: Math.max(insets.bottom, scrollPaddingBottomMin) + scrollPaddingBottomExtra,
+                paddingBottom:
+                  Math.max(insets.bottom, scrollPaddingBottomMin) + scrollPaddingBottomExtra,
               },
             ]}
             keyboardShouldPersistTaps="handled"
           >
-            <Text style={[typography.h1, styles.title]}>Are you going?</Text>
+            <Text style={titleTextStyle}>Are you going?</Text>
 
             <View style={styles.optionRow}>
               <TouchableOpacity
@@ -163,15 +165,7 @@ export default function RSVPModal({ visible, event, currentRSVP, onClose, onRSVP
                 onPress={() => setSelectedStatus('YES')}
                 activeOpacity={0.75}
               >
-                <Text
-                  style={[
-                    typography.body,
-                    styles.optionText,
-                    selectedStatus === 'YES' && styles.optionTextSelected,
-                  ]}
-                >
-                  Yes
-                </Text>
+                <Text style={getOptionTextStyle(selectedStatus === 'YES')}>Yes</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -179,44 +173,9 @@ export default function RSVPModal({ visible, event, currentRSVP, onClose, onRSVP
                 onPress={() => setSelectedStatus('MAYBE')}
                 activeOpacity={0.75}
               >
-                <Text
-                  style={[
-                    typography.body,
-                    styles.optionText,
-                    selectedStatus === 'MAYBE' && styles.optionTextSelected,
-                  ]}
-                >
-                  Maybe
-                </Text>
+                <Text style={getOptionTextStyle(selectedStatus === 'MAYBE')}>Maybe</Text>
               </TouchableOpacity>
             </View>
-
-            <Text style={[typography.body, styles.label]}>Attendee count</Text>
-            <View style={styles.countRow}>
-              <TouchableOpacity
-                style={styles.countButton}
-                onPress={() => setAttendeeCount((c) => Math.max(0, c - 1))}
-              >
-                <Text style={[typography.body, styles.countButtonText]}>−</Text>
-              </TouchableOpacity>
-              <Text style={[typography.body, styles.countValue]}>{attendeeCount}</Text>
-              <TouchableOpacity
-                style={styles.countButton}
-                onPress={() => setAttendeeCount((c) => c + 1)}
-              >
-                <Text style={[typography.body, styles.countButtonText]}>+</Text>
-              </TouchableOpacity>
-            </View>
-
-            <Text style={[typography.body, styles.label]}>Additional notes</Text>
-            <TextInput
-              style={[typography.body, styles.notesInput]}
-              placeholder="Have special needs, need a ride, bringing equipment, etc"
-              placeholderTextColor={notesPlaceholderColor}
-              multiline
-              value={notes}
-              onChangeText={setNotes}
-            />
 
             <View style={styles.termsRow}>
               <TouchableOpacity onPress={() => setAgreedToTerms((v) => !v)} activeOpacity={0.7}>
@@ -226,10 +185,10 @@ export default function RSVPModal({ visible, event, currentRSVP, onClose, onRSVP
                   )}
                 </View>
               </TouchableOpacity>
-              <Text style={[typography.body, styles.termsText]}>
+              <Text style={termsTextStyle}>
                 By selecting this check box, you agree to our{' '}
                 <Text
-                  style={[typography.body, styles.termsLink]}
+                  style={termsLinkStyle}
                   onPress={() => {
                     onClose();
                     setTimeout(() => router.push('/rsvp-terms-placeholder' as Href), 0);
@@ -248,7 +207,7 @@ export default function RSVPModal({ visible, event, currentRSVP, onClose, onRSVP
               />
             ) : (
               <TouchableOpacity style={styles.rsvpButton} onPress={handleSubmit} activeOpacity={0.85}>
-                <Text style={[typography.body, styles.rsvpButtonText]}>RSVP</Text>
+                <Text style={rsvpButtonTextStyle}>RSVP</Text>
               </TouchableOpacity>
             )}
           </ScrollView>
