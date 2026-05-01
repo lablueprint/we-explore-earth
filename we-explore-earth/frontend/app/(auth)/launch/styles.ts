@@ -1,80 +1,86 @@
 import { StyleSheet } from 'react-native';
+import { typography } from '../../../../shared/typography/typography';
 
 export const styles = StyleSheet.create({
+  fullBackground: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  safeArea: {
+    flex: 1,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
     justifyContent: 'space-between',
     paddingHorizontal: 24,
-    paddingTop: 80,
+    paddingTop: 20,
     paddingBottom: 40,
   },
-  
-  welcomeSection: {
+  centerSection: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 10,
   },
-  
-  title: {
-    fontSize: 24,
-    color: '#6c757d',
-    marginBottom: 8,
-    fontWeight: '300',
+  logo: {
+    width: 140, 
+    height: 140,
+    marginBottom: 20,
   },
-  
-  appName: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#2c3e50',
+  welcomeText: {
+    ...typography.h1,
+    fontSize: 28,
+    fontWeight: 'normal',
+    color: '#0A1207',
+    marginBottom: 4,
+  },
+  titleText: {
+    ...typography.h1,
+    fontSize: 42,
+    fontWeight: 'normal',
+    color: '#0A1207',
     marginBottom: 24,
     textAlign: 'center',
   },
-  
-  subtitle: {
+  subtitleText: {
+    ...typography.body,
     fontSize: 16,
-    color: '#6c757d',
+    color: '#6B7280', 
     textAlign: 'center',
     lineHeight: 24,
-    paddingHorizontal: 20,
   },
-  
   buttonSection: {
     gap: 16,
+    width: '100%',
   },
-  
   loginButton: {
-    backgroundColor: '#3498db',
-    paddingVertical: 16,
-    borderRadius: 12,
+    backgroundColor: '#355E2B',
+    width: '100%',
+    paddingVertical: 18,
+    borderRadius: 30,
     alignItems: 'center',
-    shadowColor: '#3498db',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    justifyContent: 'center',
   },
-  
-  signupButton: {
-    backgroundColor: 'transparent',
-    borderWidth: 2,
-    borderColor: '#3498db',
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  
-  buttonText: {
-    color: '#ffffff',
+  loginButtonText: {
+    ...typography.body,
+    color: '#FFFFFF',
     fontSize: 18,
     fontWeight: '600',
   },
-  
+  signupButton: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#355E2B',
+    width: '100%',
+    paddingVertical: 18,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   signupButtonText: {
-    color: '#3498db',
+    ...typography.body,
+    color: '#355E2B',
     fontSize: 18,
     fontWeight: '600',
   },

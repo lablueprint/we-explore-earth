@@ -1,59 +1,62 @@
-//STANDARD LIBRARY
 import React, { useState } from 'react';
-//THIRD-PARTY LIBRARIES
-import { View, Text, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, ScrollView, SafeAreaView, ImageBackground } from 'react-native';
 import { router } from 'expo-router';
-//LOCAL FILES
+import { Feather } from '@expo/vector-icons';
+
 import { styles } from './styles';
-import BackButton from '@/app/components/BackButton/backButton'
+import AuthInput from '../components/authInput';
+import AuthButton from '../components/authButton';
 
 export default function SignupPage() {
-    //REACT HOOKS
-    
-    //STATE VARIABLES
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [checkPassword, setCheckPassword] = useState('');
-    const [username, setUsername] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [password, setPassword] = useState('');
+    
     const [age, setAge] = useState(false);
     const [notifications, setNotifications] = useState(false);
     const [privacy, setPrivacy] = useState(false);
     
-    //HANDLERS
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handlePhoneChange = (text: string) => {
+        const cleaned = text.replace(/\D/g, ''); 
+        let formatted = cleaned;
+        if (cleaned.length > 3 && cleaned.length <= 6) {
+            formatted = `${cleaned.slice(0, 3)}-${cleaned.slice(3)}`;
+        } else if (cleaned.length > 6) {
+            formatted = `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6, 10)}`;
+        }
+        setPhoneNumber(formatted);
+    };
+
+    const isFormValid = 
+        firstName.trim().length > 0 &&
+        lastName.trim().length > 0 &&
+        username.trim().length > 0 &&
+        email.trim().length > 0 &&
+        phoneNumber.length === 12 && 
+        password.length >= 8 &&
+        age && 
+        privacy;
+
     async function handleSignup() {
-        // Basic validation
-        if (!email || !password || !username || !firstName || !lastName) {
-            Alert.alert('Error', 'Please fill in all required fields');
-            return;
-        }
-        
-        if (password !== checkPassword) {
-            Alert.alert('Error', 'Passwords do not match');
-            return;
-        }
-        
-        if (!age) {
-            Alert.alert('Error', 'You must be 13 years or older to create an account');
-            return;
-        }
-        
-        if (!privacy) {
-            Alert.alert('Error', 'Please accept the Privacy Policy to continue');
-            return;
-        }
-        
+        if (!isFormValid) return;
+        setIsLoading(true);
+
         try {
             const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/signup`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     email,
                     password,
                     username,
-                    firstName,
-                    lastName,
+                    firstName: firstName,
+                    lastName: lastName,
+                    phoneNumber,
                     notifications
                 })
             });
@@ -67,112 +70,125 @@ export default function SignupPage() {
             Alert.alert(
                 'Success!', 
                 'Please check your email for verification before logging in!',
-                [
-                    {
-                        text: 'OK',
-                        onPress: () => router.replace('/login')
-                    }
-                ]
+                [{ text: 'OK', onPress: () => router.replace('/(auth)/login') }]
             );
             
-        } catch (error : any) {
-            Alert.alert(
-                'Signup Failed', 
-                error.message || 'Something went wrong. Please try again.'
-            );
+        } catch (error: any) {
+            Alert.alert('Signup Failed', error.message || 'Something went wrong. Please try again.');
+        } finally {
+            setIsLoading(false);
         }
     }
-    
-    //EFFECTS
-    
-    //RENDER
+
     return (
-        <>
-            <BackButton route="/launch" />
-            <ScrollView style={styles.container}>
-                <Text style={styles.title}>Join We Explore Earth</Text>
-
-                <TextInput
-                    style={styles.input}
-                    placeholder="Email"
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                />
-                
-                <TextInput
-                    style={styles.input}
-                    placeholder="Password"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                />
-
-                <TextInput
-                    style={styles.input}
-                    placeholder="Confirm Password"
-                    value={checkPassword}
-                    onChangeText={setCheckPassword}
-                    secureTextEntry
-                />
-                
-                <TextInput
-                    style={styles.input}
-                    placeholder="Username"
-                    value={username}
-                    onChangeText={setUsername}
-                    autoCapitalize="none"
-                />
-                
-                <TextInput
-                    style={styles.input}
-                    placeholder="First Name"
-                    value={firstName}
-                    onChangeText={setFirstName}
-                />
-                
-                <TextInput
-                    style={styles.input}
-                    placeholder="Last Name"
-                    value={lastName}
-                    onChangeText={setLastName}
-                />
-
-                <TouchableOpacity 
-                    style={styles.checkboxContainer} 
-                    onPress={() => setAge(!age)}
+        <ImageBackground
+            source={require('../../../assets/images/login-background.png')}
+            style={styles.fullBackground}
+            resizeMode="cover"
+        >
+            <SafeAreaView style={styles.safeArea}>
+                <KeyboardAvoidingView 
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+                    style={styles.container}
+                    keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
                 >
-                    <View style={[styles.checkbox, age && styles.checkboxChecked]}>
-                        {age && <Text style={styles.checkmark}>✓</Text>}
-                    </View>
-                    <Text style={styles.checkboxText}>I am 13 years or older</Text>
-                </TouchableOpacity>
+                    <ScrollView 
+                        style={styles.scrollView} 
+                        showsVerticalScrollIndicator={false} 
+                        contentContainerStyle={styles.scrollContent}
+                        bounces={true}
+                    >
+                        <View style={styles.headerContainer}>
+                            <Text style={styles.title}>Sign up</Text>
+                            <Text style={styles.subtitle}>Your new journey begins here</Text>
+                        </View>
 
-                <TouchableOpacity 
-                    style={styles.checkboxContainer} 
-                    onPress={() => setNotifications(!notifications)}
-                >
-                    <View style={[styles.checkbox, notifications && styles.checkboxChecked]}>
-                        {notifications && <Text style={styles.checkmark}>✓</Text>}
-                    </View>
-                    <Text style={styles.checkboxText}>I consent to notifications</Text>
-                </TouchableOpacity>
+                        <View style={styles.formContainer}>
+                            <AuthInput
+                                placeholder="First name"
+                                value={firstName}
+                                onChangeText={setFirstName}
+                            />
+                            <AuthInput
+                                placeholder="Last name"
+                                value={lastName}
+                                onChangeText={setLastName}
+                            />
+                            <AuthInput
+                                placeholder="Username"
+                                value={username}
+                                onChangeText={setUsername}
+                            />
+                            <AuthInput
+                                placeholder="Email"
+                                value={email}
+                                onChangeText={setEmail}
+                                keyboardType="email-address"
+                            />
+                            <AuthInput
+                                placeholder="Phone number"
+                                value={phoneNumber}
+                                onChangeText={handlePhoneChange}
+                                keyboardType="number-pad"
+                                maxLength={12}
+                            />
+                            <View style={styles.passwordContainer}>
+                                <AuthInput
+                                    placeholder="Password"
+                                    value={password}
+                                    onChangeText={setPassword}
+                                    isPassword={true}
+                                />
+                                <Text style={styles.helperText}>Password must be at least 8 characters</Text>
+                            </View>
 
-                <TouchableOpacity 
-                    style={styles.checkboxContainer} 
-                    onPress={() => setPrivacy(!privacy)}
-                >
-                    <View style={[styles.checkbox, privacy && styles.checkboxChecked]}>
-                        {privacy && <Text style={styles.checkmark}>✓</Text>}
-                    </View>
-                    <Text style={styles.checkboxText}>I accept the Privacy Policy</Text>
-                </TouchableOpacity>
+                            <View style={styles.checkboxGroup}>
+                                <TouchableOpacity style={styles.checkboxContainer} onPress={() => setAge(!age)}>
+                                    <View style={[styles.checkbox, age && styles.checkboxChecked]}>
+                                        {age && <Feather name="check" size={14} color="#355E2B" />}
+                                    </View>
+                                    <Text style={styles.checkboxText}>I am 13 years or older</Text>
+                                </TouchableOpacity>
 
-                <TouchableOpacity style={styles.signupButton} onPress={handleSignup}>
-                    <Text style={styles.buttonText}>CREATE ACCOUNT</Text>
-                </TouchableOpacity>
-            </ScrollView>
-        </>
+                                <TouchableOpacity style={styles.checkboxContainer} onPress={() => setNotifications(!notifications)}>
+                                    <View style={[styles.checkbox, notifications && styles.checkboxChecked]}>
+                                        {notifications && <Feather name="check" size={14} color="#355E2B" />}
+                                    </View>
+                                    <Text style={styles.checkboxText}>I consent to notifications</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity style={styles.checkboxContainer} onPress={() => setPrivacy(!privacy)}>
+                                    <View style={[styles.checkbox, privacy && styles.checkboxChecked]}>
+                                        {privacy && <Feather name="check" size={14} color="#355E2B" />}
+                                    </View>
+                                    <Text style={styles.checkboxText}>I accept the Privacy Policy</Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            <AuthButton
+                                title="Create account"
+                                onPress={handleSignup}
+                                disabled={!isFormValid}
+                                isLoading={isLoading}
+                            />
+
+                            <View style={styles.footerContainer}>
+                                <Text style={styles.footerText}>
+                                    Have an account? Log in{' '}
+                                    <Text 
+                                        style={styles.loginLink} 
+                                        onPress={() => router.replace('/(auth)/login')}
+                                    >
+                                        here
+                                    </Text>
+                                </Text>
+                            </View>
+
+                            <View style={styles.bottomSpacer} />
+                        </View>
+                    </ScrollView>
+                </KeyboardAvoidingView>
+            </SafeAreaView>
+        </ImageBackground>
     );
 }

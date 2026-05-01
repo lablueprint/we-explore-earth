@@ -1,39 +1,34 @@
-//STANDARD LIBRARY
 import React, { useState } from 'react';
-//THIRD-PARTY LIBRARIES
-import { View, Text, TouchableOpacity, TextInput, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, ImageBackground, SafeAreaView } from "react-native";
 import { router } from "expo-router";
-//LOCAL FILES
-import { styles } from "./styles";
-import BackButton from "@/app/components/BackButton/backButton";
 import { useAppDispatch } from "@/app/redux/hooks";
 import { setUserState } from "@/app/redux/slices/userSlice";
 
+import { styles } from "./styles";
+import BackButton from "@/app/components/BackButton/backButton";
+import AuthInput from '../components/authInput';
+import AuthButton from '../components/authButton';
+
 export default function LoginPage() {
-    //REACT HOOKS
-    
-    //STATE VARIABLES
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const dispatch = useAppDispatch();
-    
-    //HANDLERS
+
+    const isFormValid = email.length > 0 && password.length > 0;
+
     async function handleLogin() {
-      if (!email || !password) {
-        Alert.alert("Please fill in all the fields");
-        return;
-      }
-    
+      if (!isFormValid) return;
+      
+      setIsLoading(true);
+      
       try {
-        const response = await fetch(
-          `${process.env.EXPO_PUBLIC_API_URL}/users/login`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password }),
-          }
-        );
-    
+        const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+
         const data = await response.json();
         
         if (!response.ok) {
@@ -41,66 +36,85 @@ export default function LoginPage() {
         }
 
         dispatch(setUserState(data));
-        //console.log("DATA RIGHT NOW:", data);
+        
         if(data.hasOnboarded) {
-        if (data.isAdmin) {
-          router.replace('/(admin)/home');
+          if (data.isAdmin) {
+            router.replace('/(admin)/home');
+          } else {
+            router.replace('/(users)/home');
+          }
         } else {
-          router.replace('/(users)/home');
+          router.replace('/(onboarding)/about');
         }
-      } else {
-        router.replace('/(onboarding)/about');
-      }
-        //router.replace('/(onboarding)/discover')
       } catch (error) {
         console.error("Login error:", error);
-        Alert.alert(
-          "Login Failed",
-          error instanceof Error ? error.message : "An unknown error occurred"
-        );
+        Alert.alert("Login Failed", error instanceof Error ? error.message : "An unknown error occurred");
+      } finally {
+        setIsLoading(false);
       }
     }
 
-    async function handleForgotPassword() {
+    function handleForgotPassword() {
       router.push('/reset' as any);
     }
-    //EFFECTS
-    
-    //RENDER
+
+    function handleCreateAccount() {
+      router.replace('/(auth)/signup');
+    }
+
     return (
-      <>
-        <BackButton route="/launch" />
-        <View style={styles.container}>
-            <Text style={styles.title}>Welcome to We Explore Earth</Text>
+      <ImageBackground
+        source={require('../../../assets/images/login-background.png')}
+        style={styles.fullBackground}
+        resizeMode="cover"
+      >
+        <SafeAreaView style={styles.safeArea}>
+          <BackButton route="/(auth)/launch" />
+          
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={styles.container}
+          >
+            <View style={styles.headerContainer}>
+              <Text style={styles.title}>Log in</Text>
+              <Text style={styles.subtitle}>Welcome back to the app</Text>
+            </View>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
+            <View style={styles.formContainer}>
+              <AuthInput
+                placeholder="Email"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+              />
 
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
+              <AuthInput
+                placeholder="Password"
+                value={password}
+                onChangeText={setPassword}
+                isPassword={true} 
+              />
 
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-          <Text style={styles.buttonText}>LOGIN</Text>
-        </TouchableOpacity>
+              <AuthButton
+                title="Log in"
+                onPress={handleLogin}
+                disabled={!isFormValid} 
+                isLoading={isLoading}
+              />
 
-        <TouchableOpacity
-          style={styles.forgotPasswordButton}
-          onPress={handleForgotPassword}
-        >
-          <Text style={styles.buttonText}>Forgot you password?</Text>
-        </TouchableOpacity>
-      </View>
-    </>
-  );
+              <TouchableOpacity style={styles.forgotPasswordButton} onPress={handleForgotPassword}>
+                <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.footerContainer}>
+              <TouchableOpacity style={styles.createAccountButton} onPress={handleCreateAccount}>
+                <Text style={styles.createAccountText}>Create an account</Text>
+              </TouchableOpacity>
+            </View>
+            
+          </KeyboardAvoidingView>
+        </SafeAreaView>
+      </ImageBackground>
+    );
 }
