@@ -14,18 +14,20 @@ import { styles } from "../events/components/styles";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
-type AudienceOption = { id: string; label: string };
+type AudienceOption = { id: string; label: string; attendeeCount: number };
 
 async function fetchAudience(): Promise<AudienceOption[]> {
   const res = await fetch(`${API_URL}/events`);
   if (!res.ok) throw new Error("Failed to fetch events");
-  const events: { id: string; title: string }[] = await res.json();
-  const eventOptions = events.map((e) => ({ id: e.id, label: e.title }));
-  return [{ id: "", label: "Everybody" }, ...eventOptions];
+  const events: { id: string; title: string; attendees: unknown[] }[] =
+    await res.json();
+  const eventOptions = events.map((e) => ({
+    id: e.id,
+    label: e.title,
+    attendeeCount: e.attendees.length || 0,
+  }));
+  return [{ id: "", label: "Everybody", attendeeCount: -1 }, ...eventOptions];
 }
-
-/** Placeholder until recipients come from the API. */
-const HARDCODED_RECIPIENTS = "124 users";
 
 function audienceSummaryLine(option: AudienceOption): string {
   if (option.id === "") return "Everybody";
@@ -35,7 +37,7 @@ function audienceSummaryLine(option: AudienceOption): string {
 export default function AdminNotificationsPage() {
   const [audienceMenuOpen, setAudienceMenuOpen] = useState(false);
   const [audienceOptions, setAudienceOptions] = useState<AudienceOption[]>([
-    { id: "", label: "Everybody" },
+    { id: "", label: "Everybody", attendeeCount: -1 },
   ]);
   const [selectedAudienceId, setSelectedAudienceId] = useState("");
   const [title, setTitle] = useState("");
@@ -53,8 +55,7 @@ export default function AdminNotificationsPage() {
     audienceOptions.find((o) => o.id === selectedAudienceId) ??
     audienceOptions[0]!;
 
-  const formComplete =
-    title.trim().length > 0 && content.trim().length > 0;
+  const formComplete = title.trim().length > 0 && content.trim().length > 0;
   const canSubmit = formComplete && confirmSend;
 
   const closeSendModal = () => {
@@ -77,9 +78,7 @@ export default function AdminNotificationsPage() {
           onPress={() => setAudienceMenuOpen((open) => !open)}
           activeOpacity={0.7}
         >
-          <Text>
-            {selectedAudience.label}
-          </Text>
+          <Text>{selectedAudience.label}</Text>
         </TouchableOpacity>
         {audienceMenuOpen ? (
           <View style={localStyles.audienceOptionsWrap}>
@@ -118,7 +117,10 @@ export default function AdminNotificationsPage() {
         />
 
         <TouchableOpacity
-          style={[styles.submitButton, !formComplete && localStyles.sendDisabled]}
+          style={[
+            styles.submitButton,
+            !formComplete && localStyles.sendDisabled,
+          ]}
           disabled={!formComplete}
           onPress={() => {
             setConfirmSend(false);
@@ -154,7 +156,9 @@ export default function AdminNotificationsPage() {
               <View style={localStyles.modalRow}>
                 <Text style={localStyles.modalEmphasis}>Recipients: </Text>
                 <Text style={localStyles.modalMuted}>
-                  {HARDCODED_RECIPIENTS}
+                  {selectedAudience.id === ""
+                    ? "All users"
+                    : `${selectedAudience.attendeeCount} attendee${selectedAudience.attendeeCount === 1 ? "" : "s"}`}
                 </Text>
               </View>
 
