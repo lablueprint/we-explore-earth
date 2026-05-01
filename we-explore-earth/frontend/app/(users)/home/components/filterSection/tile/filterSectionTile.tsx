@@ -1,8 +1,7 @@
-import { View, Text, TouchableOpacity } from 'react-native';
-import { Checkbox } from 'expo-checkbox';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { styles } from './styles';
 
-function FilterOptionCheckbox(
+function FilterOptionTile(
     {
         option,
         selectedOptions,
@@ -11,36 +10,34 @@ function FilterOptionCheckbox(
     :
     {
         option: string,
-        selectedOptions: Set<string>,
+        selectedOptions: Set<string>
         setSelectedOptions: React.Dispatch<Set<string>>
     }
 ) {
-    const handleCheck = () => {
+    const handleSelect = () => {
         const updated = new Set(selectedOptions);
-        // handle unchecking the box
-        if(selectedOptions.has(option)) {
+        // handle deselecting the tile
+        if (selectedOptions.has(option)) {
             updated.delete(option);
         }
-        // handle checking the box
+        // handle selecting the tile
         else {
             updated.add(option);
         }
         setSelectedOptions(updated);
     }
 
-    return(
-        <View style={styles.filterOptionWrapper}>
-            <Text style={styles.filterOption}>{option}</Text>
-            <Checkbox
-                value={selectedOptions.has(option)}
-                onValueChange={handleCheck}
-                color={selectedOptions.has(option) ? 'black' : 'mediumgrey'}
-            />
-        </View>
+    return (
+        <TouchableOpacity
+            onPress={handleSelect}
+            style={[styles.filterOptionTile, {backgroundColor: selectedOptions.has(option) ? '#285F00' : '#EBEBEB'}]}
+        >
+            <Text style={[styles.filterOption, {color: selectedOptions.has(option) ? '#DEDEDE' : '#000000'}]}>{option}</Text>
+        </TouchableOpacity>
     )
 }
 
-function FilterSectionCheckbox(
+function FilterSectionTile(
     {
         header,
         options,
@@ -68,18 +65,20 @@ function FilterSectionCheckbox(
                     <Text style={styles.reset}>Reset</Text>
                 </TouchableOpacity>
             </View>
-
+            
             {/** Filter options */}
-            {options.map((option, index) => 
-                <FilterOptionCheckbox
-                    key={index}
-                    option={option}
-                    selectedOptions={selectedOptions}
-                    setSelectedOptions={setSelectedOptions}
-                />
-            )}
+            <View style={styles.filterOptionContainer}>
+                {options.map((option, index) => 
+                    <FilterOptionTile
+                        key={index}
+                        option={option}
+                        selectedOptions={selectedOptions}
+                        setSelectedOptions={setSelectedOptions}
+                    />
+                )}
+            </View>
         </>
     )
 }
 
-export default FilterSectionCheckbox;
+export default FilterSectionTile;

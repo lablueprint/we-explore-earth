@@ -3,6 +3,7 @@ import { Modal, ScrollView, View, Text, TouchableOpacity } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import FilterSectionCheckbox from '../filterSection/checkbox/filterSectionCheckbox';
 import FilterSectionRadio from '../filterSection/radio/filterSectionRadio';
+import FilterSectionTile from '../filterSection/tile/filterSectionTile';
 import DateRangePickerModal from '../dateRangePickerModal/dateRangePickerModal';
 import { Filter } from '@shared/types/filter';
 import { styles } from './styles';
@@ -216,7 +217,7 @@ function EventFiltersModal(
                 }
 
                 {categoryOptions && categoryOptions.length >= 0 &&
-                    <FilterSectionCheckbox
+                    <FilterSectionTile
                         header='Categories'
                         options={categoryOptions}
                         selectedOptions={selectedCategories}
