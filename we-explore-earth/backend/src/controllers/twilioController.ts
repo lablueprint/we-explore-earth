@@ -26,32 +26,39 @@ export const sendEventBlastSMS = async (req: Request, res: Response) => {
   try {
     const { eventID } = req.body;
 
-    if (!eventID) {
-      return res.status(400).json({ error: "eventID is required" });
+    let emails: (string | undefined)[];
+
+    if (eventID === "") {
+      const snapshot = await db.collection("users").get();
+      const nonAdminUsers = snapshot.docs
+        .map((doc) => doc.data())
+        .filter((user) => !user.isAdmin);
+      emails = nonAdminUsers.map((user) => user.email);
+    } else {
+      if (!eventID) {
+        return res.status(400).json({ error: "eventID is required" });
+      }
+
+      const eventDoc = await db.collection("events").doc(eventID).get();
+
+      if (!eventDoc.exists) {
+        return res.status(404).json({ error: "Event not found" });
+      }
+
+      const attendees = (eventDoc.data()?.attendees ?? []) as { userID: string }[];
+      const userIDs = attendees.map((attendee) => attendee.userID);
+
+      const userDocs = await Promise.all(
+        userIDs.map((userID) => db.collection("users").doc(userID).get())
+      );
+
+      emails = userDocs.map((userDoc) => userDoc.data()?.email);
     }
 
-    const eventDoc = await db.collection("events").doc(eventID).get();
-
-    if (!eventDoc.exists) {
-      return res.status(404).json({ error: "Event not found" });
-    }
-
-    const attendees = (eventDoc.data()?.attendees ?? []) as { userID: string }[];
-    const userIDs = attendees.map((attendee) => attendee.userID);
-
-    const userDocs = await Promise.all(
-      userIDs.map((userID) => db.collection("users").doc(userID).get())
-    );
-
-    const emails = userDocs.map((userDoc) => userDoc.data()?.email);
-
-    console.log("Event ID:", eventID);
+    console.log("Event ID:", eventID || "everybody");
     emails.forEach((email) => console.log("User email:", email));
 
-    return res.status(200).json({
-      eventID,
-      emails,
-    });
+    return res.status(200).json({ eventID, emails });
   } catch (error) {
     console.error("Error sending event blast SMS:", error);
     return res
