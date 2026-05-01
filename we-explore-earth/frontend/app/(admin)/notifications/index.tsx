@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Checkbox } from "expo-checkbox";
 
 import { styles } from "../events/components/styles";
 
@@ -18,6 +19,16 @@ const AUDIENCE_OPTIONS = [
   { id: "everybody", label: "Everybody" },
 ];
 
+/** Placeholder until recipients come from the API. */
+const HARDCODED_RECIPIENTS = "124 users";
+
+function audienceSummaryLine(
+  option: (typeof AUDIENCE_OPTIONS)[number],
+): string {
+  if (option.id === "everybody") return "Everybody";
+  return `${option.label} Attendees`;
+}
+
 export default function AdminNotificationsPage() {
   const [audienceMenuOpen, setAudienceMenuOpen] = useState(false);
   const [selectedAudienceId, setSelectedAudienceId] = useState(
@@ -26,10 +37,19 @@ export default function AdminNotificationsPage() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [sendModalVisible, setSendModalVisible] = useState(false);
+  const [confirmSend, setConfirmSend] = useState(false);
 
   const selectedAudience =
-    AUDIENCE_OPTIONS.find((o) => o.id === selectedAudienceId) ??
-    AUDIENCE_OPTIONS[0];
+    AUDIENCE_OPTIONS.find((o) => o.id === selectedAudienceId)!;
+
+  const formComplete =
+    title.trim().length > 0 && content.trim().length > 0;
+  const canSubmit = formComplete && confirmSend;
+
+  const closeSendModal = () => {
+    setSendModalVisible(false);
+    setConfirmSend(false);
+  };
 
   return (
     <View style={styles.container}>
@@ -47,7 +67,7 @@ export default function AdminNotificationsPage() {
           activeOpacity={0.7}
         >
           <Text>
-            {selectedAudience?.label ?? "Who should receive this?"}
+            {selectedAudience.label}
           </Text>
         </TouchableOpacity>
         {audienceMenuOpen ? (
@@ -87,8 +107,12 @@ export default function AdminNotificationsPage() {
         />
 
         <TouchableOpacity
-          style={styles.submitButton}
-          onPress={() => setSendModalVisible(true)}
+          style={[styles.submitButton, !formComplete && localStyles.sendDisabled]}
+          disabled={!formComplete}
+          onPress={() => {
+            setConfirmSend(false);
+            setSendModalVisible(true);
+          }}
           activeOpacity={0.8}
         >
           <Text style={styles.buttonText}>Send</Text>
@@ -99,17 +123,75 @@ export default function AdminNotificationsPage() {
         visible={sendModalVisible}
         transparent
         animationType="fade"
-        onRequestClose={() => setSendModalVisible(false)}
+        onRequestClose={closeSendModal}
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <TouchableOpacity
-              style={styles.modalCancelButton}
-              onPress={() => setSendModalVisible(false)}
-              activeOpacity={0.8}
+            <ScrollView
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
             >
-              <Text style={styles.modalCancelButtonText}>Close</Text>
-            </TouchableOpacity>
+              <Text style={styles.modalTitle}>Send Notification?</Text>
+
+              <View style={localStyles.modalRow}>
+                <Text style={localStyles.modalEmphasis}>Audience: </Text>
+                <Text style={localStyles.modalMuted}>
+                  {audienceSummaryLine(selectedAudience)}
+                </Text>
+              </View>
+
+              <View style={localStyles.modalRow}>
+                <Text style={localStyles.modalEmphasis}>Recipients: </Text>
+                <Text style={localStyles.modalMuted}>
+                  {HARDCODED_RECIPIENTS}
+                </Text>
+              </View>
+
+              <View style={localStyles.previewSection}>
+                <Text style={styles.label}>Message Preview:</Text>
+                <View style={localStyles.previewDivider} />
+                <Text style={localStyles.previewTitle}>
+                  {title.trim() ? title : "(No title)"}
+                </Text>
+                <Text style={localStyles.previewBody}>
+                  {content.trim() ? content : "(No content)"}
+                </Text>
+              </View>
+
+              <View style={localStyles.checkboxRow}>
+                <Checkbox
+                  value={confirmSend}
+                  onValueChange={setConfirmSend}
+                  color={confirmSend ? "#007AFF" : "#ccc"}
+                />
+                <Text style={localStyles.checkboxLabel}>
+                  I confirm I want to send this notification
+                </Text>
+              </View>
+
+              <View style={styles.modalButtonRow}>
+                <TouchableOpacity
+                  style={styles.modalCancelButton}
+                  onPress={closeSendModal}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.modalCancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.modalSaveButton,
+                    !canSubmit && localStyles.sendDisabled,
+                  ]}
+                  disabled={!canSubmit}
+                  onPress={() => {
+                    /* wire send API later */
+                  }}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.modalSaveButtonText}>Send</Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
           </View>
         </View>
       </Modal>
@@ -126,5 +208,54 @@ const localStyles = StyleSheet.create({
     borderColor: "#ddd",
     borderRadius: 8,
     overflow: "hidden",
+  },
+  modalRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: 12,
+    alignItems: "baseline",
+  },
+  modalEmphasis: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#333",
+  },
+  modalMuted: {
+    fontSize: 16,
+    color: "#666",
+    flexShrink: 1,
+  },
+  previewSection: {
+    marginTop: 20,
+  },
+  previewDivider: {
+    height: 1,
+    backgroundColor: "#eee",
+    marginVertical: 10,
+  },
+  previewTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#444",
+  },
+  previewBody: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#555",
+    lineHeight: 22,
+  },
+  checkboxRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 24,
+    gap: 12,
+  },
+  checkboxLabel: {
+    flex: 1,
+    fontSize: 16,
+    color: "#333",
+  },
+  sendDisabled: {
+    opacity: 0.45,
   },
 });
