@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Modal, ScrollView, View, Text, TouchableOpacity } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
+import AntDesign from '@expo/vector-icons/AntDesign';
 import FilterSectionCheckbox from '../filterSection/checkbox/filterSectionCheckbox';
 import FilterSectionRadio from '../filterSection/radio/filterSectionRadio';
 import FilterSectionTile from '../filterSection/tile/filterSectionTile';
@@ -188,7 +189,12 @@ function EventFiltersModal(
             onRequestClose={() => { setFilterModalVisible(false); }}
         >
             <ScrollView style={{flex: 1, backgroundColor: 'white', paddingTop: 80, paddingHorizontal: 20}}>
-                <Text style={styles.filterTitle}>Filter</Text>
+                <View style={styles.filterTitleCloseWrapper}>
+                    <Text style={styles.filterTitle}>Filter</Text>
+                    <TouchableOpacity onPress={() => { setFilterModalVisible(false); }}>
+                        <AntDesign name="close" size={24} color="#181818" />
+                    </TouchableOpacity>
+                </View>
                 
                 {dateOptions && dateOptions.length >= 0 &&
                     <FilterSectionRadio
