@@ -1,20 +1,17 @@
-import { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import EventFiltersModal from './components/eventFiltersModal/eventFiltersModal';
+import { useState, useEffect } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-// LOCAL COMPONENTS
-import Calendar from '@/app/components/Calendar/calendar';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { Event } from '@shared/types/event';
-import { Filter } from '@shared/types/filter';
-import { styles } from './styles';
+import EventFiltersModal from "../../components/Home/components/eventFiltersModal/eventFiltersModal";
+import HomeCalendar from "@/app/components/Home/homeCalendar";
+
+import type { Event } from "@shared/types/event";
+import type { Filter } from "@shared/types/filter";
 
 export default function HomeScreen() {
-  const [events, setEvents] = useState<Array<Event>>([]);
+  const [events, setEvents] = useState<Event[]>([]);
   const [filters, setFilters] = useState<Filter>({});
-  const [filterModalVisible, setFilterModalVisible] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true); // for showing calendar or loading indicator
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchFilteredEvents() {
@@ -27,59 +24,55 @@ export default function HomeScreen() {
       }
 
       try {
-        const response = await fetch(`${baseUrl}/events/filtered`, 
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(filters),
-          }
-        );
-        if(!response.ok) {
+        setLoading(true);
+
+        const response = await fetch(`${baseUrl}/events/filtered`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(filters),
+        });
+
+        if (!response.ok) {
           throw new Error("Failed to fetch filtered events.");
         }
+
         const data: Event[] = await response.json();
         setEvents(data);
-        console.log("Successfully fetched filtered events.");
-      }
-      catch (error: any) {
-        console.log(error instanceof Error ? error.message : "Failed to fetch filtered events.");
-      }
-      finally {
+      } catch (error) {
+        console.log(
+          error instanceof Error
+            ? error.message
+            : "Failed to fetch filtered events."
+        );
+      } finally {
         setLoading(false);
       }
     }
-    
-    fetchFilteredEvents();
 
-  }, [filters])
+    fetchFilteredEvents();
+  }, [filters]);
 
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: 'white', paddingTop: 20, paddingHorizontal: 20}}>
-
-      {/** Home Page */}
-      <View style={styles.homeHeader}>
-        <Text style={styles.upcoming}>Upcoming</Text>
-        <TouchableOpacity
-          onPress={() => { setFilterModalVisible(true); }}
-          style={styles.filterButtonWrapper}
-        >
-          <Text style={styles.filterButtonText}>Filters</Text>
-          <Ionicons name="options-outline" size={24} color="mediumgrey" />
-        </TouchableOpacity>
-      </View>
-      
-      <Calendar
-        loading={loading}
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: "white",
+        paddingTop: 20,
+        paddingHorizontal: 20,
+      }}
+    >
+      <HomeCalendar
         events={events}
+        loading={loading}
+        showFilters
+        onPressFilters={() => setFilterModalVisible(true)}
       />
 
-      {/** Event filters modal */}
       <EventFiltersModal
         setFilters={setFilters}
         filterModalVisible={filterModalVisible}
         setFilterModalVisible={setFilterModalVisible}
       />
-
     </SafeAreaView>
   );
 }

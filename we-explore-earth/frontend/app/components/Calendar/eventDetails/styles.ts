@@ -187,4 +187,5 @@ export const styles = StyleSheet.create({
     color: "#262622",
     marginBottom: 14,
   },
+  
 });
