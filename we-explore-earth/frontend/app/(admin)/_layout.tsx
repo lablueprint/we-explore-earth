@@ -95,6 +95,15 @@ export default function AdminLayout() {
           }}
         />
         <Tabs.Screen
+          name="notifications/index"
+          options={{
+            title: "Notify",
+            tabBarIcon: ({ color }) => (
+              <IconSymbol size={28} name="bell.fill" color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
           name="profile/index"
           options={{
             title: "Profile",
