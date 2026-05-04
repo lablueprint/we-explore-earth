@@ -11,16 +11,39 @@ export const styles = StyleSheet.create({
         fontWeight: 700, /** bold */
         fontSize: 32,
     },
-    filterOptionWrapper: {
-        marginTop: 12,
+    selectDateDateChipWrapper: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 16,
+    },
+    selectDateWrapper: {
         display: 'flex',
         flexDirection: 'row',
         gap: 6,
         alignItems: 'center',
+        height: 32,
     },
-    filterOption: {
-        fontWeight: 600, /** semi-bold */
+    selectDateText: {
+        fontWeight: 400,
         fontSize: 16,
+    },
+    dateChipContainer: {
+        gap: 6,
+    },
+    dateChipWrapper: {
+        width: 115,
+        height: 32,
+        borderWidth: 1,
+        borderRadius: 100,
+        borderColor: '#DEDEDE',
+        backgroundColor: '#F0F0F0',
+        justifyContent: 'center',
+    },
+    dateChipText: {
+        fontSize: 14,
+        color: '#000000',
+        textAlign: 'center',
     },
     clearSubmitWrapper: {
         marginTop: 52,

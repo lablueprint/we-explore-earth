@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Modal, ScrollView, View, Text, TouchableOpacity } from 'react-native';
-import Feather from '@expo/vector-icons/Feather';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import Entypo from '@expo/vector-icons/Entypo';
 import FilterSectionCheckbox from '../filterSection/checkbox/filterSectionCheckbox';
 import FilterSectionRadio from '../filterSection/radio/filterSectionRadio';
 import FilterSectionTile from '../filterSection/tile/filterSectionTile';
@@ -207,18 +207,34 @@ function EventFiltersModal(
                 }
 
                 {/** Calendar Picker Modal */}
-                <View>
+                <View style={styles.selectDateDateChipWrapper}>
+                    {/** Button to toggle view of calendar */}
                     <TouchableOpacity
                         onPress={() => { setCalendarVisible(!calendarVisible); }}
-                        style={styles.filterOptionWrapper}
+                        style={styles.selectDateWrapper}
                     >
-                        <Text style={styles.filterOption}>Select a date</Text>
+                        <Text style={styles.selectDateText}>Select a date</Text>
                         {calendarVisible ?
-                            <Feather name='chevron-up' size={24} color='black' />
+                            <Entypo name="chevron-thin-up" size={16} color="#000000" />
                         :
-                            <Feather name='chevron-down' size={24} color='black' />
+                            <Entypo name="chevron-thin-down" size={16} color="#000000" />
                         }
                     </TouchableOpacity>
+                    {/** Display date chips only if calendar is visible */}
+                    {calendarVisible &&
+                        <View style={styles.dateChipContainer}>
+                            {/** Display selected start date */}
+                            <View style={styles.dateChipWrapper}>
+                                {/** TODO: Fix displayed start date. Does not always match selected calendar date! */}
+                                <Text style={styles.dateChipText}>{startDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) }</Text>
+                            </View>
+                            {/** Display selected end date */}
+                            <View style={styles.dateChipWrapper}>
+                                {/** TODO: Fix displayed end date. Does not always match selected calendar date! */}
+                                <Text style={styles.dateChipText}>{endDate?.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</Text>
+                            </View>
+                        </View>
+                    }
                 </View>
                 {calendarVisible && 
                     <DateRangePickerModal

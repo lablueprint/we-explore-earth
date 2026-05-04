@@ -66,38 +66,19 @@ export const calendarStyles = {
     },
 };
 
-// TODO: Modal styles (placeholder)
+/* TODO: Modal styles (placeholder)
+* - Widen the calendar
+* - Distinguish disabled dates from each month's extra dates
+*/
 export const modalStyles = StyleSheet.create({
-    centeredView: {
-        flex: 1,
-        justifyContent: 'center',
+    wrapper: {
+        marginTop: 12,
+        padding: 16,
         alignItems: 'center',
-    },
-    modalView: {
-        margin: 20,
-        backgroundColor: '#ffffff',
+        backgroundColor: '#F0F0F0',
+        borderWidth: 1,
         borderRadius: 20,
-        padding: 35,
-        alignItems: 'center',
-        shadowColor: '#000000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
+        borderColor: '#DEDEDE',
         elevation: 5,
-    },
-    submit: {
-        marginTop: 24,
-        padding: 4,
-        borderRadius: 4,
-        backgroundColor: 'lightgrey',
-    },
-    submitText: {
-        textAlign: 'center',
-        fontWeight: 700, /** bold */
-        fontSize: 16,
-        color: '#3c3b3b',
     },
 })

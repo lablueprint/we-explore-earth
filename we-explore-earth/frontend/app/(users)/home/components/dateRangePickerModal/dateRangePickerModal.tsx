@@ -80,21 +80,18 @@ function DateRangePickerModal (
     };
 
     return (
-        <View style={modalStyles.centeredView}>
-            <View style={modalStyles.modalView}>
-                <Calendar
-                    minDate={(new Date()).toISOString().split('T')[0]}
-                    disableAllTouchEventsForDisabledDays={true}
-                    hideExtraDays={true}
-                    markingType={'custom'}
-                    markedDates={getMarkedDates()}
-                    onDayPress={onDayPress}
-                    theme={{
-                        todayTextColor: calendarStyles.todayColor,
-                        arrowColor: calendarStyles.arrowColor,
-                    }}
-                />
-            </View>
+        <View style={modalStyles.wrapper}>
+            <Calendar
+                minDate={(new Date()).toISOString().split('T')[0]}
+                markingType={'custom'}
+                markedDates={getMarkedDates()}
+                onDayPress={onDayPress}
+                theme={{
+                    calendarBackground: '#F0F0F0',
+                    todayTextColor: calendarStyles.todayColor,
+                    arrowColor: calendarStyles.arrowColor,
+                }}
+            />
         </View>
     );
 };
