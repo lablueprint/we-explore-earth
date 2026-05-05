@@ -24,7 +24,8 @@ export const sendSMS = async (req: Request, res: Response) => {
 
 export const sendEventBlastSMS = async (req: Request, res: Response) => {
   try {
-    const { eventID } = req.body;
+    const { eventID, audience, title, content } = req.body;
+    console.log("event-blast request body:", { eventID, audience, title, content });
 
     let emails: (string | undefined)[];
 
