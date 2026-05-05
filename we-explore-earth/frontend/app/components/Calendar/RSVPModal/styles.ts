@@ -1,11 +1,11 @@
 import { StyleSheet } from 'react-native';
+import { typography } from '@shared/typography/typography';
 
 export const closeIconSize = 18;
 export const closeIconColor = '#555';
 export const checkmarkIconSize = 12;
 export const checkmarkIconColor = '#fff';
 export const activityIndicatorColor = '#285F00';
-export const notesPlaceholderColor = '#aaa';
 export const gradientColors = ['#ffffff', '#eaf1e2', '#d2e6c8'] as const;
 export const gradientLocations = [0, 0.42, 1] as const;
 export const scrollPaddingTopExtra = 52;
@@ -17,9 +17,14 @@ export const closeButtonRightExtra = 16;
 export const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.45)',
   },
   gradient: {
-    flex: 1,
+    height: '75%',
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    overflow: 'hidden',
   },
   closeButton: {
     position: 'absolute',
@@ -70,48 +75,6 @@ export const styles = StyleSheet.create({
   optionTextSelected: {
     color: '#fff',
   },
-  label: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: '#222',
-    marginBottom: 10,
-  },
-  countRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  countButton: {
-    backgroundColor: '#285F00',
-    borderRadius: 999,
-    width: 52,
-    height: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  countButtonText: {
-    color: '#fff',
-    fontSize: 22,
-    fontWeight: '500',
-    lineHeight: 26,
-  },
-  countValue: {
-    flex: 1,
-    textAlign: 'center',
-    fontSize: 18,
-    fontWeight: '500',
-    color: '#1a1a1a',
-  },
-  notesInput: {
-    backgroundColor: '#f0f4ee',
-    borderRadius: 14,
-    padding: 14,
-    fontSize: 14,
-    color: '#333',
-    minHeight: 110,
-    textAlignVertical: 'top',
-    marginBottom: 20,
-  },
   termsRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -155,3 +118,13 @@ export const styles = StyleSheet.create({
     letterSpacing: 1,
   },
 });
+
+export const titleTextStyle = [typography.h1, styles.title];
+
+export function getOptionTextStyle(isSelected: boolean) {
+  return [typography.body, styles.optionText, isSelected ? styles.optionTextSelected : null];
+}
+
+export const termsTextStyle = [typography.body, styles.termsText];
+export const termsLinkStyle = [typography.body, styles.termsLink];
+export const rsvpButtonTextStyle = [typography.body, styles.rsvpButtonText];

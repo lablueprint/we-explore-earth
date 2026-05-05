@@ -33,10 +33,10 @@ export const styles = StyleSheet.create({
     gap: 10,
   },
   title: {
-    fontSize: 18,
+    fontSize: 17,
     color: '#1a1a1a',
-    lineHeight: 24,
-    letterSpacing: -0.3,
+    lineHeight: 22,
+    letterSpacing: -0.35,
   },
   datePill: {
     flexDirection: 'row',
@@ -53,8 +53,8 @@ export const styles = StyleSheet.create({
     marginRight: 5,
   },
   dateText: {
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 12,
+    lineHeight: 16,
     color: '#666',
   },
   rsvpBadge: {

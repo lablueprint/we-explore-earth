@@ -129,16 +129,24 @@ export default function MyEventsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>Your Events</Text>
+        <Text style={[typography.h1, styles.title]}>Your Events</Text>
 
         <View style={styles.tabRow}>
           {(['Upcoming', 'Past'] as const).map((t) => (
             <TouchableOpacity
               key={t}
               onPress={() => setTab(t)}
-              style={[styles.tabButton, tab === t ? styles.tabButtonActive : styles.tabButtonInactive]}
+              style={[styles.tab, tab === t && styles.tabActive]}
             >
-              <Text style={tab === t ? styles.tabTextActive : styles.tabTextInactive}>{t}</Text>
+              <Text
+                style={[
+                  typography.body,
+                  styles.tabLabel,
+                  tab === t && styles.tabLabelActive,
+                ]}
+              >
+                {t}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>

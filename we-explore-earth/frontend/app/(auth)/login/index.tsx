@@ -1,7 +1,7 @@
 //STANDARD LIBRARY
 import React, { useState } from 'react';
 //THIRD-PARTY LIBRARIES
-import { View, Text, TouchableOpacity, TextInput, Alert } from "react-native";
+import { View, Text, TouchableOpacity, TextInput, Alert, ImageBackground, SafeAreaView, KeyboardAvoidingView, Platform } from "react-native";
 import { router } from "expo-router";
 //LOCAL FILES
 import { styles } from "./styles";
@@ -43,14 +43,14 @@ export default function LoginPage() {
         dispatch(setUserState(data));
         //console.log("DATA RIGHT NOW:", data);
         if(data.hasOnboarded) {
-        if (data.isAdmin) {
-          router.replace('/(admin)/home');
+          if (data.isAdmin) {
+            router.replace('/(admin)/home');
+          } else {
+            router.replace('/(users)/home');
+          }
         } else {
-          router.replace('/(users)/home');
+          router.replace('/(onboarding)/about' as any);
         }
-      } else {
-        router.replace('/(onboarding)/discover');
-      }
         //router.replace('/(onboarding)/discover')
       } catch (error) {
         console.error("Login error:", error);
@@ -68,39 +68,62 @@ export default function LoginPage() {
     
     //RENDER
     return (
-      <>
-        <BackButton route="/launch" />
-        <View style={styles.container}>
-            <Text style={styles.title}>Welcome to We Explore Earth</Text>
-
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
-
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-          <Text style={styles.buttonText}>LOGIN</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.forgotPasswordButton}
-          onPress={handleForgotPassword}
+        <ImageBackground
+            source={require('../../../../shared/images/login-background.png')}
+            style={styles.fullBackground}
+            resizeMode="cover"
         >
-          <Text style={styles.buttonText}>Forgot you password?</Text>
-        </TouchableOpacity>
-      </View>
-    </>
+            <SafeAreaView style={styles.safeArea}>
+                <BackButton route="/launch" />
+                <KeyboardAvoidingView 
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                    style={styles.container}
+                >
+                    <View style={styles.topSection}>
+                        <Text style={styles.title}>Log in</Text>
+                        <Text style={styles.subtitle}>Welcome back to the app</Text>
+
+                        <TextInput
+                          style={styles.input}
+                          placeholder="Email"
+                          value={email}
+                          onChangeText={setEmail}
+                          keyboardType="email-address"
+                          autoCapitalize="none"
+                          placeholderTextColor="#8A8A8A"
+                        />
+
+                        <TextInput
+                          style={styles.input}
+                          placeholder="Password"
+                          value={password}
+                          onChangeText={setPassword}
+                          secureTextEntry
+                          placeholderTextColor="#8A8A8A"
+                        />
+
+                        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+                          <Text style={styles.buttonText}>Log in</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                          style={styles.forgotPasswordButton}
+                          onPress={handleForgotPassword}
+                        >
+                          <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={styles.bottomSection}>
+                        <TouchableOpacity 
+                          style={styles.createAccountButton} 
+                          onPress={() => router.replace('/(auth)/signup')}
+                        >
+                            <Text style={styles.createAccountText}>Create an account</Text>
+                        </TouchableOpacity>
+                    </View>
+                </KeyboardAvoidingView>
+            </SafeAreaView>
+        </ImageBackground>
   );
 }
