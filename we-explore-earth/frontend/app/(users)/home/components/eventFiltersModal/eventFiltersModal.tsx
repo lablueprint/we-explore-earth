@@ -24,8 +24,9 @@ function EventFiltersModal(
 ) {
     const dateOptions : Array<string> = ['Any date', 'Today', 'Tomorrow', 'This week', 'This weekend', 'Custom'];
     const [selectedDate, setSelectedDate] = useState<string>(dateOptions[0]);
-    const [startDate, setStartDate] = useState<Date>(new Date());
+    const [startDate, setStartDate] = useState<Date | undefined>(undefined);
     const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+    const [showInvalidDateRangeMessage, setShowInvalidDateRangeMessage] = useState<boolean>(false);
 
     const [categoryOptions, setCategoryOptions] = useState<Array<string>>([]);
     const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
@@ -52,8 +53,13 @@ function EventFiltersModal(
         // ===========================================================================================
         // Date Filter
         // ===========================================================================================
+        // invalid date range selected (via date range picker modal)
+        if(startDate && !endDate) {
+            setShowInvalidDateRangeMessage(true);
+            return;
+        }
         // valid date range selected
-        if(startDate && endDate) {
+        else if(startDate && endDate) {
             result.startDate = startDate;
             result.endDate = endDate;
         }
@@ -136,9 +142,10 @@ function EventFiltersModal(
 
     useEffect(() => {
         // Compute start and end dates.
-        var newStartDate : Date = new Date();
+        var newStartDate : Date | undefined = new Date();
         var newEndDate : Date | undefined = new Date();
         const today = new Date();
+        setShowInvalidDateRangeMessage(false);
 
         switch (selectedDate) {
             case 'Today':  // startDate == endDate == current day
@@ -160,25 +167,26 @@ function EventFiltersModal(
             case 'Custom':
                 setCalendarVisible(true);
                 return;
-            case 'Any date':  // startDate == current day, endDate == undefined (range = today and on)
+            case 'Any date':  // startDate == endDate == undefined (backend will filter events with range: today and on)
             default:
+                newStartDate = undefined;
                 newEndDate = undefined;
                 break;
         }
 
-        newStartDate.setHours(0, 0, 0, 0);   // normalize start date
+        newStartDate?.setHours(0, 0, 0, 0);   // normalize start date
         newEndDate?.setHours(0, 0, 0, 0);    // normalize end date
         today.setHours(0, 0, 0, 0);          // normalize current date
 
         // lower bound = current date
-        if(newStartDate < today) {
+        if(newStartDate && newStartDate < today) {
             newStartDate = today;
         }
         // end date will never precede current date
 
         setStartDate(newStartDate);
         setEndDate(newEndDate);
-        // console.log(selectedDate, '  Start Date:', newStartDate.toDateString(), '  End Date:', newEndDate?.toDateString())
+        // console.log(selectedDate, '  Start Date:', newStartDate?.toDateString(), '  End Date:', newEndDate?.toDateString())
     }, [selectedDate]);
 
     return(
@@ -225,7 +233,7 @@ function EventFiltersModal(
                         <View style={styles.dateChipContainer}>
                             {/** Display selected start date */}
                             <View style={styles.dateChipWrapper}>
-                                <Text style={styles.dateChipText}>{startDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) }</Text>
+                                <Text style={styles.dateChipText}>{startDate?.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) }</Text>
                             </View>
                             {/** Display selected end date */}
                             <View style={styles.dateChipWrapper}>
@@ -241,6 +249,7 @@ function EventFiltersModal(
                         setStartDate={setStartDate}
                         setEndDate={setEndDate}
                         setSelectedDate={setSelectedDate}
+                        setShowInvalidDateRangeMessage={setShowInvalidDateRangeMessage}
                     />
                 }
 
@@ -272,17 +281,22 @@ function EventFiltersModal(
                     />
                 }
 
-                <View style={styles.clearSubmitWrapper}>
-                    <TouchableOpacity onPress={handleClear}>
-                        <Text style={styles.clearText}>Clear filters</Text>
-                    </TouchableOpacity>
+                <View style={styles.bottom}>
+                    <View style={styles.clearSubmitWrapper}>
+                        <TouchableOpacity onPress={handleClear}>
+                            <Text style={styles.clearText}>Clear filters</Text>
+                        </TouchableOpacity>
 
-                    <TouchableOpacity
-                        style={styles.submit}
-                        onPress={handleSubmit}
-                    >
-                        <Text style={styles.submitText}>Apply filters</Text>
-                    </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.submit}
+                            onPress={handleSubmit}
+                        >
+                            <Text style={styles.submitText}>Apply filters</Text>
+                        </TouchableOpacity>
+                    </View>
+                    {showInvalidDateRangeMessage && 
+                        <Text style={styles.invalidDateRangeMessage}>Please select a valid date range.</Text>
+                    }
                 </View>
             </ScrollView>
         </Modal>

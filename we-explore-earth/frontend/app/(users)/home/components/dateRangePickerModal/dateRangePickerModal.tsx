@@ -10,20 +10,20 @@ function DateRangePickerModal (
         setStartDate,
         setEndDate,
         setSelectedDate, // selected date option (not a date)
+        setShowInvalidDateRangeMessage
     }
     :
     {
-        startDate: Date,
+        startDate: Date | undefined,
         endDate: Date | undefined,
-        setStartDate: React.Dispatch<any>,
-        setEndDate: React.Dispatch<any>,
-        setSelectedDate: React.Dispatch<any>,
+        setStartDate: React.Dispatch<Date | undefined>,
+        setEndDate: React.Dispatch<Date | undefined>,
+        setSelectedDate: React.Dispatch<string>,
+        setShowInvalidDateRangeMessage: React.Dispatch<boolean>
     }
 ) {
-    // TODO: When using this range, validate it. Must have a valid start and end date.
-
     // TODO: Replace status by checking existence of startDate and endDate? May fix bug where getMarkedDates is called twice every time the selected date option changes.
-    const [status, setStatus] = useState({ start: true, end: !!endDate });
+    const [status, setStatus] = useState({ start: !!startDate, end: !!endDate });
 
     // For converting Date objects (e.g., `startDate`, `endDate`) to date strings (YYYY-MM-DD) wrt local timezone
     const getLocalDateString = (date: Date) => {
@@ -34,20 +34,21 @@ function DateRangePickerModal (
     };
 
     useEffect(() => {
-        setStatus({ start: true, end: !!endDate });  // to capture changes to selected date option filter
-    }, [endDate])
+        setStatus({ start: !!startDate, end: !!endDate });  // to capture changes to selected date option filter
+    }, [startDate, endDate])
 
     const onDayPress = (selectedDate: any) => {
-        // TODO: bug: Any date -> Custom: next selected date should be start, not end date
         setSelectedDate('Custom');
+        setShowInvalidDateRangeMessage(false);
+
         const { dateString } = selectedDate; // corresponds to the date the user tapped on the calendar
 
         // Create normalized Date object from date string with respect to local timezone
         const [year, month, day] = dateString.split('-').map(Number);
         const localDate = new Date(year, month - 1, day, 0, 0, 0, 0);
 
-        // Reset range if range is defined or if user picks a date before the start
-        if ((status.start && status.end) || dateString < getLocalDateString(startDate)) {
+        // Reset range if no range is defined (default: 'Any date'), if range is defined, or if user picks a date before the start
+        if ((!status.start && !status.end) || (status.start && status.end) || dateString < getLocalDateString(startDate)) {
             setStartDate(localDate);
             setEndDate(undefined);
             setStatus({ start: true, end: false });
@@ -59,7 +60,7 @@ function DateRangePickerModal (
 
     const getMarkedDates = () => {
         const marked: any = {}; // type MarkedDates: maps date strings in "YYYY-MM-DD" format to type MarkingProps (in imported Calendar component's docs)
-        const startKey = getLocalDateString(startDate);
+        const startKey = startDate ? getLocalDateString(startDate) : '';
         const endKey = endDate ? getLocalDateString(endDate) : '';
         
         // Start and end dates are both selected

@@ -126,7 +126,7 @@ export async function getFilteredEvents(req: Request, res: Response) {
     let filterAccommodations: Set<string> | undefined = undefined;
 
     // Prepare the filters
-    if (!filters.startDate && !filters.startDate) { // default case: no date range selected (aka: any date)
+    if (!filters.startDate && !filters.endDate) { // default case: no date range selected (aka: any date)
       filterStartDate = new Date(); // set start date to current date
       filterStartDate.setHours(0, 0, 0, 0); // normalize start date
     }

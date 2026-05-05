@@ -47,7 +47,6 @@ export const styles = StyleSheet.create({
     },
     clearSubmitWrapper: {
         marginTop: 52,
-        marginBottom: 64,
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
@@ -71,5 +70,13 @@ export const styles = StyleSheet.create({
         fontWeight: 700, /** bold */
         fontSize: 16,
         color: '#FFFFFF',
+    },
+    invalidDateRangeMessage: {
+        paddingTop: 12,
+        textAlign: 'right',
+        color: 'red',
+    },
+    bottom: {
+        marginBottom: 64,
     },
 });
