@@ -49,7 +49,7 @@ export default function LoginPage() {
             router.replace('/(users)/home');
           }
         } else {
-          router.replace('/(onboarding)/discover');
+          router.replace('/(onboarding)/about');
         }
         //router.replace('/(onboarding)/discover')
       } catch (error) {
