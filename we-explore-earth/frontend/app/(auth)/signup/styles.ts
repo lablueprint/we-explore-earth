@@ -11,24 +11,17 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'transparent',
   },
-  container: {
+  keyboardView: {
     flex: 1,
   },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
+  scrollContainer: {
     paddingHorizontal: 24,
-    paddingTop: 40,
-    paddingBottom: 40,
-  },
-  headerContainer: {
-    marginBottom: 32,
+    paddingTop: 80, 
+    paddingBottom: 40, 
   },
   title: {
     ...typography.h1,
     fontSize: 42,
-    fontWeight: 'normal',
     color: '#0A1207',
     marginBottom: 8,
   },
@@ -36,27 +29,21 @@ export const styles = StyleSheet.create({
     ...typography.body,
     fontSize: 16,
     color: '#8A8A8A',
+    marginBottom: 30, 
   },
-  formContainer: {
-    width: '100%',
-  },
-  passwordContainer: {
-    marginBottom: 24,
-  },
-  helperText: {
-    ...typography.body,
-    fontSize: 12,
-    color: '#8A8A8A',
-    marginTop: -8,
-    marginLeft: 4,
-  },
-  checkboxGroup: {
-    marginBottom: 32,
-    gap: 16,
+  input: {
+    borderWidth: 1,
+    borderColor: '#D4D4D4',
+    borderRadius: 16, 
+    padding: 15,
+    marginBottom: 15,
+    fontSize: 16,
+    backgroundColor: 'transparent', 
   },
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 15,
   },
   checkbox: {
     width: 20,
@@ -64,33 +51,53 @@ export const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: '#C0C0C0',
     borderRadius: 4,
-    marginRight: 12,
+    marginRight: 10,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'transparent',
   },
   checkboxChecked: {
+    backgroundColor: '#355E2B',
     borderColor: '#355E2B',
+  },
+  checkmark: {
+    color: '#fff',
+    fontSize: 12,
   },
   checkboxText: {
     ...typography.body,
-    fontSize: 14,
+    fontSize: 15,
     color: '#8A8A8A',
+  },
+  privacyText: {
+    color: '#355E2B',
+    fontWeight: '600',
+  },
+  signupButton: {
+    backgroundColor: '#8A8A8A', 
+    padding: 15,
+    borderRadius: 30,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  buttonText: {
+    ...typography.body,
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
   },
   footerContainer: {
     marginTop: 24,
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingVertical: 10,
   },
   footerText: {
     ...typography.body,
-    fontSize: 14,
+    fontSize: 16,
     color: '#8A8A8A',
   },
-  loginLink: {
+  footerLink: {
     color: '#355E2B',
     fontWeight: '600',
-  },
-  bottomSpacer: {
-    height: 100,
   }
 });
