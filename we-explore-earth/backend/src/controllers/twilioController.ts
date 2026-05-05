@@ -28,6 +28,7 @@ export const sendEventBlastSMS = async (req: Request, res: Response) => {
     console.log("event-blast request body:", { eventID, audience, title, content });
 
     let emails: (string | undefined)[];
+    let phoneNumbers: (string | undefined)[];
 
     if (eventID === "") {
       const snapshot = await db.collection("users").get();
@@ -35,6 +36,7 @@ export const sendEventBlastSMS = async (req: Request, res: Response) => {
         .map((doc) => doc.data())
         .filter((user) => !user.isAdmin);
       emails = nonAdminUsers.map((user) => user.email);
+      phoneNumbers = nonAdminUsers.map((user) => user.phoneNumber);
     } else {
       if (!eventID) {
         return res.status(400).json({ error: "eventID is required" });
@@ -54,12 +56,26 @@ export const sendEventBlastSMS = async (req: Request, res: Response) => {
       );
 
       emails = userDocs.map((userDoc) => userDoc.data()?.email);
+      phoneNumbers = userDocs.map((userDoc) => userDoc.data()?.phoneNumber);
     }
 
     console.log("Event ID:", eventID || "everybody");
     emails.forEach((email) => console.log("User email:", email));
+    phoneNumbers.forEach((phone) => console.log("User phone:", phone));
 
-    return res.status(200).json({ eventID, emails });
+    // Send SMS to phone numbers that exist
+    const validPhoneNumbers = phoneNumbers.filter((phone) => phone);
+    const formattedContent = title ? `${title}\n\n${content}` : content;
+    const smsPromises = validPhoneNumbers.map((phone) =>
+      client.messages.create({
+        body: formattedContent,
+        from: process.env.TWILIO_PHONE_NUMBER!,
+        to: phone!
+      })
+    );
+    const smsResults = await Promise.all(smsPromises);
+
+    return res.status(200).json({ eventID, emails, smsSentCount: smsResults.length, smsSids: smsResults.map(r => r.sid) });
   } catch (error) {
     console.error("Error sending event blast SMS:", error);
     return res
