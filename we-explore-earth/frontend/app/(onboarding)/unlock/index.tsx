@@ -6,8 +6,8 @@ export default function UnlockPage() {
       title="Win Badges"
       description="As you attend events"
       nextRoute="/(onboarding)/avatar"
-      currentPage={3} 
-      totalPages={5}
+      currentPage={4} 
+      totalPages={4}
     />
   );
 }

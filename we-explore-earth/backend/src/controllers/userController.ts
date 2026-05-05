@@ -58,9 +58,9 @@ export async function getUser(req: Request, res: Response) {
 // POST /users/signup
 export async function signupUser(req: Request, res: Response) {
   try {
-    const { email, password, username, firstName, lastName, notifications} = req.body;
+    const { email, password, username, firstName, lastName, notifications, phoneNumber } = req.body;
 
-    if (!email || !password || !username || !firstName || !lastName) {
+    if (!email || !password || !username || !firstName || !lastName || !phoneNumber) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -75,9 +75,6 @@ export async function signupUser(req: Request, res: Response) {
     const admins: string[] = configSnap.data()?.admins ?? [];
 
     const isAdmin = admins.includes(normalizedEmail);
-
-
-
 
     //Part 1: Validate the user using firebase Auth + Send email verification link
     const userRecord = await admin.auth().createUser({
@@ -118,6 +115,7 @@ export async function signupUser(req: Request, res: Response) {
       email,
       firstName,
       lastName,
+      phoneNumber,
       notificationToken: null,
       isAdmin: isAdmin,
       events: [],
@@ -143,7 +141,7 @@ export async function signupUser(req: Request, res: Response) {
 export async function updateUser(req: Request, res:Response) {
   try {
     const { id } = req.params;
-    const { username, email, firstName, lastName, notificationToken, isAdmin, hasOnboarded } = req.body;
+    const { username, email, firstName, lastName, notificationToken, isAdmin, hasOnboarded, phoneNumber } = req.body;
 
     if (!id) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -156,8 +154,13 @@ export async function updateUser(req: Request, res:Response) {
     }
 
     const userData = userDocument.data() as NewUser;
+    
     if (notificationToken !== undefined) userData.notificationToken = notificationToken;
     if (hasOnboarded !== undefined) userData.hasOnboarded = hasOnboarded;
+    if (phoneNumber !== undefined) userData.phoneNumber = phoneNumber;
+    if (username !== undefined) userData.username = username;
+    if (firstName !== undefined) userData.firstName = firstName;
+    if (lastName !== undefined) userData.lastName = lastName;
   
     await db.collection("users").doc(id as string).set(userData);
 
