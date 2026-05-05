@@ -1,13 +1,19 @@
+//STANDARD LIBRARY
 import { useState, useEffect } from "react";
+
+//THIRD-PARTY LIBRARIES
 import { SafeAreaView } from "react-native-safe-area-context";
 
+//LOCAL FILES
 import HomeCalendar from "@/app/components/Home/homeCalendar";
 import type { Event } from "@shared/types/event";
 
 export default function AdminHomeScreen() {
+  //STATE VARIABLES
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
 
+  //EFFECTS
   useEffect(() => {
     async function fetchEvents() {
       const baseUrl = process.env.EXPO_PUBLIC_API_URL;
@@ -34,6 +40,7 @@ export default function AdminHomeScreen() {
     fetchEvents();
   }, []);
 
+  //RENDER
   return (
     <SafeAreaView
       style={{
@@ -46,6 +53,7 @@ export default function AdminHomeScreen() {
       <HomeCalendar
         events={events}
         loading={loading}
+        isAdmin
         showFilters={false}
       />
     </SafeAreaView>
