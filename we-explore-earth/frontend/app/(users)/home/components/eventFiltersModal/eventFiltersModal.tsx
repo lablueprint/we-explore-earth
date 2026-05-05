@@ -158,7 +158,7 @@ function EventFiltersModal(
                 newEndDate.setDate(today.getDate() + (7-day));
                 break;
             case 'Custom':
-                // TODO: Check 'custom' functionality
+                setCalendarVisible(true);
                 return;
             case 'Any date':  // startDate == current day, endDate == undefined (range = today and on)
             default:
