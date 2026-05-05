@@ -14,7 +14,7 @@ export default function LaunchPage() {
     
     return (
         <ImageBackground 
-            source={require('../../../assets/images/login-background.png')} 
+            source={require('../../../../shared/images/login-background.png')} 
             style={styles.fullBackground}
             resizeMode="cover"
         >
@@ -22,7 +22,7 @@ export default function LaunchPage() {
                 <View style={styles.container}>
                     <View style={styles.centerSection}>
                         <Image 
-                            source={require('../../../assets/images/login-triangle.png')} 
+                            source={require('../../../../shared/images/login-triangle.png')} 
                             style={styles.logo}
                             resizeMode="contain"
                         />

@@ -49,7 +49,7 @@ export default function LoginPage() {
             router.replace('/(users)/home');
           }
         } else {
-          router.replace('/(onboarding)/about');
+          router.replace('/(onboarding)/about' as any);
         }
         //router.replace('/(onboarding)/discover')
       } catch (error) {
@@ -69,7 +69,7 @@ export default function LoginPage() {
     //RENDER
     return (
         <ImageBackground
-            source={require('../../../assets/images/login-background.png')}
+            source={require('../../../../shared/images/login-background.png')}
             style={styles.fullBackground}
             resizeMode="cover"
         >

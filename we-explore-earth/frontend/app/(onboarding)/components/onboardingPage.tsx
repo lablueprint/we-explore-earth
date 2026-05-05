@@ -34,14 +34,14 @@ export default function OnboardingPage({
   
   return (
     <ImageBackground 
-      source={require('../../../assets/images/onboarding-gradient.png')} 
+      source={require('../../../../shared/images/onboarding-gradient.png')} 
       style={styles.fullBackground}
       resizeMode="cover"
     >
       <SafeAreaView style={styles.safeArea}>
         
         <Image 
-          source={require('../../../assets/images/lines.png')} 
+          source={require('../../../../shared/images/lines.png')} 
           style={styles.vectorLines}
           resizeMode="cover"
         />

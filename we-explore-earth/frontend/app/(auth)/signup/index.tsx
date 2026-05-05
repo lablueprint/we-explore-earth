@@ -90,7 +90,7 @@ export default function SignupPage() {
     //RENDER
     return (
         <ImageBackground
-            source={require('../../../assets/images/login-background.png')}
+            source={require('../../../../shared/images/login-background.png')}
             style={styles.fullBackground}
             resizeMode="cover"
         >

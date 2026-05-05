@@ -3,10 +3,8 @@ import React from "react";
 import { Alert } from "react-native";
 
 import { EventFormDirtyProvider, useEventFormDirty } from "./EventFormDirtyContext";
-import { HapticTab } from "@/components/haptic-tab";
-import { IconSymbol } from "@/components/ui/icon-symbol";
-import { Colors } from "@/constants/theme";
-import { useColorScheme } from "@/hooks/use-color-scheme";
+import { HapticTab } from "../components/Native/haptic-tab";
+import { IconSymbol } from "../components/Native/icon-symbol";
 
 const NEW_EVENT_HREF = "/(admin)/events/new";
 
@@ -64,13 +62,11 @@ function NewEventTabButton(
 }
 
 export default function AdminLayout() {
-  const colorScheme = useColorScheme();
 
   return (
     <EventFormDirtyProvider>
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
           headerShown: false,
           tabBarButton: ConfirmLeaveEventFormTabButton,
         }}
