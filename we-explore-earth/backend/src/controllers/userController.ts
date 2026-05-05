@@ -116,7 +116,6 @@ export async function signupUser(req: Request, res: Response) {
       firstName,
       lastName,
       phoneNumber,
-      notificationToken: null,
       isAdmin: isAdmin,
       events: [],
       avatar: null,
@@ -141,7 +140,7 @@ export async function signupUser(req: Request, res: Response) {
 export async function updateUser(req: Request, res:Response) {
   try {
     const { id } = req.params;
-    const { username, email, firstName, lastName, notificationToken, isAdmin, hasOnboarded, phoneNumber } = req.body;
+    const { username, email, firstName, lastName, isAdmin, hasOnboarded, phoneNumber } = req.body;
 
     if (!id) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -155,7 +154,6 @@ export async function updateUser(req: Request, res:Response) {
 
     const userData = userDocument.data() as NewUser;
     
-    if (notificationToken !== undefined) userData.notificationToken = notificationToken;
     if (hasOnboarded !== undefined) userData.hasOnboarded = hasOnboarded;
     if (phoneNumber !== undefined) userData.phoneNumber = phoneNumber;
     if (username !== undefined) userData.username = username;
