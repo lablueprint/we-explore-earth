@@ -5,6 +5,7 @@ import { useState, useMemo } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
+import { useAppSelector } from "@/app/redux/hooks";
 
 //LOCAL FILES
 import Calendar from "@/app/components/Calendar/calendar";
@@ -12,6 +13,7 @@ import EventView from "@/app/components/Calendar/eventView/eventView";
 import EventDetails from "@/app/components/Calendar/eventDetails/eventDetails";
 import type { Event } from "@shared/types/event";
 import { styles, homeIcons, textStyles } from "./styles";
+import { useUser } from "@/hooks/useUser";
 
 type Props = {
   events: Event[];
@@ -34,6 +36,7 @@ export default function HomeCalendar({
 }: Props) {
   //REACT HOOKS
   const router = useRouter();
+  const { user } = useUser();
 
   //STATE VARIABLES
   const [brewingDetailsVisible, setBrewingDetailsVisible] = useState(false);
@@ -51,7 +54,7 @@ export default function HomeCalendar({
   };
 
   //RENDER
-  if (isAdmin) {
+  if (user?.isAdmin) {
     return (
       <View style={styles.container}>
         <View style={styles.adminHeader}>
