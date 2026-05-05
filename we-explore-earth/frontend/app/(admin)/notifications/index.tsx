@@ -9,8 +9,10 @@ import {
   View,
 } from "react-native";
 import { Checkbox } from "expo-checkbox";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
-import { styles } from "../events/components/styles";
+import { typography } from "@shared/typography/typography";
+import { styles as sharedStyles } from "../events/components/styles";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -39,7 +41,7 @@ export default function AdminNotificationsPage() {
   const [audienceOptions, setAudienceOptions] = useState<AudienceOption[]>([
     { id: "", label: "Everybody", attendeeCount: -1 },
   ]);
-  const [selectedAudienceId, setSelectedAudienceId] = useState("");
+  const [selectedAudienceId, setSelectedAudienceId] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [sendModalVisible, setSendModalVisible] = useState(false);
@@ -52,8 +54,9 @@ export default function AdminNotificationsPage() {
   }, []);
 
   const selectedAudience =
-    audienceOptions.find((o) => o.id === selectedAudienceId) ??
-    audienceOptions[0]!;
+    selectedAudienceId !== null
+      ? (audienceOptions.find((o) => o.id === selectedAudienceId) ?? audienceOptions[0]!)
+      : null;
 
   const formComplete = title.trim().length > 0 && content.trim().length > 0;
   const canSubmit = formComplete && confirmSend;
@@ -70,29 +73,41 @@ export default function AdminNotificationsPage() {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        <Text style={styles.title}>Send Notification</Text>
+        <Text style={[typography.h1, styles.pageTitle]}>Send Notification</Text>
 
         <Text style={styles.label}>Audience</Text>
         <TouchableOpacity
-          style={styles.input}
+          style={styles.selectRow}
           onPress={() => setAudienceMenuOpen((open) => !open)}
           activeOpacity={0.7}
         >
-          <Text>{selectedAudience.label}</Text>
+          <Text
+            style={[
+              styles.selectText,
+              !selectedAudience && styles.placeholderText,
+            ]}
+          >
+            {selectedAudience ? selectedAudience.label : "Who should receive this?"}
+          </Text>
+          <Ionicons
+            name={audienceMenuOpen ? "chevron-up" : "chevron-down"}
+            size={18}
+            color="#999"
+          />
         </TouchableOpacity>
         {audienceMenuOpen ? (
-          <View style={localStyles.audienceOptionsWrap}>
+          <View style={styles.dropdownWrap}>
             {audienceOptions.map((opt) => (
               <TouchableOpacity
                 key={opt.id}
-                style={styles.modalOptionRow}
+                style={styles.dropdownRow}
                 onPress={() => {
                   setSelectedAudienceId(opt.id);
                   setAudienceMenuOpen(false);
                 }}
                 activeOpacity={0.7}
               >
-                <Text style={styles.modalOptionText}>{opt.label}</Text>
+                <Text style={styles.dropdownRowText}>{opt.label}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -104,6 +119,7 @@ export default function AdminNotificationsPage() {
           value={title}
           onChangeText={setTitle}
           placeholder="Enter title"
+          placeholderTextColor="#bbb"
         />
 
         <Text style={styles.label}>Content</Text>
@@ -112,15 +128,14 @@ export default function AdminNotificationsPage() {
           value={content}
           onChangeText={setContent}
           placeholder="Enter notification content"
+          placeholderTextColor="#bbb"
           multiline
           numberOfLines={4}
+          textAlignVertical="top"
         />
 
         <TouchableOpacity
-          style={[
-            styles.submitButton,
-            !formComplete && localStyles.sendDisabled,
-          ]}
+          style={[styles.sendButton, !formComplete && styles.sendButtonDisabled]}
           disabled={!formComplete}
           onPress={() => {
             setConfirmSend(false);
@@ -128,7 +143,8 @@ export default function AdminNotificationsPage() {
           }}
           activeOpacity={0.8}
         >
-          <Text style={styles.buttonText}>Send</Text>
+          <Text style={styles.sendButtonText}>Send</Text>
+          <Ionicons name="send" size={16} color="#fff" />
         </TouchableOpacity>
       </ScrollView>
 
@@ -138,64 +154,67 @@ export default function AdminNotificationsPage() {
         animationType="fade"
         onRequestClose={closeSendModal}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
+        <View style={sharedStyles.modalOverlay}>
+          <View style={sharedStyles.modalContent}>
             <ScrollView
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
             >
-              <Text style={styles.modalTitle}>Send Notification?</Text>
+              <Text style={sharedStyles.modalTitle}>Send Notification?</Text>
 
-              <View style={localStyles.modalRow}>
-                <Text style={localStyles.modalEmphasis}>Audience: </Text>
-                <Text style={localStyles.modalMuted}>
-                  {audienceSummaryLine(selectedAudience)}
+              <View style={modalStyles.row}>
+                <Text style={modalStyles.emphasis}>Audience: </Text>
+                <Text style={modalStyles.muted}>
+                  {selectedAudience
+                    ? audienceSummaryLine(selectedAudience)
+                    : "Everybody"}
                 </Text>
               </View>
 
-              <View style={localStyles.modalRow}>
-                <Text style={localStyles.modalEmphasis}>Recipients: </Text>
-                <Text style={localStyles.modalMuted}>
-                  {selectedAudience.id === ""
+              <View style={modalStyles.row}>
+                <Text style={modalStyles.emphasis}>Recipients: </Text>
+                <Text style={modalStyles.muted}>
+                  {!selectedAudience || selectedAudience.id === ""
                     ? "All users"
                     : `${selectedAudience.attendeeCount} attendee${selectedAudience.attendeeCount === 1 ? "" : "s"}`}
                 </Text>
               </View>
 
-              <View style={localStyles.previewSection}>
-                <Text style={styles.label}>Message Preview:</Text>
-                <View style={localStyles.previewDivider} />
-                <Text style={localStyles.previewTitle}>
+              <View style={modalStyles.previewSection}>
+                <Text style={sharedStyles.label}>Message Preview:</Text>
+                <View style={modalStyles.divider} />
+                <Text style={modalStyles.previewTitle}>
                   {title.trim() ? title : "(No title)"}
                 </Text>
-                <Text style={localStyles.previewBody}>
+                <Text style={modalStyles.previewBody}>
                   {content.trim() ? content : "(No content)"}
                 </Text>
               </View>
 
-              <View style={localStyles.checkboxRow}>
+              <View style={modalStyles.checkboxRow}>
                 <Checkbox
                   value={confirmSend}
                   onValueChange={setConfirmSend}
-                  color={confirmSend ? "#007AFF" : "#ccc"}
+                  color={confirmSend ? "#3d5a1a" : "#ccc"}
                 />
-                <Text style={localStyles.checkboxLabel}>
+                <Text style={modalStyles.checkboxLabel}>
                   I confirm I want to send this notification
                 </Text>
               </View>
 
-              <View style={styles.modalButtonRow}>
+              <View style={sharedStyles.modalButtonRow}>
                 <TouchableOpacity
-                  style={styles.modalCancelButton}
+                  style={sharedStyles.modalCancelButton}
                   onPress={closeSendModal}
                   activeOpacity={0.8}
                 >
-                  <Text style={styles.modalCancelButtonText}>Cancel</Text>
+                  <Text style={sharedStyles.modalCancelButtonText}>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[
-                    styles.modalSaveButton,
-                    !canSubmit && localStyles.sendDisabled,
+                    sharedStyles.modalSaveButton,
+                    styles.modalConfirmButton,
+                    !canSubmit && styles.sendButtonDisabled,
                   ]}
                   disabled={!canSubmit}
                   onPress={async () => {
@@ -203,16 +222,24 @@ export default function AdminNotificationsPage() {
                       await fetch(`${API_URL}/twilio/event-blast`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ eventID: selectedAudienceId }),
+                        body: JSON.stringify({
+                          eventID: selectedAudience?.id ?? "",
+                          audience: selectedAudience?.label ?? "",
+                          title,
+                          content,
+                        }),
                       });
                       closeSendModal();
+                      setTitle("");
+                      setContent("");
+                      setSelectedAudienceId(null);
                     } catch (err) {
                       console.error("Failed to send notification:", err);
                     }
                   }}
                   activeOpacity={0.8}
                 >
-                  <Text style={styles.modalSaveButtonText}>Send</Text>
+                  <Text style={sharedStyles.modalSaveButtonText}>Send</Text>
                 </TouchableOpacity>
               </View>
             </ScrollView>
@@ -223,28 +250,124 @@ export default function AdminNotificationsPage() {
   );
 }
 
-const localStyles = StyleSheet.create({
-  audienceOptionsWrap: {
-    marginTop: -8,
-    marginBottom: 8,
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    padding: 20,
+    paddingTop: 40,
+    paddingBottom: 48,
+  },
+  pageTitle: {
+    marginBottom: 28,
+    marginTop: 4,
+  },
+  label: {
+    fontFamily: "HankenGrotesk-Regular",
+    fontSize: 14,
+    color: "#888",
+    marginBottom: 6,
+  },
+  selectRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     backgroundColor: "#fff",
     borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
+    borderColor: "#e8e8e8",
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 15,
+    marginBottom: 20,
+  },
+  selectText: {
+    fontFamily: "HankenGrotesk-Regular",
+    fontSize: 16,
+    color: "#1a1a1a",
+  },
+  placeholderText: {
+    fontFamily: "HankenGrotesk-Regular",
+    fontSize: 16,
+    color: "#bbb",
+  },
+  dropdownWrap: {
+    marginTop: -16,
+    marginBottom: 20,
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#e8e8e8",
+    borderRadius: 12,
     overflow: "hidden",
   },
-  modalRow: {
+  dropdownRow: {
+    paddingHorizontal: 16,
+    paddingVertical: 13,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+  },
+  dropdownRowText: {
+    fontFamily: "HankenGrotesk-Regular",
+    fontSize: 16,
+    color: "#1a1a1a",
+  },
+  input: {
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#e8e8e8",
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 15,
+    fontSize: 16,
+    fontFamily: "HankenGrotesk-Regular",
+    color: "#1a1a1a",
+    marginBottom: 20,
+  },
+  textArea: {
+    height: 130,
+    textAlignVertical: "top",
+  },
+  sendButton: {
+    backgroundColor: "#3d5a1a",
+    borderRadius: 32,
+    paddingVertical: 17,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    marginTop: 4,
+  },
+  sendButtonDisabled: {
+    backgroundColor: "#c4c4c4",
+  },
+  sendButtonText: {
+    color: "#fff",
+    fontSize: 17,
+    fontWeight: "600",
+    fontFamily: "HankenGrotesk-Regular",
+  },
+  modalConfirmButton: {
+    backgroundColor: "#3d5a1a",
+  },
+});
+
+const modalStyles = StyleSheet.create({
+  row: {
     flexDirection: "row",
     flexWrap: "wrap",
     marginTop: 12,
     alignItems: "baseline",
   },
-  modalEmphasis: {
+  emphasis: {
     fontSize: 16,
     fontWeight: "600",
     color: "#333",
   },
-  modalMuted: {
+  muted: {
     fontSize: 16,
     color: "#666",
     flexShrink: 1,
@@ -252,7 +375,7 @@ const localStyles = StyleSheet.create({
   previewSection: {
     marginTop: 20,
   },
-  previewDivider: {
+  divider: {
     height: 1,
     backgroundColor: "#eee",
     marginVertical: 10,
@@ -278,8 +401,5 @@ const localStyles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: "#333",
-  },
-  sendDisabled: {
-    opacity: 0.45,
   },
 });
