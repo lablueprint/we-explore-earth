@@ -225,12 +225,10 @@ function EventFiltersModal(
                         <View style={styles.dateChipContainer}>
                             {/** Display selected start date */}
                             <View style={styles.dateChipWrapper}>
-                                {/** TODO: Fix displayed start date. Does not always match selected calendar date! */}
                                 <Text style={styles.dateChipText}>{startDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) }</Text>
                             </View>
                             {/** Display selected end date */}
                             <View style={styles.dateChipWrapper}>
-                                {/** TODO: Fix displayed end date. Does not always match selected calendar date! */}
                                 <Text style={styles.dateChipText}>{endDate?.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</Text>
                             </View>
                         </View>

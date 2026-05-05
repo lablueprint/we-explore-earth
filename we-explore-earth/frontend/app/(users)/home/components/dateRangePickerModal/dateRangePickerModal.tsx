@@ -25,6 +25,14 @@ function DateRangePickerModal (
     // TODO: Replace status by checking existence of startDate and endDate? May fix bug where getMarkedDates is called twice every time the selected date option changes.
     const [status, setStatus] = useState({ start: true, end: !!endDate });
 
+    // For converting Date objects (e.g., `startDate`, `endDate`) to date strings (YYYY-MM-DD) wrt local timezone
+    const getLocalDateString = (date: Date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
     useEffect(() => {
         setStatus({ start: true, end: !!endDate });  // to capture changes to selected date option filter
     }, [endDate])
@@ -32,23 +40,27 @@ function DateRangePickerModal (
     const onDayPress = (selectedDate: any) => {
         // TODO: bug: Any date -> Custom: next selected date should be start, not end date
         setSelectedDate('Custom');
-        const { dateString } = selectedDate;
+        const { dateString } = selectedDate; // corresponds to the date the user tapped on the calendar
+
+        // Create normalized Date object from date string with respect to local timezone
+        const [year, month, day] = dateString.split('-').map(Number);
+        const localDate = new Date(year, month - 1, day, 0, 0, 0, 0);
 
         // Reset range if range is defined or if user picks a date before the start
-        if ((status.start && status.end) || dateString < startDate.toISOString().split('T')[0]) {
-            setStartDate(new Date(dateString));
+        if ((status.start && status.end) || dateString < getLocalDateString(startDate)) {
+            setStartDate(localDate);
             setEndDate(undefined);
             setStatus({ start: true, end: false });
         } else {
-            setEndDate(new Date(dateString));
+            setEndDate(localDate);
             setStatus({ start: true, end: true });
         }
     };
 
     const getMarkedDates = () => {
         const marked: any = {}; // type MarkedDates: maps date strings in "YYYY-MM-DD" format to type MarkingProps (in imported Calendar component's docs)
-        const startKey = startDate.toISOString().split('T')[0];
-        const endKey = endDate?.toISOString().split('T')[0] || '';
+        const startKey = getLocalDateString(startDate);
+        const endKey = endDate ? getLocalDateString(endDate) : '';
         
         // Start and end dates are both selected
         if (status.start && status.end) {
@@ -62,7 +74,7 @@ function DateRangePickerModal (
                 const middleDate = new Date(startDate);
                 while (middleDate < endDate!) {
                     middleDate.setDate(middleDate.getDate() + 1);
-                    const middleKey = middleDate.toISOString().split('T')[0];
+                    const middleKey = getLocalDateString(middleDate);
                     marked[middleKey] = { customStyles: calendarStyles.middleDay };
                 }
                 
@@ -82,7 +94,7 @@ function DateRangePickerModal (
     return (
         <View style={modalStyles.wrapper}>
             <Calendar
-                minDate={(new Date()).toISOString().split('T')[0]}
+                minDate={getLocalDateString(new Date())}
                 markingType={'custom'}
                 markedDates={getMarkedDates()}
                 onDayPress={onDayPress}
