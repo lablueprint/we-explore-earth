@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { View } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { calendarStyles, modalStyles } from './styles';
@@ -22,9 +22,6 @@ function DateRangePickerModal (
         setShowInvalidDateRangeMessage: React.Dispatch<boolean>
     }
 ) {
-    // TODO: Replace status by checking existence of startDate and endDate? May fix bug where getMarkedDates is called twice every time the selected date option changes.
-    const [status, setStatus] = useState({ start: !!startDate, end: !!endDate });
-
     // For converting Date objects (e.g., `startDate`, `endDate`) to date strings (YYYY-MM-DD) wrt local timezone
     const getLocalDateString = (date: Date) => {
         const year = date.getFullYear();
@@ -32,10 +29,6 @@ function DateRangePickerModal (
         const day = String(date.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
     };
-
-    useEffect(() => {
-        setStatus({ start: !!startDate, end: !!endDate });  // to capture changes to selected date option filter
-    }, [startDate, endDate])
 
     const onDayPress = (selectedDate: any) => {
         setSelectedDate('Custom');
@@ -48,13 +41,11 @@ function DateRangePickerModal (
         const localDate = new Date(year, month - 1, day, 0, 0, 0, 0);
 
         // Reset range if no range is defined (default: 'Any date'), if range is defined, or if user picks a date before the start
-        if ((!status.start && !status.end) || (status.start && status.end) || dateString < getLocalDateString(startDate)) {
+        if ((!startDate && !endDate) || (startDate && endDate) || (startDate && dateString < getLocalDateString(startDate))) {
             setStartDate(localDate);
             setEndDate(undefined);
-            setStatus({ start: true, end: false });
         } else {
             setEndDate(localDate);
-            setStatus({ start: true, end: true });
         }
     };
 
@@ -64,7 +55,7 @@ function DateRangePickerModal (
         const endKey = endDate ? getLocalDateString(endDate) : '';
         
         // Start and end dates are both selected
-        if (status.start && status.end) {
+        if (startDate && endDate) {
             // Single date range
             if (startKey == endKey) {
                 marked[startKey] = { customStyles: calendarStyles.singleDay };
@@ -85,7 +76,7 @@ function DateRangePickerModal (
             }
         }
         // Only start date is selected
-        else if (status.start) {
+        else if (startDate) {
             marked[startKey] = { customStyles: calendarStyles.startDay };
         }
         
