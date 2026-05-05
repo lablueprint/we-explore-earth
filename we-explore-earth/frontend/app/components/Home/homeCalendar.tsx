@@ -5,21 +5,18 @@ import { useState, useMemo } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
-import { useAppSelector } from "@/app/redux/hooks";
 
 //LOCAL FILES
 import Calendar from "@/app/components/Calendar/calendar";
 import EventView from "@/app/components/Calendar/eventView/eventView";
 import EventDetails from "@/app/components/Calendar/eventDetails/eventDetails";
+import { useUser } from "@/hooks/useUser";
 import type { Event } from "@shared/types/event";
 import { styles, homeIcons, textStyles } from "./styles";
-import { useUser } from "@/hooks/useUser";
 
 type Props = {
   events: Event[];
   loading: boolean;
-  isAdmin?: boolean;
-  displayName?: string;
   showFilters?: boolean;
   onPressFilters?: () => void;
   onRSVPChange?: () => void;
@@ -28,8 +25,6 @@ type Props = {
 export default function HomeCalendar({
   events,
   loading,
-  isAdmin = false,
-  displayName = "there",
   showFilters = true,
   onPressFilters,
   onRSVPChange,
@@ -37,6 +32,8 @@ export default function HomeCalendar({
   //REACT HOOKS
   const router = useRouter();
   const { user } = useUser();
+
+  const displayName = user?.firstName?.trim() || "there";
 
   //STATE VARIABLES
   const [brewingDetailsVisible, setBrewingDetailsVisible] = useState(false);

@@ -53,7 +53,6 @@ export default function AdminHomeScreen() {
       <HomeCalendar
         events={events}
         loading={loading}
-        isAdmin
         showFilters={false}
       />
     </SafeAreaView>

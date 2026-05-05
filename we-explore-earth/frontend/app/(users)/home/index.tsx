@@ -8,22 +8,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 //LOCAL FILES
 import EventFiltersModal from "../../components/Home/components/eventFiltersModal/eventFiltersModal";
 import HomeCalendar from "@/app/components/Home/homeCalendar";
-import { useUser } from "@/hooks/useUser";
 import type { Event } from "@shared/types/event";
 import type { Filter } from "@shared/types/filter";
 import { styles } from "./styles";
 
 export default function HomeScreen() {
-  //REACT HOOKS
-  const { user } = useUser();
-
   //STATE VARIABLES
   const [events, setEvents] = useState<Event[]>([]);
   const [filters, setFilters] = useState<Filter>({});
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [loading, setLoading] = useState(true);
-
-  const displayName = user?.firstName?.trim() || "there";
 
   //HANDLERS
   const fetchFilteredEvents = useCallback(async () => {
@@ -66,7 +60,6 @@ export default function HomeScreen() {
         <HomeCalendar
           events={events}
           loading={loading}
-          displayName={displayName}
           showFilters
           onPressFilters={() => setFilterModalVisible(true)}
           onRSVPChange={fetchFilteredEvents}
