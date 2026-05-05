@@ -19,15 +19,31 @@ const API_URL = process.env.EXPO_PUBLIC_API_URL;
 type AudienceOption = { id: string; label: string; attendeeCount: number };
 
 async function fetchAudience(): Promise<AudienceOption[]> {
-  const res = await fetch(`${API_URL}/events`);
+  const now = new Date();
+  const startDate = new Date(now);
+  startDate.setMonth(startDate.getMonth() - 1);
+  const endDate = new Date(now);
+  endDate.setFullYear(endDate.getFullYear() + 1000);
+
+  const res = await fetch(`${API_URL}/events/filtered`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+    }),
+  });
   if (!res.ok) throw new Error("Failed to fetch events");
-  const events: { id: string; title: string; attendees: unknown[] }[] =
+
+  const events: { id: string; title: string; attendees: unknown[]; timeStart: { _seconds: number } }[] =
     await res.json();
-  const eventOptions = events.map((e) => ({
+
+  const eventOptions = [...events].reverse().map((e) => ({
     id: e.id,
     label: e.title,
     attendeeCount: e.attendees.length || 0,
   }));
+
   return [{ id: "", label: "Everybody", attendeeCount: -1 }, ...eventOptions];
 }
 
@@ -97,19 +113,26 @@ export default function AdminNotificationsPage() {
         </TouchableOpacity>
         {audienceMenuOpen ? (
           <View style={styles.dropdownWrap}>
-            {audienceOptions.map((opt) => (
-              <TouchableOpacity
-                key={opt.id}
-                style={styles.dropdownRow}
-                onPress={() => {
-                  setSelectedAudienceId(opt.id);
-                  setAudienceMenuOpen(false);
-                }}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.dropdownRowText}>{opt.label}</Text>
-              </TouchableOpacity>
-            ))}
+            <ScrollView
+              keyboardShouldPersistTaps="handled"
+              nestedScrollEnabled
+              showsVerticalScrollIndicator={false}
+              style={styles.dropdownScroll}
+            >
+              {audienceOptions.map((opt) => (
+                <TouchableOpacity
+                  key={opt.id}
+                  style={styles.dropdownRow}
+                  onPress={() => {
+                    setSelectedAudienceId(opt.id);
+                    setAudienceMenuOpen(false);
+                  }}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.dropdownRowText}>{opt.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
           </View>
         ) : null}
 
@@ -303,6 +326,10 @@ const styles = StyleSheet.create({
     borderColor: "#e8e8e8",
     borderRadius: 12,
     overflow: "hidden",
+    maxHeight: 220,
+  },
+  dropdownScroll: {
+    flexGrow: 0,
   },
   dropdownRow: {
     paddingHorizontal: 16,
