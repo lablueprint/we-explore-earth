@@ -7,10 +7,6 @@ export const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
     },
-    filterTitle: {
-        fontWeight: 700, /** bold */
-        fontSize: 32,
-    },
     selectDateDateChipWrapper: {
         display: 'flex',
         flexDirection: 'row',
@@ -20,19 +16,15 @@ export const styles = StyleSheet.create({
     selectDateWrapper: {
         display: 'flex',
         flexDirection: 'row',
-        gap: 6,
+        gap: 4,
         alignItems: 'center',
         height: 32,
     },
-    selectDateText: {
-        fontWeight: 400,
-        fontSize: 16,
-    },
     dateChipContainer: {
-        gap: 6,
+        gap: 12,
     },
     dateChipWrapper: {
-        width: 115,
+        width: 124,
         height: 32,
         borderWidth: 1,
         borderRadius: 100,
@@ -41,8 +33,6 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     dateChipText: {
-        fontSize: 14,
-        color: '#000000',
         textAlign: 'center',
     },
     clearSubmitWrapper: {
@@ -53,8 +43,6 @@ export const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     clearText: {
-        fontSize: 16,
-        color: '#181818',
         textDecorationLine: 'underline',
     },
     submit: {
@@ -67,12 +55,10 @@ export const styles = StyleSheet.create({
     },
     submitText: {
         textAlign: 'center',
-        fontWeight: 700, /** bold */
-        fontSize: 16,
         color: '#FFFFFF',
     },
     invalidDateRangeMessage: {
-        paddingTop: 12,
+        paddingTop: 4,
         textAlign: 'right',
         color: 'red',
     },

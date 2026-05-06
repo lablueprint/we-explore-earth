@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { styles } from './styles';
+import { typography } from '@shared/typography/typography';
 
 function CustomRadioButton (
     { 
@@ -37,7 +38,7 @@ function FilterOptionRadio(
 ) {
     return(
         <View style={styles.filterOptionWrapper}>
-            <Text style={styles.filterOption}>{option}</Text>
+            <Text style={typography.body}>{option}</Text>
             <CustomRadioButton
                 selected={option === selectedOption}
                 onPress={() => { setSelectedOption(option) }}
@@ -71,21 +72,23 @@ function FilterSectionRadio(
         <>
             {/** Filter header */}
             <View style={styles.filterHeaderWrapper}>
-                <Text style={styles.filterHeader}>{header}</Text>
+                <Text style={[typography.h2, styles.filterHeader]}>{header}</Text>
                 <TouchableOpacity onPress={handleReset}>
-                    <Text style={styles.reset}>Reset</Text>
+                    <Text style={[typography.body, styles.reset]}>Reset</Text>
                 </TouchableOpacity>
             </View>
 
             {/** Filter options */}
-            {options.map((option, index) => 
-                <FilterOptionRadio
-                    key={index}
-                    option={option}
-                    selectedOption={selectedOption}
-                    setSelectedOption={setSelectedOption}
-                />
-            )}
+            <View style={styles.filterOptionContainer}>
+                {options.map((option, index) => 
+                    <FilterOptionRadio
+                        key={index}
+                        option={option}
+                        selectedOption={selectedOption}
+                        setSelectedOption={setSelectedOption}
+                    />
+                )}
+            </View>
         </>
     )
 }

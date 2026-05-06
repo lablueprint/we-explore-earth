@@ -1,5 +1,6 @@
 import { Text, TouchableOpacity, View } from 'react-native';
 import { styles } from './styles';
+import { typography } from '@shared/typography/typography';
 
 function FilterOptionTile(
     {
@@ -30,9 +31,12 @@ function FilterOptionTile(
     return (
         <TouchableOpacity
             onPress={handleSelect}
-            style={[styles.filterOptionTile, {backgroundColor: selectedOptions.has(option) ? '#285F00' : '#EBEBEB'}]}
+            style={[styles.filterOptionTile, {
+                backgroundColor: selectedOptions.has(option) ? '#285F00' : '#EBEBEB',
+                borderColor: selectedOptions.has(option) ? '#285F00' : '#E6E6E6'
+            }]}
         >
-            <Text style={[styles.filterOption, {color: selectedOptions.has(option) ? '#DEDEDE' : '#000000'}]}>{option}</Text>
+            <Text style={[typography.body, styles.filterOption, {color: selectedOptions.has(option) ? '#DEDEDE' : '#333'}]}>{option}</Text>
         </TouchableOpacity>
     )
 }
@@ -60,9 +64,9 @@ function FilterSectionTile(
         <>
             {/** Filter header */}
             <View style={styles.filterHeaderWrapper}>
-                <Text style={styles.filterHeader}>{header}</Text>
+                <Text style={[typography.h2, styles.filterHeader]}>{header}</Text>
                 <TouchableOpacity onPress={handleReset}>
-                    <Text style={styles.reset}>Reset</Text>
+                    <Text style={[typography.body, styles.reset]}>Reset</Text>
                 </TouchableOpacity>
             </View>
             

@@ -8,6 +8,7 @@ import FilterSectionTile from '../filterSection/tile/filterSectionTile';
 import DateRangePickerModal from '../dateRangePickerModal/dateRangePickerModal';
 import { Filter } from '@shared/types/filter';
 import { styles } from './styles';
+import { typography } from '@shared/typography/typography';
 
 function EventFiltersModal(
     {
@@ -198,9 +199,9 @@ function EventFiltersModal(
         >
             <ScrollView style={{flex: 1, backgroundColor: 'white', paddingTop: 80, paddingHorizontal: 20}}>
                 <View style={styles.filterTitleCloseWrapper}>
-                    <Text style={styles.filterTitle}>Filter</Text>
+                    <Text style={typography.h1}>Filter</Text>
                     <TouchableOpacity onPress={() => { setFilterModalVisible(false); }}>
-                        <AntDesign name="close" size={24} color="#181818" />
+                        <AntDesign name="close" size={24} color="#000000" />
                     </TouchableOpacity>
                 </View>
                 
@@ -221,7 +222,7 @@ function EventFiltersModal(
                         onPress={() => { setCalendarVisible(!calendarVisible); }}
                         style={styles.selectDateWrapper}
                     >
-                        <Text style={styles.selectDateText}>Select a date</Text>
+                        <Text style={typography.body}>Select a date</Text>
                         {calendarVisible ?
                             <Entypo name="chevron-thin-up" size={16} color="#000000" />
                         :
@@ -233,11 +234,11 @@ function EventFiltersModal(
                         <View style={styles.dateChipContainer}>
                             {/** Display selected start date */}
                             <View style={styles.dateChipWrapper}>
-                                <Text style={styles.dateChipText}>{startDate?.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) }</Text>
+                                <Text style={[typography.body, styles.dateChipText]}>{startDate?.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) }</Text>
                             </View>
                             {/** Display selected end date */}
                             <View style={styles.dateChipWrapper}>
-                                <Text style={styles.dateChipText}>{endDate?.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</Text>
+                                <Text style={[typography.body, styles.dateChipText]}>{endDate?.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</Text>
                             </View>
                         </View>
                     }
@@ -284,18 +285,18 @@ function EventFiltersModal(
                 <View style={styles.bottom}>
                     <View style={styles.clearSubmitWrapper}>
                         <TouchableOpacity onPress={handleClear}>
-                            <Text style={styles.clearText}>Clear filters</Text>
+                            <Text style={[typography.body, styles.clearText]}>Clear filters</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
                             style={styles.submit}
                             onPress={handleSubmit}
                         >
-                            <Text style={styles.submitText}>Apply filters</Text>
+                            <Text style={[typography.body, styles.submitText]}>Apply filters</Text>
                         </TouchableOpacity>
                     </View>
                     {showInvalidDateRangeMessage && 
-                        <Text style={styles.invalidDateRangeMessage}>Please select a valid date range.</Text>
+                        <Text style={[typography.body, styles.invalidDateRangeMessage]}>Please select an end date.</Text>
                     }
                 </View>
             </ScrollView>

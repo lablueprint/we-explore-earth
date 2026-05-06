@@ -7,6 +7,12 @@ export const typography = StyleSheet.create({
     letterSpacing: -0.5,
     color: '#000',
   },
+  h2: {
+    fontFamily: 'HankenGrotesk-Regular',
+    fontWeight: 500,
+    fontSize: 16,
+    color: '#888888',
+  },
   body: {
     fontFamily: 'HankenGrotesk-Regular',
     fontSize: 16,

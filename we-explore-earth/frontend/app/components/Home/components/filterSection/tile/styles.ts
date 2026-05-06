@@ -2,36 +2,33 @@ import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
     filterHeaderWrapper:{
-        marginTop: 24,
+        marginTop: 36,
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'baseline',
     },
     filterHeader: {
-        fontWeight: 700, /** bold */
-        fontSize: 24,
+        textTransform: 'uppercase',
     },
     reset: {
-        color: 'mediumgrey',
         textDecorationLine: 'underline',
     },
     filterOptionContainer: {
-        marginTop: 12,
+        marginTop: 8,
         display: 'flex',
         flexDirection: 'row',
         flexWrap: 'wrap',
-        gap: 6,
+        gap: 4,
     },
     filterOptionTile: {
         width: '49%',
         height: 60,
+        borderWidth: 1,
         borderRadius: 12,
         justifyContent: 'center',
     },
     filterOption: {
-        fontWeight: 600, /** semi-bold */
-        fontSize: 16,
         textAlign: 'center',
     },
 });
