@@ -9,6 +9,8 @@ import {
   Alert,
   Image
 } from "react-native";
+
+import {MapPinPlus,FilePenLine, Plus, DollarSign, ChartPie, AlarmClock, PenLineIcon, PersonStanding, UserRoundPlus,} from "lucide-react-native";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
@@ -17,6 +19,8 @@ import { CategoryAccommodationSection } from "./CategoryAccommodationSection";
 import * as ImagePicker from 'expo-image-picker';
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 // import { storage } from "@/firebase.config";
+import { LinearGradient } from "expo-linear-gradient";
+import { typography } from "../../../../../shared/typography/typography";
 
 interface EventFormProps {
   title: string;
@@ -196,140 +200,160 @@ export function EventForm({
     }
   };
 
-// const uploadImageAsync = async (uri: string) => {
-//   const response = await fetch(uri);
-//   const blob = await response.blob();
-
-//   const imageRef = ref(
-//     storage,
-//     `events/${Date.now()}.jpg`
-//   );
-
-//   await uploadBytes(imageRef, blob);
-//   return await getDownloadURL(imageRef);
-// };  
-
-// const handleSubmit = async () => {
-//   let imageUrl = null;
-//   if (imageUri) {
-//     imageUrl = await uploadImageAsync(imageUri);
-//   }
-//   onSubmit ();
-// }
-
   return (
+
     <View style={styles.container}>
+
+      <LinearGradient
+          colors={[
+            "#afc49e",
+            "#F8F9F7", 
+            "#afc49e",  
+          ]}
+          locations={[0, 0.5, 1]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{ flex: 1 }}
+        >
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-      >
-        <Text style={styles.title}>{formTitle}</Text>
+        keyboardShouldPersistTaps="handled" >
 
-        <TextInput
-          style={styles.input}
-          placeholder="Title"
-          value={title}
-          onChangeText={setTitle}
-        />
+      <TouchableOpacity onPress={pickImage} style={styles.coverContainer}>
+        {imageUri ? (
+          <Image
+            source={{ uri: imageUri }}
+            style={styles.coverImage}
+            resizeMode="cover"
+          /> 
+        ) : (
+          <Text style={typography.body}>Add photo</Text>
+        )}
 
-        <TextInput
-          style={[styles.input, styles.textArea]}
-          placeholder="Description"
-          value={description}
-          onChangeText={setDescription}
-          multiline
-          numberOfLines={4}
-        />
-
-        <Text style={styles.label}>Start Date</Text>
-        {isAndroid ? (
-          <TouchableOpacity
-            style={styles.input}
-            onPress={() => setShowDateStartPicker(true)}
-          >
-            <Text>{formatDate(dateStart)}</Text>
+        {imageUri && (
+          <TouchableOpacity style={styles.editButton} onPress={pickImage} >
+            <Text style={{ fontSize: 16 }}>✎</Text>
           </TouchableOpacity>
-        ) : null}
-        {(isAndroid && showDateStartPicker) || !isAndroid ? (
-          <DateTimePicker
-            value={dateStart}
-            mode="date"
-            display="default"
-            onChange={handleDateStartChange}
+        )}
+      </TouchableOpacity>
+
+      {imageUri && (
+        <TouchableOpacity onPress={() => setImageUri(null)}>
+          <Text style={styles.removeImageText}>Remove photo</Text>
+        </TouchableOpacity>
+      )}
+
+      <TextInput
+        style={[styles.input, typography.h2]}
+        placeholder="Event title"
+        value={title}
+        onChangeText={setTitle}
+      />
+
+      <View style={styles.dateCard}>
+        <View style={styles.dateGrid}>
+          <View style={styles.timeline}>
+            <View style={styles.dot} />
+            <View style={styles.dottedLine} />
+            <View style={styles.dot} />
+          </View>
+
+          <View style={styles.dateLabels}>
+            <Text style={styles.dateLabel}>From</Text>
+            <Text style={styles.dateLabel}>To</Text>
+          </View>
+
+          <View style={styles.dateColumn}>
+            <TouchableOpacity onPress={() => setShowDateStartPicker(true)}>
+              <Text style={styles.dateText}>{dateStart.toLocaleDateString()} </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => setShowDateEndPicker(true)}>
+              <Text style={styles.dateText}>{dateEnd.toLocaleDateString()}</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.timeColumn}>
+            <TouchableOpacity onPress={() => setShowTimeStartPicker(true)}>
+              <Text style={styles.dateText}>{timeStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => setShowTimeEndPicker(true)}>
+              <Text style={styles.dateText}>{timeEnd.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+
+      {isAndroid && showDateStartPicker && (
+        <DateTimePicker value={dateStart} mode="date" display="default" onChange={handleDateStartChange}/>
+      )}
+
+      {isAndroid && showTimeStartPicker && (
+        <DateTimePicker value={timeStart} mode="time" display="default" onChange={handleTimeStartChange}/>
+      )}
+
+      {isAndroid && showDateEndPicker && (
+        <DateTimePicker value={dateEnd} mode="date" display="default" onChange={handleDateEndChange} />
+      )}
+
+      {isAndroid && showTimeEndPicker && (
+        <DateTimePicker value={timeEnd} mode="time" display="default" onChange={handleTimeEndChange} />
+      )}
+    
+        <View style={styles.inputWithIcon}>
+          <MapPinPlus size={20} color="#7A7A7A" />
+          <TextInput
+            style={[styles.input, styles.inputInsideIcon, typography.body]}
+            placeholder="Add Location"
+            value={location}
+            onChangeText={setLocation}
+            placeholderTextColor="#6B6B6B"
           />
-        ) : null}
-
-        <Text style={styles.label}>Start Time</Text>
-        {isAndroid ? (
-          <TouchableOpacity
-            style={styles.input}
-            onPress={() => setShowTimeStartPicker(true)}
-          >
-            <Text>{formatTime(timeStart)}</Text>
-          </TouchableOpacity>
-        ) : null}
-        {(isAndroid && showTimeStartPicker) || !isAndroid ? (
-          <DateTimePicker
-            value={timeStart}
-            mode="time"
-            display="default"
-            onChange={handleTimeStartChange}
+        </View>
+        
+        <View style={styles.inputWithIcon}>
+          <PenLineIcon size={20} color="#7A7A7A" style={{ alignSelf: "flex-start", marginTop: 16 }} />
+          <TextInput
+            style={[styles.input, styles.inputInsideIcon, styles.textArea, typography.body]}
+            placeholder="Add Description"
+            value={description}
+            onChangeText={setDescription}
+            multiline
+            numberOfLines={4}
           />
-        ) : null}
-
-        <Text style={styles.label}>End Date</Text>
-        {isAndroid ? (
-          <TouchableOpacity
-            style={styles.input}
-            onPress={() => setShowDateEndPicker(true)}
-          >
-            <Text>{formatDate(dateEnd)}</Text>
-          </TouchableOpacity>
-        ) : null}
-        {(isAndroid && showDateEndPicker) || !isAndroid ? (
-          <DateTimePicker
-            value={dateEnd}
-            mode="date"
-            display="default"
-            onChange={handleDateEndChange}
+        </View>
+        
+        <View style= {[styles.input]}>
+          <CategoryAccommodationSection
+            categoryOptions={categoryOptions}
+            accommodationOptions={accommodationOptions}
+            category={category}
+            accommodation={accommodation}
+            onCategoryChange={onCategoryChange}
+            onAccommodationChange={onAccommodationChange}
           />
-        ) : null}
+        </View>
 
-        <Text style={styles.label}>End Time</Text>
-        {isAndroid ? (
-          <TouchableOpacity
-            style={styles.input}
-            onPress={() => setShowTimeEndPicker(true)}
-          >
-            <Text>{formatTime(timeEnd)}</Text>
-          </TouchableOpacity>
-        ) : null}
-        {(isAndroid && showTimeEndPicker) || !isAndroid ? (
-          <DateTimePicker
-            value={timeEnd}
-            mode="time"
-            display="default"
-            onChange={handleTimeEndChange}
+        <View style={styles.divider} />
+
+        <View style={styles.inputWithIcon}>
+          <PersonStanding size={20} color="#7A7A7A" />
+          <TextInput
+            style={[styles.input, styles.inputInsideIcon, typography.body]}
+            placeholder="Hosted By"
+            placeholderTextColor="#6B6B6B"
+            value={hostedBy}
+            onChangeText={setHostedBy}
           />
-        ) : null}
+        </View>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Location"
-          value={location}
-          onChangeText={setLocation}
-        />
 
-        <TextInput
-          style={styles.input}
-          placeholder="Hosted By"
-          value={hostedBy}
-          onChangeText={setHostedBy}
-        />
+        <Text style = {typography.body}> LOGISTICS</Text>
 
         <View style={styles.priceContainer}>
-          <Text style={styles.dollarSign}>$</Text>
+          <Text style={[styles.dollarSign, { marginLeft: -10 } ]}>$</Text>
           <TextInput
             style={styles.priceInput}
             placeholder="0.00"
@@ -339,45 +363,26 @@ export function EventForm({
           />
         </View>
 
-        <CategoryAccommodationSection
-          categoryOptions={categoryOptions}
-          accommodationOptions={accommodationOptions}
-          category={category}
-          accommodation={accommodation}
-          onCategoryChange={onCategoryChange}
-          onAccommodationChange={onAccommodationChange}
-        />
-         
+        
+        <View style={styles.inputWithIcon}>
+          <UserRoundPlus size={20} color="#7A7A7A" />
+          <TextInput
+            style={[styles.input, styles.inputInsideIcon, typography.body]}
+            placeholder="Maximum Capacity"
+            placeholderTextColor="#6B6B6B"
+            value={maxAttendees}
+            onChangeText={handleMaxAttendeesChange}
+            keyboardType="number-pad"
+          />
+        </View>
 
-         <TextInput
-          style={styles.input}
-          placeholder="Maximum Number of Attendees"
-          value={maxAttendees}
-          onChangeText={handleMaxAttendeesChange}
-          keyboardType="number-pad" 
-        />          
-
-        <Text style={styles.label}>Cover Image</Text>
-        <TouchableOpacity onPress={pickImage} style={styles.imageButton}>
-          <Text>{imageUri ? "Change photo" : "Add photo"}</Text>
-        </TouchableOpacity>
-        {imageUri && (
-          <>
-           <Image
-              source={{ uri: imageUri }}
-              style={styles.imagePreview}
-              resizeMode="cover"
-              />
-          <TouchableOpacity onPress={() => setImageUri(null)}>
-           <Text style={styles.removeImageText}>Remove photo</Text>
-          </TouchableOpacity>
-          </>
-        )}
-
-        <TouchableOpacity style={styles.submitButton} onPress={onSubmit}>
-          <Text style={styles.buttonText}>{submitButtonText}</Text>
+        <TouchableOpacity style={styles.launchButton} onPress={onSubmit}>
+          <Text style={styles.launchButtonText}>{submitButtonText}</Text>
         </TouchableOpacity>
       </ScrollView>
+      </LinearGradient>
     </View>
   );
 }
+
+
