@@ -12,12 +12,7 @@ export const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: 40,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-  },
+
   input: {
     borderWidth: 0,
     borderRadius: 12,
@@ -30,25 +25,7 @@ export const styles = StyleSheet.create({
     height: 100,
     textAlignVertical: "top",
   },
-  label: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 8,
-    color: "#333",
-  },
-  submitButton: {
-    backgroundColor: "#007AFF",
-    paddingHorizontal: 40,
-    paddingVertical: 15,
-    borderRadius: 8,
-    marginTop: 10,
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "600",
-    textAlign: "center",
-  },
+
 
   divider: {
   height: 1,
@@ -113,10 +90,12 @@ export const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: "bold",
     marginBottom: 16,
+    marginTop: 16,
     textAlign: "center",
     color: "#333",
+    fontFamily: 'HankenGrotesk-Regular',
+    lineHeight: 24,
   },
   modalOptionsList: {
     maxHeight: 300,
@@ -139,8 +118,8 @@ export const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalCheckboxChecked: {
-    backgroundColor: "#007AFF",
-    borderColor: "#007AFF",
+    backgroundColor: "#1D6400",
+    borderColor: "#023107",
   },
   modalCheckmark: {
     color: "#fff",
@@ -151,6 +130,8 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: "#333",
     flex: 1,
+    fontFamily: 'HankenGrotesk-Regular',
+    lineHeight: 24,
   },
   modalButtonRow: {
     flexDirection: "row",
@@ -170,18 +151,21 @@ export const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 16,
     color: "#666",
+    fontFamily: 'HankenGrotesk-Regular',
+    lineHeight: 24,
   },
   modalSaveButton: {
     flex: 1,
     paddingVertical: 12,
     borderRadius: 8,
-    backgroundColor: "#007AFF",
+    backgroundColor: "#1D6400",
   },
   modalSaveButtonText: {
     textAlign: "center",
     fontSize: 16,
     color: "#fff",
-    fontWeight: "600",
+    fontFamily: 'HankenGrotesk-Regular',
+    lineHeight: 24,
   },
   
   imageButton: {
@@ -201,9 +185,13 @@ export const styles = StyleSheet.create({
   },
 
   removeImageText: {
-    color: "#d00",
-    marginTop: 6,
+    color: "rgb(21, 87, 1)",
+    marginTop: 2,
+    marginBottom: 16,
     textAlign: "center",
+    fontFamily: 'HankenGrotesk-Regular',
+    fontSize: 16,
+    lineHeight: 24,
   },
 
 
@@ -297,23 +285,6 @@ priceContainer: {
   position: "relative",
 },
 
-timezonePill: {
-  position: "absolute",
-  top: 10,
-  right: 16,
-  borderWidth: 1,
-  borderColor: "#d0d0d0",
-  backgroundColor: "#fff",
-  borderRadius: 14,
-  paddingHorizontal: 10,
-  paddingVertical: 4,
-},
-
-timezoneText: {
-  fontSize: 11,
-  color: "#8A8A8A",
-},
-
 dateGrid: {
   flexDirection: "row",
   alignItems: "center",
@@ -343,6 +314,7 @@ dottedLine: {
 dateLabels: {
   gap: 28,
   marginRight: 24,
+  
 },
 
 dateColumn: {
@@ -357,12 +329,13 @@ timeColumn: {
 
 dateLabel: {
   fontSize: 13,
-  color: "#8A8A8A",
+  color: "#6B6B6B",
+  fontFamily: 'HankenGrotesk-Regular',
 },
 
 dateText: {
   fontSize: 13,
-  color: "#8A8A8A",
+  color: "#6B6B6B",
 },
 
 //Icons
@@ -378,26 +351,25 @@ inputWithIcon: {
 
 inputInsideIcon: {
   flex: 1,
-  backgroundColor: "transparent", // removes double box
-  marginBottom: 0,                // removes extra spacing
-  paddingVertical: 14,            // keep same feel
-  paddingHorizontal: 10,
+  backgroundColor: "transparent",
+  marginBottom: 0,
+  paddingVertical: 16,
+  paddingHorizontal: 8,
+  fontSize: 16,
 },
 
-textAreaWithIcon: {
-  flexDirection: "row",
-  alignItems: "flex-start",
-  backgroundColor: "#ededed",
-  borderRadius: 12,
-  paddingHorizontal: 16,
-  paddingTop: 14,
-  marginBottom: 16,
+iconContainer: {
+  width: 28,
+  alignItems: "center",
+  justifyContent: "center",
 },
 
-descriptionInput: {
-  minHeight: 110,
-  textAlignVertical: "top",
+iconContainerTop: {
+  width: 28,
+  alignItems: "center",
+  marginTop: 2,
 },
+
 
 //TAGS
 tagPill: {

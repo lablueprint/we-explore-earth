@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Plus} from "lucide-react-native";
 import {
   View,
   Text,
@@ -72,26 +73,32 @@ export function CategoryAccommodationSection({
 
 return (
   <>
-    <TouchableOpacity onPress={() => setModalVisible(true)}>
-      {category.length === 0 && accommodation.length === 0 ? (
-        <Text style={typography.body}>
-          + Add event tags
+
+  <TouchableOpacity onPress={() => setModalVisible(true)}  style ={{ marginLeft: -10 }} >
+    <View  style={[ styles.inputWithIcon, { alignItems: "flex-start",}]} >
+      <Plus
+        size={20}
+        color="#7A7A7A"
+      />
+    
+
+      <View style={{ flex: 1 }}>
+        <Text style={[typography.body, { color: "#6B6B6B" }]}>
+           Add event tags
         </Text>
-      ) : (
-        <View >
-          <Text style={typography.body}>
-            + Add event tags
-          </Text>
+
+        {(category.length > 0 || accommodation.length > 0) && (
           <View style={styles.tagContainer}>
-          {[...category, ...accommodation].map((tag) => (
-            <View key={tag} style={styles.tagPill}>
-              <Text style={styles.tagText}>{tag}</Text>
-            </View>
-          ))}
+            {[...category, ...accommodation].map((tag) => (
+              <View key={tag} style={styles.tagPill}>
+                <Text style={styles.tagText}>{tag}</Text>
+              </View>
+            ))}
           </View>
-        </View>
-      )}
-    </TouchableOpacity>
+        )}
+      </View>
+    </View>
+  </TouchableOpacity>
 
     <Modal
       visible={modalVisible}
@@ -123,7 +130,7 @@ return (
                 <Text style={styles.modalOptionText}>{option}</Text>
               </TouchableOpacity>
             ))}
-
+            
 
             <Text style={styles.modalTitle}> Accommodations</Text>
          

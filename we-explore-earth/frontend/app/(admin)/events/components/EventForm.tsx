@@ -10,7 +10,7 @@ import {
   Image
 } from "react-native";
 
-import {MapPinPlus,FilePenLine, Plus, DollarSign, ChartPie, AlarmClock,} from "lucide-react-native";
+import {MapPinPlus,FilePenLine, Plus, DollarSign, ChartPie, AlarmClock, PenLineIcon, PersonStanding, UserRoundPlus,} from "lucide-react-native";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
@@ -200,38 +200,17 @@ export function EventForm({
     }
   };
 
-// const uploadImageAsync = async (uri: string) => {
-//   const response = await fetch(uri);
-//   const blob = await response.blob();
-
-//   const imageRef = ref(
-//     storage,
-//     `events/${Date.now()}.jpg`
-//   );
-
-//   await uploadBytes(imageRef, blob);
-//   return await getDownloadURL(imageRef);
-// };  
-
-// const handleSubmit = async () => {
-//   let imageUrl = null;
-//   if (imageUri) {
-//     imageUrl = await uploadImageAsync(imageUri);
-//   }
-//   onSubmit ();
-// }
-
   return (
 
     <View style={styles.container}>
 
       <LinearGradient
           colors={[
-            "#afc49e",  // green (top-left)
-            "#F8F9F7",  // light/blank (middle)
-            "#afc49e",  // green again (bottom-right)
+            "#afc49e",
+            "#F8F9F7", 
+            "#afc49e",  
           ]}
-          locations={[0, 0.5, 1]} // controls where each color sits
+          locations={[0, 0.5, 1]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{ flex: 1 }}
@@ -287,21 +266,21 @@ export function EventForm({
 
           <View style={styles.dateColumn}>
             <TouchableOpacity onPress={() => setShowDateStartPicker(true)}>
-              <Text style={styles.dateText}>Start Date</Text>
+              <Text style={styles.dateText}>{dateStart.toLocaleDateString()} </Text>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => setShowDateEndPicker(true)}>
-              <Text style={styles.dateText}>End Date</Text>
+              <Text style={styles.dateText}>{dateEnd.toLocaleDateString()}</Text>
             </TouchableOpacity>
           </View>
 
           <View style={styles.timeColumn}>
             <TouchableOpacity onPress={() => setShowTimeStartPicker(true)}>
-              <Text style={styles.dateText}>Time</Text>
+              <Text style={styles.dateText}>{timeStart.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => setShowTimeEndPicker(true)}>
-              <Text style={styles.dateText}>Time</Text>
+              <Text style={styles.dateText}>{timeEnd.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -328,18 +307,23 @@ export function EventForm({
           <TextInput
             style={[styles.input, styles.inputInsideIcon, typography.body]}
             placeholder="Add Location"
+            value={location}
+            onChangeText={setLocation}
             placeholderTextColor="#6B6B6B"
           />
         </View>
-      
-        <TextInput
-          style={[styles.input, styles.textArea, typography.body]}
-          placeholder="Add Description"
-          value={description}
-          onChangeText={setDescription}
-          multiline
-          numberOfLines={4}
-        />
+        
+        <View style={styles.inputWithIcon}>
+          <PenLineIcon size={20} color="#7A7A7A" style={{ alignSelf: "flex-start", marginTop: 16 }} />
+          <TextInput
+            style={[styles.input, styles.inputInsideIcon, styles.textArea, typography.body]}
+            placeholder="Add Description"
+            value={description}
+            onChangeText={setDescription}
+            multiline
+            numberOfLines={4}
+          />
+        </View>
         
         <View style= {[styles.input]}>
           <CategoryAccommodationSection
@@ -352,93 +336,24 @@ export function EventForm({
           />
         </View>
 
-
-
-        {/* <Text style={styles.label}>Start Date</Text>
-        {isAndroid ? (
-          <TouchableOpacity
-            style={styles.input}
-            onPress={() => setShowDateStartPicker(true)}
-          >
-            <Text>{formatDate(dateStart)}</Text>
-          </TouchableOpacity>
-        ) : null}
-        {(isAndroid && showDateStartPicker) || !isAndroid ? (
-          <DateTimePicker
-            value={dateStart}
-            mode="date"
-            display="default"
-            onChange={handleDateStartChange}
-          />
-        ) : null}
-
-        <Text style={styles.label}>Start Time</Text>
-        {isAndroid ? (
-          <TouchableOpacity
-            style={styles.input}
-            onPress={() => setShowTimeStartPicker(true)}
-          >
-            <Text>{formatTime(timeStart)}</Text>
-          </TouchableOpacity>
-        ) : null}
-        {(isAndroid && showTimeStartPicker) || !isAndroid ? (
-          <DateTimePicker
-            value={timeStart}
-            mode="time"
-            display="default"
-            onChange={handleTimeStartChange}
-          />
-        ) : null}
-
-        <Text style={styles.label}>End Date</Text>
-        {isAndroid ? (
-          <TouchableOpacity
-            style={styles.input}
-            onPress={() => setShowDateEndPicker(true)}
-          >
-            <Text>{formatDate(dateEnd)}</Text>
-          </TouchableOpacity>
-        ) : null}
-        {(isAndroid && showDateEndPicker) || !isAndroid ? (
-          <DateTimePicker
-            value={dateEnd}
-            mode="date"
-            display="default"
-            onChange={handleDateEndChange}
-          />
-        ) : null}
-
-        <Text style={styles.label}>End Time</Text>
-        {isAndroid ? (
-          <TouchableOpacity
-            style={styles.input}
-            onPress={() => setShowTimeEndPicker(true)}
-          >
-            <Text>{formatTime(timeEnd)}</Text>
-          </TouchableOpacity>
-        ) : null}
-        {(isAndroid && showTimeEndPicker) || !isAndroid ? (
-          <DateTimePicker
-            value={timeEnd}
-            mode="time"
-            display="default"
-            onChange={handleTimeEndChange}
-          />
-        ) : null} */}
-
         <View style={styles.divider} />
 
-        <TextInput
-          style={[styles.input, typography.body]}
-          placeholder="Hosted By"
-          value={hostedBy}
-          onChangeText={setHostedBy}
-        />
+        <View style={styles.inputWithIcon}>
+          <PersonStanding size={20} color="#7A7A7A" />
+          <TextInput
+            style={[styles.input, styles.inputInsideIcon, typography.body]}
+            placeholder="Hosted By"
+            placeholderTextColor="#6B6B6B"
+            value={hostedBy}
+            onChangeText={setHostedBy}
+          />
+        </View>
+
 
         <Text style = {typography.body}> LOGISTICS</Text>
 
         <View style={styles.priceContainer}>
-          <Text style={styles.dollarSign}>$</Text>
+          <Text style={[styles.dollarSign, { marginLeft: -10 } ]}>$</Text>
           <TextInput
             style={styles.priceInput}
             placeholder="0.00"
@@ -448,13 +363,18 @@ export function EventForm({
           />
         </View>
 
-         <TextInput
-          style={[styles.input, typography.body]}
-          placeholder="Maximum Capacity"
-          value={maxAttendees}
-          onChangeText={handleMaxAttendeesChange}
-          keyboardType="number-pad" 
-        />          
+        
+        <View style={styles.inputWithIcon}>
+          <UserRoundPlus size={20} color="#7A7A7A" />
+          <TextInput
+            style={[styles.input, styles.inputInsideIcon, typography.body]}
+            placeholder="Maximum Capacity"
+            placeholderTextColor="#6B6B6B"
+            value={maxAttendees}
+            onChangeText={handleMaxAttendeesChange}
+            keyboardType="number-pad"
+          />
+        </View>
 
         <TouchableOpacity style={styles.launchButton} onPress={onSubmit}>
           <Text style={styles.launchButtonText}>{submitButtonText}</Text>
@@ -466,5 +386,3 @@ export function EventForm({
 }
 
 
-//TODO  Fix dates
-//TODO Emojis
