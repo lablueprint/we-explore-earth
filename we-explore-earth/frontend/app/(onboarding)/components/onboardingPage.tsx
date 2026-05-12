@@ -9,8 +9,9 @@ interface OnboardingPageProps {
   nextRoute: string;
   buttonText?: string;
   onFinish?: () => Promise<void>;
-  currentPage: number;
-  totalPages: number;
+  currentPage?: number;
+  totalPages?: number;
+  isParagraph?: boolean;
 }
 
 export default function OnboardingPage({ 
@@ -20,7 +21,8 @@ export default function OnboardingPage({
   buttonText = "Continue",
   onFinish,
   currentPage,
-  totalPages
+  totalPages,
+  isParagraph
 }: OnboardingPageProps) {
   
   async function handleNext() {
@@ -32,35 +34,43 @@ export default function OnboardingPage({
   
   return (
     <ImageBackground 
-      source={require('../../../assets/images/onboarding-gradient.png')} 
+      source={require('../../../../shared/images/onboarding-gradient.png')} 
       style={styles.fullBackground}
       resizeMode="cover"
     >
       <SafeAreaView style={styles.safeArea}>
         
         <Image 
-          source={require('../../../assets/images/lines.png')} 
+          source={require('../../../../shared/images/lines.png')} 
           style={styles.vectorLines}
           resizeMode="cover"
         />
 
         <View style={styles.container}>
           
-          <View style={styles.progressContainer}>
-            {Array.from({ length: totalPages }).map((_, index) => (
-              <View 
-                key={index} 
-                style={[
-                  styles.progressDash, 
-                  currentPage === index + 1 ? styles.activeDash : styles.inactiveDash
-                ]} 
-              />
-            ))}
-          </View>
+          {totalPages && currentPage ? (
+            <View style={styles.progressContainer}>
+              {Array.from({ length: totalPages }).map((_, index) => (
+                <View 
+                  key={index} 
+                  style={[
+                    styles.progressDash, 
+                    currentPage === index + 1 ? styles.activeDash : styles.inactiveDash
+                  ]} 
+                />
+              ))}
+            </View>
+          ) : (
+            <View style={{ marginTop: 24 }} />
+          )}
 
           <View style={styles.contentContainer}>
             <Text style={styles.title}>{title}</Text>
-            {description && <Text style={styles.description}>{description}</Text>}
+            {description && (
+              <Text style={[styles.description, isParagraph && styles.descriptionSmall]}>
+                {description}
+              </Text>
+            )}
           </View>
 
           <View style={styles.footerContainer}>

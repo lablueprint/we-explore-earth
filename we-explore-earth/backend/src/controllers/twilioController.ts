@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import twilio from "twilio";
+import { db } from "../firestore";
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID!;
 const authToken = process.env.TWILIO_AUTH_TOKEN!;
@@ -20,3 +21,65 @@ export const sendSMS = async (req: Request, res: Response) => {
         res.status(500).json({ success: false, message: "Failed to send SMS" });
     }
 }
+
+export const sendEventBlastSMS = async (req: Request, res: Response) => {
+  try {
+    const { eventID, audience, title, content } = req.body;
+    console.log("event-blast request body:", { eventID, audience, title, content });
+
+    let emails: (string | undefined)[];
+    let phoneNumbers: (string | undefined)[];
+
+    if (eventID === "") {
+      const snapshot = await db.collection("users").get();
+      const nonAdminUsers = snapshot.docs
+        .map((doc) => doc.data())
+        .filter((user) => !user.isAdmin);
+      emails = nonAdminUsers.map((user) => user.email);
+      phoneNumbers = nonAdminUsers.map((user) => user.phoneNumber);
+    } else {
+      if (!eventID) {
+        return res.status(400).json({ error: "eventID is required" });
+      }
+
+      const eventDoc = await db.collection("events").doc(eventID).get();
+
+      if (!eventDoc.exists) {
+        return res.status(404).json({ error: "Event not found" });
+      }
+
+      const attendees = (eventDoc.data()?.attendees ?? []) as { userID: string }[];
+      const userIDs = attendees.map((attendee) => attendee.userID);
+
+      const userDocs = await Promise.all(
+        userIDs.map((userID) => db.collection("users").doc(userID).get())
+      );
+
+      emails = userDocs.map((userDoc) => userDoc.data()?.email);
+      phoneNumbers = userDocs.map((userDoc) => userDoc.data()?.phoneNumber);
+    }
+
+    console.log("Event ID:", eventID || "everybody");
+    emails.forEach((email) => console.log("User email:", email));
+    phoneNumbers.forEach((phone) => console.log("User phone:", phone));
+
+    // Send SMS to phone numbers that exist
+    const validPhoneNumbers = phoneNumbers.filter((phone) => phone);
+    const formattedContent = title ? `${title}\n\n${content}` : content;
+    const smsPromises = validPhoneNumbers.map((phone) =>
+      client.messages.create({
+        body: formattedContent,
+        from: process.env.TWILIO_PHONE_NUMBER!,
+        to: phone!
+      })
+    );
+    const smsResults = await Promise.all(smsPromises);
+
+    return res.status(200).json({ eventID, emails, smsSentCount: smsResults.length, smsSids: smsResults.map(r => r.sid) });
+  } catch (error) {
+    console.error("Error sending event blast SMS:", error);
+    return res
+      .status(500)
+      .json({ error: "Failed to gather event blast recipients" });
+  }
+};

@@ -7,6 +7,12 @@ export const typography = StyleSheet.create({
     letterSpacing: -0.5,
     color: '#000',
   },
+  h2: {
+    fontFamily: 'LibreBaskerville-Regular',
+    fontSize: 20,
+    letterSpacing: -0.5, // Mimicking that tight look from your image
+    color: '#000',
+  },
   body: {
     fontFamily: 'HankenGrotesk-Regular',
     fontSize: 16,

@@ -8,6 +8,7 @@ import type { Event } from "@shared/types/event";
 import type { Filter } from "@shared/types/filter";
 
 export default function AdminHomeScreen() {
+  //STATE VARIABLES
   const [events, setEvents] = useState<Event[]>([]);
   const [filters, setFilters] = useState<Filter>({});
   const [filterModalVisible, setFilterModalVisible] = useState(false);
@@ -52,6 +53,7 @@ export default function AdminHomeScreen() {
     fetchFilteredEvents();
   }, [fetchFilteredEvents]);
 
+  //RENDER
   return (
     <SafeAreaView
       style={{

@@ -1,13 +1,15 @@
 import { useState, useEffect, useCallback, use } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+//LOCAL FILES
 import EventFiltersModal from "../../components/Home/components/eventFiltersModal/eventFiltersModal";
 import HomeCalendar from "@/app/components/Home/homeCalendar";
-
 import type { Event } from "@shared/types/event";
 import type { Filter } from "@shared/types/filter";
+import { styles } from "./styles";
 
 export default function HomeScreen() {
+  //STATE VARIABLES
   const [events, setEvents] = useState<Event[]>([]);
   const [filters, setFilters] = useState<Filter>({});
   const [filterModalVisible, setFilterModalVisible] = useState(false);
