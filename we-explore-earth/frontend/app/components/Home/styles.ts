@@ -19,14 +19,10 @@ export const styles = StyleSheet.create({
   },
 
   filterButtonWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    columnGap: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 4,
-    borderWidth: 2,
-    borderRadius: 8,
-    borderColor: "mediumgrey",
+    padding: 6,
+    borderWidth: 1,
+    borderRadius: 24,
+    borderColor: "#DEDEDE",
   },
 
   filterButtonText: {

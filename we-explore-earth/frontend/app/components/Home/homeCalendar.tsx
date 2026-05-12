@@ -29,8 +29,7 @@ export default function HomeCalendar({
             onPress={onPressFilters}
             style={styles.filterButtonWrapper}
           >
-            <Text style={styles.filterButtonText}>Filters</Text>
-            <Ionicons name="options-outline" size={24} color="mediumgrey" />
+            <Ionicons name="options-outline" size={21} color="#181818" />
           </TouchableOpacity>
         )} 
       </View>
