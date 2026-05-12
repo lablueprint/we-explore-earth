@@ -1,7 +1,18 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Calendar } from 'react-native-calendars';
-import { calendarStyles, modalStyles } from './styles';
+import { Calendar, LocaleConfig } from 'react-native-calendars';
+import { dateRangeStyles, calendarStyles } from './styles';
+
+// Configure 2-letter day names for calendar (e.g., 'Su', 'Mo', etc.)
+LocaleConfig.locales['en'] = {
+    monthNames: [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ],
+    dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    dayNamesShort: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+};
+LocaleConfig.defaultLocale = 'en';
 
 function DateRangePickerModal (
     {
@@ -58,7 +69,7 @@ function DateRangePickerModal (
         if (startDate && endDate) {
             // Single date range
             if (startKey == endKey) {
-                marked[startKey] = { customStyles: calendarStyles.singleDay };
+                marked[startKey] = { customStyles: dateRangeStyles.singleDay };
             }
             // Multi date range
             else {
@@ -67,34 +78,54 @@ function DateRangePickerModal (
                 while (middleDate < endDate!) {
                     middleDate.setDate(middleDate.getDate() + 1);
                     const middleKey = getLocalDateString(middleDate);
-                    marked[middleKey] = { customStyles: calendarStyles.middleDay };
+                    marked[middleKey] = { customStyles: dateRangeStyles.middleDay };
                 }
                 
                 // Start and end date have unique styles
-                marked[startKey] = { customStyles: calendarStyles.startDay };
-                marked[endKey] = { customStyles: calendarStyles.endDay };
+                marked[startKey] = { customStyles: dateRangeStyles.startDay };
+                marked[endKey] = { customStyles: dateRangeStyles.endDay };
             }
         }
         // Only start date is selected
         else if (startDate) {
-            marked[startKey] = { customStyles: calendarStyles.startDay };
+            marked[startKey] = { customStyles: dateRangeStyles.startDay };
         }
         
         return marked;
     };
 
     return (
-        <View style={modalStyles.wrapper}>
+        <View style={calendarStyles.wrapper}>
             <Calendar
                 minDate={getLocalDateString(new Date())}
                 markingType={'custom'}
                 markedDates={getMarkedDates()}
                 onDayPress={onDayPress}
+                enableSwipeMonths={true}
+                style={{
+                    width: 322,
+                }}
                 theme={{
                     calendarBackground: '#F0F0F0',
-                    todayTextColor: calendarStyles.todayColor,
-                    arrowColor: calendarStyles.arrowColor,
-                }}
+                    arrowColor: '#888888', // arrows for switching between months
+                    // for 'Month YYYY' at the top
+                    textMonthFontFamily: 'HankenGrotesk-Regular',
+                    textMonthFontSize: 16,
+                    textMonthFontWeight: 500,
+                    monthTextColor: '#181818',
+                    // for day headers (e.g., 'Su', 'Mo', etc.)
+                    textDayHeaderFontFamily: 'HankenGrotesk-Regular',
+                    textDayHeaderFontSize: 10,
+                    textDayHeaderFontWeight: 400,
+                    textSectionTitleColor: '#181818',
+                    // for each day of the month
+                    textDayFontFamily: 'HankenGrotesk-Regular',
+                    textDayFontSize: 12,
+                    textDayFontWeight: 400,
+                    todayTextColor: '#000000',
+                    dayTextColor: '#000000', // for all non-disabled days excluding today
+                    textDisabledColor: '#B2B2B2', // for disabled days (all days before current day)
+                } as any}
             />
         </View>
     );
