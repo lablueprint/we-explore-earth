@@ -1,11 +1,7 @@
-//STANDARD LIBRARY
-import { useState } from 'react';
-
-//THIRD-PARTY LIBRARIES
+import React, { useState } from 'react';
 import { View, ActivityIndicator, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-//LOCAL FILES
 import EventView from './eventView/eventView';
 import EventDetails from './eventDetails/eventDetails';
 import { styles } from './styles';
@@ -15,16 +11,16 @@ export default function Calendar({
   loading,
   events,
   embedded = false,
+  onRSVPChange,
 }: {
   loading: boolean;
   events: Event[];
   embedded?: boolean;
+  onRSVPChange?: () => void;
 }) {
-  //STATE VARIABLES
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
 
-  //HANDLERS
   const handleEventPress = (event: Event | null) => {
     if (!event) return;
     setSelectedEvent(event);
@@ -44,6 +40,7 @@ export default function Calendar({
       visible={detailsModalVisible && !!selectedEvent}
       event={selectedEvent}
       onClose={handleCloseDetailsModal}
+      onRSVPChange={onRSVPChange}
     />
   );
 
@@ -56,7 +53,6 @@ export default function Calendar({
           </View>
         ) : (
           <>
-            {/* Set up calendar to group events by MONTH. Label groups with MONTH. Add filters to the calendar when ready. */}
             {eventList}
             {details}
           </>
@@ -74,7 +70,6 @@ export default function Calendar({
           </View>
         ) : (
           <>
-            {/** TODO: Group events by MONTH. Label groups with MONTH. */}
             <ScrollView contentContainerStyle={styles.scrollContent}>
               {eventList}
             </ScrollView>

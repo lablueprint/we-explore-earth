@@ -108,18 +108,7 @@ export default function HomeCalendar({
         ) : null}
       </View>
 
-      <View style={styles.upcomingHeader}>
-        <Text style={textStyles.upcoming}>Upcoming</Text>
-      </View>
-
-      <Calendar embedded loading={loading} events={events} />
-
-      <EventDetails
-        visible={brewingDetailsVisible && !!brewingSelectedEvent}
-        event={brewingSelectedEvent}
-        onClose={() => setBrewingDetailsVisible(false)}
-        onRSVPChange={onRSVPChange}
-      />
+      <Calendar loading={loading} events={events} onRSVPChange={onRSVPChange} />
     </View>
   );
 }

@@ -1,44 +1,57 @@
-//STANDARD LIBRARY
-import { useState, useEffect } from "react";
-
-//THIRD-PARTY LIBRARIES
+import { useState, useEffect, useCallback } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-//LOCAL FILES
+import EventFiltersModal from "@/app/components/Home/components/eventFiltersModal/eventFiltersModal";
 import HomeCalendar from "@/app/components/Home/homeCalendar";
+
 import type { Event } from "@shared/types/event";
+import type { Filter } from "@shared/types/filter";
 
 export default function AdminHomeScreen() {
   //STATE VARIABLES
   const [events, setEvents] = useState<Event[]>([]);
+  const [filters, setFilters] = useState<Filter>({});
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  //EFFECTS
-  useEffect(() => {
-    async function fetchEvents() {
-      const baseUrl = process.env.EXPO_PUBLIC_API_URL;
+  const fetchFilteredEvents = useCallback(async () => {
+    const baseUrl = process.env.EXPO_PUBLIC_API_URL;
 
-      if (!baseUrl) {
-        console.log("Config Error", "EXPO_PUBLIC_API_URL is not set.");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const response = await fetch(`${baseUrl}/events`);
-        if (!response.ok) throw new Error("Failed to fetch events.");
-
-        const data: Event[] = await response.json();
-        setEvents(data);
-      } catch (error) {
-        console.log(error instanceof Error ? error.message : "Failed to fetch events.");
-      } finally {
-        setLoading(false);
-      }
+    if (!baseUrl) {
+      console.log("Config Error: EXPO_PUBLIC_API_URL is not set.");
+      setLoading(false);
+      return;
     }
 
-    fetchEvents();
-  }, []);
+    try {
+      setLoading(true);
+
+      const response = await fetch(`${baseUrl}/events/filtered`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(filters),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch filtered events.");
+      }
+
+      const data: Event[] = await response.json();
+      setEvents(data);
+    } catch (error) {
+      console.log(
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch filtered events."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [filters]);
+
+  useEffect(() => {
+    fetchFilteredEvents();
+  }, [fetchFilteredEvents]);
 
   //RENDER
   return (
@@ -53,7 +66,15 @@ export default function AdminHomeScreen() {
       <HomeCalendar
         events={events}
         loading={loading}
-        showFilters={false}
+        showFilters
+        onPressFilters={() => setFilterModalVisible(true)}
+        onRSVPChange={fetchFilteredEvents}
+      />
+
+      <EventFiltersModal
+        setFilters={setFilters}
+        filterModalVisible={filterModalVisible}
+        setFilterModalVisible={setFilterModalVisible}
       />
     </SafeAreaView>
   );
