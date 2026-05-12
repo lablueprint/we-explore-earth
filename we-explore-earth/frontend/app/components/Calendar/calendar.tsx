@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, ActivityIndicator, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -12,14 +12,32 @@ export default function Calendar({
   events,
   embedded = false,
   onRSVPChange,
+  autoOpenEvent,
+  onAutoOpenEventHandled,
 }: {
   loading: boolean;
   events: Event[];
   embedded?: boolean;
   onRSVPChange?: () => void;
+  /** When set, opens details for this event once (e.g. after admin edit). */
+  autoOpenEvent?: Event | null;
+  onAutoOpenEventHandled?: () => void;
 }) {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
+  const lastAutoOpenedIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!autoOpenEvent) {
+      lastAutoOpenedIdRef.current = null;
+      return;
+    }
+    if (lastAutoOpenedIdRef.current === autoOpenEvent.id) return;
+    lastAutoOpenedIdRef.current = autoOpenEvent.id;
+    setSelectedEvent(autoOpenEvent);
+    setDetailsModalVisible(true);
+    queueMicrotask(() => onAutoOpenEventHandled?.());
+  }, [autoOpenEvent, onAutoOpenEventHandled]);
 
   const handleEventPress = (event: Event | null) => {
     if (!event) return;

@@ -3,6 +3,7 @@ import React from "react";
 import { Alert } from "react-native";
 
 import { EventFormDirtyProvider, useEventFormDirty } from "./EventFormDirtyContext";
+import { PendingUpdatedAdminEventProvider } from "./PendingUpdatedAdminEventContext";
 import { HapticTab } from "../components/Native/haptic-tab";
 import { IconSymbol } from "../components/Native/icon-symbol";
 
@@ -65,12 +66,13 @@ export default function AdminLayout() {
 
   return (
     <EventFormDirtyProvider>
-      <Tabs
-        screenOptions={{
-          headerShown: false,
-          tabBarButton: ConfirmLeaveEventFormTabButton,
-        }}
-      >
+      <PendingUpdatedAdminEventProvider>
+        <Tabs
+          screenOptions={{
+            headerShown: false,
+            tabBarButton: ConfirmLeaveEventFormTabButton,
+          }}
+        >
         <Tabs.Screen
           name="home/index"
           options={{
@@ -108,7 +110,8 @@ export default function AdminLayout() {
             ),
           }}
         />
-      </Tabs>
+        </Tabs>
+      </PendingUpdatedAdminEventProvider>
     </EventFormDirtyProvider>
   );
 }

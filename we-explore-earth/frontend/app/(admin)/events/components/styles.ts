@@ -338,6 +338,37 @@ dateText: {
   color: "#6B6B6B",
 },
 
+iosPickerModalRoot: {
+  flex: 1,
+  justifyContent: "flex-end",
+  backgroundColor: "transparent",
+},
+iosPickerDismissTouch: {
+  flex: 1,
+},
+iosPickerSheet: {
+  backgroundColor: "#fff",
+  borderTopLeftRadius: 14,
+  borderTopRightRadius: 14,
+  paddingBottom: 28,
+  overflow: "hidden",
+},
+iosPickerDoneRow: {
+  flexDirection: "row",
+  justifyContent: "flex-end",
+  alignItems: "center",
+  paddingHorizontal: 16,
+  paddingVertical: 10,
+  borderBottomWidth: StyleSheet.hairlineWidth,
+  borderBottomColor: "#DADADA",
+},
+iosPickerDoneText: {
+  fontSize: 17,
+  color: "#185526",
+  fontWeight: "600",
+  fontFamily: "HankenGrotesk-Regular",
+},
+
 //Icons
 
 inputWithIcon: {

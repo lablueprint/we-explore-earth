@@ -7,7 +7,8 @@ import {
   Platform,
   ScrollView,
   Alert,
-  Image
+  Image,
+  Modal,
 } from "react-native";
 
 import {MapPinPlus,FilePenLine, Plus, DollarSign, ChartPie, AlarmClock, PenLineIcon, PersonStanding, UserRoundPlus,} from "lucide-react-native";
@@ -56,6 +57,54 @@ interface EventFormProps {
   formTitle: string;
 }
 
+function IosDateTimePickerSheet({
+  visible,
+  onClose,
+  value,
+  mode,
+  display,
+  onChange,
+}: {
+  visible: boolean;
+  onClose: () => void;
+  value: Date;
+  mode: "date" | "time";
+  display: "inline" | "spinner";
+  onChange: (event: DateTimePickerEvent, date?: Date) => void;
+}) {
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+    >
+      <View style={styles.iosPickerModalRoot}>
+        <TouchableOpacity
+          style={styles.iosPickerDismissTouch}
+          activeOpacity={1}
+          onPress={onClose}
+          accessibilityRole="button"
+          accessibilityLabel="Dismiss date picker"
+        />
+        <View style={styles.iosPickerSheet}>
+          <View style={styles.iosPickerDoneRow}>
+            <TouchableOpacity onPress={onClose}>
+              <Text style={styles.iosPickerDoneText}>Done</Text>
+            </TouchableOpacity>
+          </View>
+          <DateTimePicker
+            value={value}
+            mode={mode}
+            display={display}
+            onChange={onChange}
+          />
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
 export function EventForm({
   title,
   setTitle,
@@ -95,6 +144,7 @@ export function EventForm({
   const [showTimeEndPicker, setShowTimeEndPicker] = useState(false);
 
   const isAndroid = Platform.OS === "android";
+  const isIOS = Platform.OS === "ios";
 
   const formatDate = (date: Date): string => {
     return date.toLocaleDateString();
@@ -301,7 +351,44 @@ export function EventForm({
       {isAndroid && showTimeEndPicker && (
         <DateTimePicker value={timeEnd} mode="time" display="default" onChange={handleTimeEndChange} />
       )}
-    
+
+      {isIOS && (
+        <>
+          <IosDateTimePickerSheet
+            visible={showDateStartPicker}
+            onClose={() => setShowDateStartPicker(false)}
+            value={dateStart}
+            mode="date"
+            display="inline"
+            onChange={handleDateStartChange}
+          />
+          <IosDateTimePickerSheet
+            visible={showTimeStartPicker}
+            onClose={() => setShowTimeStartPicker(false)}
+            value={timeStart}
+            mode="time"
+            display="spinner"
+            onChange={handleTimeStartChange}
+          />
+          <IosDateTimePickerSheet
+            visible={showDateEndPicker}
+            onClose={() => setShowDateEndPicker(false)}
+            value={dateEnd}
+            mode="date"
+            display="inline"
+            onChange={handleDateEndChange}
+          />
+          <IosDateTimePickerSheet
+            visible={showTimeEndPicker}
+            onClose={() => setShowTimeEndPicker(false)}
+            value={timeEnd}
+            mode="time"
+            display="spinner"
+            onChange={handleTimeEndChange}
+          />
+        </>
+      )}
+
         <View style={styles.inputWithIcon}>
           <MapPinPlus size={20} color="#7A7A7A" />
           <TextInput
