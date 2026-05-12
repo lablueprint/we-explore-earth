@@ -4,7 +4,12 @@ import { Alert } from "react-native";
 import type { FirestoreTimestamp } from "@shared/types/event";
 import type { EventFormState } from "../eventForm.types";
 import { useEventFormDirty } from "../../EventFormDirtyContext";
-import { combineDateAndTime, timestampToDate } from "@/utils/eventUtils";
+import {
+  apiResponseToEvent,
+  combineDateAndTime,
+  timestampToDate,
+} from "@/utils/eventUtils";
+import { usePendingUpdatedAdminEvent } from "../../PendingUpdatedAdminEventContext";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -43,6 +48,7 @@ export function useEventFormPage(id: string | undefined) {
   const router = useRouter();
   const navigation = useNavigation();
   const { setEventFormDirty, isEventFormDirty } = useEventFormDirty();
+  const { setPendingUpdatedEvent } = usePendingUpdatedAdminEvent();
 
   const isCreate = id === "new" || !id;
   const eventId = isCreate ? null : (id as string);
@@ -251,15 +257,28 @@ export function useEventFormPage(id: string | undefined) {
       eventImage: form.eventImage,
     };
 
-    const onSuccess = () => {
+    const onCreateSuccess = () => {
       setEventFormDirty(false);
-      Alert.alert("Success", `Event ${isCreate ? "created" : "updated"} successfully!`, [
+      Alert.alert("Success", "Event created successfully!", [
         { text: "OK", onPress: () => router.replace("/(admin)/home" as const) },
       ]);
-      if (isCreate) setForm(getEmptyFormState());
+      setForm(getEmptyFormState());
     };
 
     const onError = (msg: string) => Alert.alert("Error", msg);
+
+    const finishUpdateSuccess = (data: Record<string, unknown>) => {
+      setEventFormDirty(false);
+      const updated = apiResponseToEvent(data);
+      if (updated) {
+        setPendingUpdatedEvent(updated);
+        router.replace("/(admin)/home" as const);
+      } else {
+        Alert.alert("Success", "Event updated successfully!", [
+          { text: "OK", onPress: () => router.replace("/(admin)/home" as const) },
+        ]);
+      }
+    };
 
     const isRemoteImageUri =
       form.imageUri != null && /^https?:\/\//i.test(form.imageUri.trim());
@@ -267,8 +286,6 @@ export function useEventFormPage(id: string | undefined) {
       form.imageUri != null && !isRemoteImageUri;
 
     try {
-      let response: Response;
-
       if (hasNewLocalImage && form.imageUri) {
         const fd = new FormData();
         fd.append("title", payload.title);
@@ -304,35 +321,56 @@ export function useEventFormPage(id: string | undefined) {
         const url = isCreate
           ? `${API_URL}/events/create`
           : `${API_URL}/events/${eventId}`;
-        response = await fetch(url, {
+        const multipartRes = await fetch(url, {
           method: isCreate ? "POST" : "PUT",
           body: fd,
         });
-      } else if (isCreate) {
-        response = await fetch(`${API_URL}/events/create`, {
+        const data = await multipartRes.json();
+        if (!multipartRes.ok) {
+          onError(
+            (data.error as string) ||
+              (isCreate ? "Failed to create event" : "Failed to update event")
+          );
+          return;
+        }
+        if (isCreate) {
+          onCreateSuccess();
+          return;
+        }
+        if (eventId) {
+          finishUpdateSuccess(data as Record<string, unknown>);
+        }
+        return;
+      }
+
+      if (isCreate) {
+        const response = await fetch(`${API_URL}/events/create`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
-      } else if (eventId) {
-        response = await fetch(`${API_URL}/events/${eventId}`, {
+        const data = await response.json();
+        if (!response.ok) {
+          onError((data.error as string) || "Failed to create event");
+          return;
+        }
+        onCreateSuccess();
+        return;
+      }
+
+      if (eventId) {
+        const response = await fetch(`${API_URL}/events/${eventId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
-      } else {
-        return;
+        const data = await response.json();
+        if (!response.ok) {
+          onError((data.error as string) || "Failed to update event");
+          return;
+        }
+        finishUpdateSuccess(data as Record<string, unknown>);
       }
-
-      const data = await response.json();
-      if (!response.ok) {
-        onError(
-          (data.error as string) ||
-            (isCreate ? "Failed to create event" : "Failed to update event")
-        );
-        return;
-      }
-      onSuccess();
     } catch (error) {
       console.error(
         isCreate ? "Error creating event:" : "Error updating event:",
@@ -346,7 +384,14 @@ export function useEventFormPage(id: string | undefined) {
             : "Failed to update event"
       );
     }
-  }, [form, isCreate, eventId, setEventFormDirty, router]);
+  }, [
+    form,
+    isCreate,
+    eventId,
+    setEventFormDirty,
+    router,
+    setPendingUpdatedEvent,
+  ]);
 
   const updateField = useCallback(<K extends keyof EventFormState>(
     field: K,

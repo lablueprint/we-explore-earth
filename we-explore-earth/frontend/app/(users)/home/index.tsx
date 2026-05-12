@@ -1,8 +1,4 @@
-//STANDARD LIBRARY
-import { useState, useEffect, useCallback } from "react";
-
-//THIRD-PARTY LIBRARIES
-import { ScrollView } from "react-native";
+import { useState, useEffect, useCallback, use } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 //LOCAL FILES
@@ -19,52 +15,61 @@ export default function HomeScreen() {
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  //HANDLERS
   const fetchFilteredEvents = useCallback(async () => {
     const baseUrl = process.env.EXPO_PUBLIC_API_URL;
+
     if (!baseUrl) {
-      console.log("Config Error", "EXPO_PUBLIC_API_URL is not set.");
+      console.log("Config Error: EXPO_PUBLIC_API_URL is not set.");
       setLoading(false);
       return;
     }
-    try {
+
+    try{
+      setLoading(true); 
       const response = await fetch(`${baseUrl}/events/filtered`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(filters),
       });
-      if (!response.ok) throw new Error("Failed to fetch filtered events.");
+
+      if(!response.ok) {
+        throw new Error("Failed to fetch filtered events.");
+      } 
+      
       const data: Event[] = await response.json();
       setEvents(data);
-    } catch (error: unknown) {
-      console.log(error instanceof Error ? error.message : "Failed to fetch filtered events.");
+    } catch (error) {
+      console.log(
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch filtered events."
+      );   
     } finally {
-      setLoading(false);
+      setLoading(false);  
     }
   }, [filters]);
 
-  //EFFECTS
   useEffect(() => {
     fetchFilteredEvents();
   }, [fetchFilteredEvents]);
-
-  //RENDER
+  
   return (
-    <SafeAreaView style={styles.screen}>
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator
-      >
-        <HomeCalendar
-          events={events}
-          loading={loading}
-          showFilters
-          onPressFilters={() => setFilterModalVisible(true)}
-          onRSVPChange={fetchFilteredEvents}
-        />
-      </ScrollView>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: "white",
+        paddingTop: 20,
+        paddingHorizontal: 20,
+      }}
+    >
+      <HomeCalendar
+        events={events}
+        loading={loading}
+        showFilters
+        onPressFilters={() => setFilterModalVisible(true)}
+        onRSVPChange={fetchFilteredEvents}
+      
+      />
 
       <EventFiltersModal
         setFilters={setFilters}

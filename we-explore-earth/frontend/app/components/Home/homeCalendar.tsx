@@ -10,7 +10,6 @@ import { SvgUri } from "react-native-svg";
 //LOCAL FILES
 import Calendar from "@/app/components/Calendar/calendar";
 import EventView from "@/app/components/Calendar/eventView/eventView";
-import EventDetails from "@/app/components/Calendar/eventDetails/eventDetails";
 import { useUser } from "@/hooks/useUser";
 import type { Event } from "@shared/types/event";
 import { styles, homeIcons, textStyles } from "./styles";
@@ -21,6 +20,9 @@ type Props = {
   showFilters?: boolean;
   onPressFilters?: () => void;
   onRSVPChange?: () => void;
+  /** After an admin saves an edit, open this event in the details sheet. */
+  autoOpenEvent?: Event | null;
+  onAutoOpenEventHandled?: () => void;
 };
 
 export default function HomeCalendar({
@@ -29,6 +31,8 @@ export default function HomeCalendar({
   showFilters = true,
   onPressFilters,
   onRSVPChange,
+  autoOpenEvent,
+  onAutoOpenEventHandled,
 }: Props) {
   //REACT HOOKS
   const router = useRouter();
@@ -76,7 +80,13 @@ export default function HomeCalendar({
         <View style={styles.adminHeader}>
           <Text style={textStyles.upcoming}>Upcoming</Text>
         </View>
-        <Calendar loading={loading} events={events} />
+        <Calendar
+          loading={loading}
+          events={events}
+          embedded
+          autoOpenEvent={autoOpenEvent}
+          onAutoOpenEventHandled={onAutoOpenEventHandled}
+        />
       </View>
     );
   }
@@ -131,17 +141,12 @@ export default function HomeCalendar({
         ) : null}
       </View>
 
-      <View style={styles.upcomingHeader}>
-        <Text style={textStyles.upcoming}>Upcoming</Text>
-      </View>
-
-      <Calendar embedded loading={loading} events={events} />
-
-      <EventDetails
-        visible={brewingDetailsVisible && !!brewingSelectedEvent}
-        event={brewingSelectedEvent}
-        onClose={() => setBrewingDetailsVisible(false)}
+      <Calendar
+        loading={loading}
+        events={events}
         onRSVPChange={onRSVPChange}
+        autoOpenEvent={autoOpenEvent}
+        onAutoOpenEventHandled={onAutoOpenEventHandled}
       />
     </View>
   );

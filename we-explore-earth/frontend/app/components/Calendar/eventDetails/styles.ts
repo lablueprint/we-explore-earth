@@ -39,20 +39,6 @@ export const styles = StyleSheet.create({
     fontWeight: "500",
   },
 
-  shareButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: "#EFEDE8",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  shareIcon: {
-    fontSize: 18,
-    color: "#1D1D1B",
-  },
-
   imagePlaceholder: {
     width: '100%',
     height: 240,
@@ -72,6 +58,22 @@ export const styles = StyleSheet.create({
   imagePlaceholderText: {
     color: '#9A9A94',
     fontSize: 16,
+  },
+
+  editButton: {
+    borderWidth: 1,
+    borderColor: "#2F6B0C",
+    borderRadius: 999,
+    paddingVertical: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 20,
+  },
+  
+  editButtonText: {
+    color: "#2F6B0C",
+    fontSize: 17,
+    fontWeight: "700",
   },
 
   title: {
@@ -192,6 +194,15 @@ export const styles = StyleSheet.create({
     lineHeight: 29,
     color: "#262622",
     marginBottom: 14,
+  },
+
+  scrollContent: {
+    paddingBottom: 80,
+  },
+  
+  viewAllButton: {
+    paddingVertical: 4,
+    paddingHorizontal: 4,
   },
   
 });

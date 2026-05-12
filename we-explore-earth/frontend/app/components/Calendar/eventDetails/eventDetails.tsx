@@ -9,6 +9,8 @@ import {
   Image,
   ActivityIndicator,
 } from "react-native";
+import { useRouter, useSegments } from "expo-router";
+
 import { styles } from "./styles";
 import type { Event, FirestoreTimestamp } from "@shared/types/event";
 import RSVPModal from "../RSVPModal/RSVPModal";
@@ -45,8 +47,14 @@ export default function EventDetails({
   onRSVPChange,
 }: Props) {
   const { user } = useUser();
+  const router = useRouter();
+  const segments = useSegments();
+
+  const isAdmin = segments[0] === "(admin)";
+
   const [rsvpModalVisible, setRsvpModalVisible] = useState(false);
   const [localRSVP, setLocalRSVP] = useState<"YES" | "MAYBE" | null>(null);
+  const [hasLocalChange, setHasLocalChange] = useState(false);
 
   const currentRSVP =
     event && user?.events
@@ -57,11 +65,12 @@ export default function EventDetails({
       : null;
 
   useEffect(() => {
-    setLocalRSVP(currentRSVP ?? null);
-  }, [currentRSVP]);
-
-  useEffect(() => {
-    if (!visible) setRsvpModalVisible(false);
+    if (visible) {
+      setLocalRSVP(null);
+      setHasLocalChange(false);
+    } else {
+      setRsvpModalVisible(false);
+    }
   }, [visible]);
 
   const handleRSVPPress = () => {
@@ -74,15 +83,22 @@ export default function EventDetails({
 
   const handleRSVPChange = (status: "YES" | "MAYBE" | null) => {
     setLocalRSVP(status);
+    setHasLocalChange(true);
     onRSVPChange?.();
   };
 
+  const handleEditEvent = () => {
+    if (!event?.id) return;
+    onClose();
+    router.push(`/(admin)/events/${event.id}` as const);
+  };
+
+  const displayRSVP = hasLocalChange ? localRSVP : currentRSVP;
+
   const { url: coverUrl, loading: coverLoading } = useEventSignedImageUrl(
-    event?.eventImage
+    event?.eventImage ?? null
   );
-  
-  const displayRSVP = rsvpModalVisible ? localRSVP : currentRSVP;
-  
+
   if (!event) return null;
 
   return (
@@ -95,15 +111,18 @@ export default function EventDetails({
       >
         <View style={styles.backdrop}>
           <View style={styles.sheet}>
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.scrollContent}
+            >
               <View style={styles.topRow}>
-              <TouchableOpacity onPress={onClose} style={styles.backButton}>
-                <Text style={styles.backArrow}>←</Text>
-                <Text style={styles.backText}>Back</Text>
-              </TouchableOpacity>
-
-                <TouchableOpacity style={styles.shareButton}>
-                  <Text style={styles.shareIcon}>↥</Text>
+                <TouchableOpacity
+                  onPress={onClose}
+                  style={styles.backButton}
+                  hitSlop={15}
+                >
+                  <Text style={styles.backArrow}>←</Text>
+                  <Text style={styles.backText}>Back</Text>
                 </TouchableOpacity>
               </View>
 
@@ -136,9 +155,12 @@ export default function EventDetails({
               <View style={styles.infoRow}>
                 <Text style={styles.infoIcon}>🗓️</Text>
                 <View>
-                  <Text style={styles.infoTitle}>{formatDate(event.timeStart)}</Text>
+                  <Text style={styles.infoTitle}>
+                    {formatDate(event.timeStart)}
+                  </Text>
                   <Text style={styles.infoSub}>
-                    {formatTime(event.timeStart)} to {formatTime(event.timeEnd)}
+                    {formatTime(event.timeStart)} to{" "}
+                    {formatTime(event.timeEnd)}
                   </Text>
                 </View>
               </View>
@@ -155,7 +177,21 @@ export default function EventDetails({
 
               <View style={styles.attendeeHeader}>
                 <Text style={styles.attendeeCount}>30 People on the List</Text>
-                <Text style={styles.viewAll}>View all</Text>
+
+                {isAdmin && (
+                  <TouchableOpacity
+                    style={styles.viewAllButton}
+                    onPress={() => {
+                      if (event?.id) {
+                        router.push(
+                          `/(admin)/events/${event.id}/attendees` as const
+                        );
+                      }
+                    }}
+                  >
+                    <Text style={styles.backText}>View All</Text>
+                  </TouchableOpacity>
+                )}
               </View>
 
               <View style={styles.avatarRow}>
@@ -164,25 +200,42 @@ export default function EventDetails({
                 ))}
               </View>
 
-              <TouchableOpacity onPress={handleRSVPPress} style={styles.rsvpButton}>
+              <TouchableOpacity
+                onPress={handleRSVPPress}
+                style={styles.rsvpButton}
+              >
                 <Text style={styles.rsvpButtonText}>
                   {displayRSVP ? "Update RSVP" : "RSVP"}
                 </Text>
               </TouchableOpacity>
 
+              {isAdmin && (
+                <TouchableOpacity
+                  onPress={handleEditEvent}
+                  style={styles.editButton}
+                >
+                  <Text style={styles.editButtonText}>Edit Event</Text>
+                </TouchableOpacity>
+              )}
+
               <View style={styles.divider} />
 
               <Text style={styles.sectionLabel}>OVERVIEW</Text>
-              <Text style={styles.body}>{event.description}</Text>
+              <Text style={styles.body}>
+                {event.description || "No description provided."}
+              </Text>
 
               <Text style={styles.sectionLabel}>DESCRIPTION</Text>
               <Text style={styles.body}>
-                We’ll move through riparian and chaparral woodland habitats,
-                stopping frequently to explore edible properties of local species.
+                We'll move through riparian and chaparral woodland habitats,
+                stopping frequently to explore edible properties of local
+                species.
               </Text>
 
               <Text style={styles.sectionLabel}>WHAT TO BRING</Text>
-              <Text style={styles.body}>• Water{"\n"}• Comfortable closed-toe shoes</Text>
+              <Text style={styles.body}>
+                • Water{"\n"}• Comfortable closed-toe shoes
+              </Text>
             </ScrollView>
           </View>
         </View>

@@ -1,52 +1,59 @@
 // STANDARD / THIRD-PARTY IMPORTS
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   View,
   ActivityIndicator,
-  Alert,
   ScrollView,
 } from "react-native";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 // LOCAL COMPONENTS
 import EventView from "./eventView/eventView";
 import EventDetails from "./eventDetails/eventDetails";
-import EventAttendees from "./eventAttendees/eventAttendees";
-import RSVPModal from "./RSVPModal/RSVPModal";
 
 // TYPES
-import type { Event, RSVPStatus } from "@shared/types/event";
+import type { Event } from "@shared/types/event";
 
-// HOOKS
-import { useUser } from "../../../hooks/useUser";
+// LOCAL STYLES
+import { styles } from "./styles";
 
-export default function Calendar(
-  {
-    loading,
-    events = [],
-    embedded = false,
-  }
-  :
-  {
-    loading: boolean,
-    events?: Array<Event | null | undefined>,
-    embedded?: boolean,
-  }
-) {
-  const { user } = useUser();
+type CalendarProps = {
+  loading: boolean;
+  events?: Array<Event | null | undefined>;
+  embedded?: boolean;
+  onRSVPChange?: () => void;
+  /** When set, opens details for this event once (e.g. after admin edit). */
+  autoOpenEvent?: Event | null;
+  onAutoOpenEventHandled?: () => void;
+};
 
-  // STATE VARIABLES
+export default function Calendar({
+  loading,
+  events = [],
+  embedded = false,
+  onRSVPChange,
+  autoOpenEvent,
+  onAutoOpenEventHandled,
+}: CalendarProps) {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
-  const [rsvpModalVisible, setRsvpModalVisible] = useState(false);
-  const [currentRSVP, setCurrentRSVP] = useState<RSVPStatus | null>(null);
+  const lastAutoOpenedIdRef = useRef<string | null>(null);
 
-  // HANDLERS
+  useEffect(() => {
+    if (!autoOpenEvent) {
+      lastAutoOpenedIdRef.current = null;
+      return;
+    }
+    if (lastAutoOpenedIdRef.current === autoOpenEvent.id) return;
+    lastAutoOpenedIdRef.current = autoOpenEvent.id;
+    setSelectedEvent(autoOpenEvent);
+    setDetailsModalVisible(true);
+    queueMicrotask(() => onAutoOpenEventHandled?.());
+  }, [autoOpenEvent, onAutoOpenEventHandled]);
+
   const handleEventPress = (event: Event | null) => {
     if (!event) return;
     setSelectedEvent(event);
-    const existingRSVP = user?.events?.find((e) => e.eventID === event.id);
-    setCurrentRSVP(existingRSVP ? (existingRSVP.status as RSVPStatus) : null);
     setDetailsModalVisible(true);
   };
 
@@ -54,29 +61,39 @@ export default function Calendar(
     setDetailsModalVisible(false);
   };
 
-  const handleRSVPPress = () => {
-    if (!user) {
-      Alert.alert("Sign In Required", "Please sign in to RSVP to events.");
-      return;
-    }
-    setDetailsModalVisible(false);
-    setRsvpModalVisible(true);
-  };
+  const visibleEvents = events.filter((e): e is Event => Boolean(e));
 
-  const handleCloseRSVPModal = () => {
-    setRsvpModalVisible(false);
-    setDetailsModalVisible(true);
-  };
+  const eventList = visibleEvents.map((event) => (
+    <EventView key={event.id} event={event} onPress={handleEventPress} />
+  ));
 
-  const handleRSVPChange = (status: RSVPStatus | null) => {
-    setCurrentRSVP(status);
-  };
+  const details = (
+    <EventDetails
+      visible={detailsModalVisible && !!selectedEvent}
+      event={selectedEvent}
+      onClose={handleCloseDetailsModal}
+      onRSVPChange={onRSVPChange}
+    />
+  );
 
-  // only display events with non null values
-  const visibleEvents = events.filter((event): event is Event => Boolean(event));
-
-  // RENDER
   const Container = embedded ? View : SafeAreaView;
+
+  if (embedded) {
+    return (
+      <View>
+        {loading ? (
+          <View style={styles.embeddedLoading}>
+            <ActivityIndicator size="large" />
+          </View>
+        ) : (
+          <>
+            {eventList}
+            {details}
+          </>
+        )}
+      </View>
+    );
+  }
 
   return (
     <Container style={{ flex: 1, backgroundColor: "#fff" }}>
@@ -89,30 +106,10 @@ export default function Calendar(
           </View>
         ) : (
           <>
-            {/** TODO: Group events by MONTH. Label groups with MONTH. */}
-            <ScrollView>
-              {visibleEvents.map((event) => (
-                <EventView
-                  key={event.id}
-                  event={event}
-                  onPress={handleEventPress}
-                />
-              ))}
+            <ScrollView contentContainerStyle={styles.scrollContent}>
+              {eventList}
             </ScrollView>
-
-            <EventDetails
-              visible={detailsModalVisible && !!selectedEvent}
-              event={selectedEvent}
-              onClose={handleCloseDetailsModal}
-            />
-
-            <RSVPModal
-              visible={rsvpModalVisible && !!selectedEvent}
-              event={selectedEvent}
-              currentRSVP={currentRSVP}
-              onClose={handleCloseRSVPModal}
-              onRSVPChange={handleRSVPChange}
-            />
+            {details}
           </>
         )}
       </View>

@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  getAllUsers,
   getUser,
   getUserEvents,
   getUserRSVPs,
@@ -13,6 +14,9 @@ import {
 } from "../controllers/userController";
 
 const router = express.Router();
+
+// GET /users
+router.get("/", getAllUsers);
 
 // GET /users/:id/events
 router.get("/:id/events", getUserEvents);
