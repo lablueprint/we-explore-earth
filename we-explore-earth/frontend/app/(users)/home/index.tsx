@@ -1,57 +1,58 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, use } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+//LOCAL FILES
 import EventFiltersModal from "../../components/Home/components/eventFiltersModal/eventFiltersModal";
 import HomeCalendar from "@/app/components/Home/homeCalendar";
-
 import type { Event } from "@shared/types/event";
 import type { Filter } from "@shared/types/filter";
+import { styles } from "./styles";
 
 export default function HomeScreen() {
+  //STATE VARIABLES
   const [events, setEvents] = useState<Event[]>([]);
   const [filters, setFilters] = useState<Filter>({});
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchFilteredEvents() {
-      const baseUrl = process.env.EXPO_PUBLIC_API_URL;
+  const fetchFilteredEvents = useCallback(async () => {
+    const baseUrl = process.env.EXPO_PUBLIC_API_URL;
 
-      if (!baseUrl) {
-        console.log("Config Error", "EXPO_PUBLIC_API_URL is not set.");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-
-        const response = await fetch(`${baseUrl}/events/filtered`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(filters),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch filtered events.");
-        }
-
-        const data: Event[] = await response.json();
-        setEvents(data);
-      } catch (error) {
-        console.log(
-          error instanceof Error
-            ? error.message
-            : "Failed to fetch filtered events."
-        );
-      } finally {
-        setLoading(false);
-      }
+    if (!baseUrl) {
+      console.log("Config Error: EXPO_PUBLIC_API_URL is not set.");
+      setLoading(false);
+      return;
     }
 
-    fetchFilteredEvents();
+    try{
+      setLoading(true); 
+      const response = await fetch(`${baseUrl}/events/filtered`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(filters),
+      });
+
+      if(!response.ok) {
+        throw new Error("Failed to fetch filtered events.");
+      } 
+      
+      const data: Event[] = await response.json();
+      setEvents(data);
+    } catch (error) {
+      console.log(
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch filtered events."
+      );   
+    } finally {
+      setLoading(false);  
+    }
   }, [filters]);
 
+  useEffect(() => {
+    fetchFilteredEvents();
+  }, [fetchFilteredEvents]);
+  
   return (
     <SafeAreaView
       style={{
@@ -66,6 +67,8 @@ export default function HomeScreen() {
         loading={loading}
         showFilters
         onPressFilters={() => setFilterModalVisible(true)}
+        onRSVPChange={fetchFilteredEvents}
+      
       />
 
       <EventFiltersModal

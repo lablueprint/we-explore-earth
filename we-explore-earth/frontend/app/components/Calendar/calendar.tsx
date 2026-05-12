@@ -1,11 +1,10 @@
 //STANDARD LIBRARY
-import { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 //THIRD-PARTY LIBRARIES
 import { Text, View, ActivityIndicator, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-//LOCAL FILES
 import EventView from './eventView/eventView';
 import EventDetails from './eventDetails/eventDetails';
 import { styles } from './styles';
@@ -15,16 +14,34 @@ export default function Calendar({
   loading,
   events,
   embedded = false,
+  onRSVPChange,
+  autoOpenEvent,
+  onAutoOpenEventHandled,
 }: {
   loading: boolean;
   events: Event[];
   embedded?: boolean;
+  onRSVPChange?: () => void;
+  /** When set, opens details for this event once (e.g. after admin edit). */
+  autoOpenEvent?: Event | null;
+  onAutoOpenEventHandled?: () => void;
 }) {
-  //STATE VARIABLES
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
+  const lastAutoOpenedIdRef = useRef<string | null>(null);
 
-  //HANDLERS
+  useEffect(() => {
+    if (!autoOpenEvent) {
+      lastAutoOpenedIdRef.current = null;
+      return;
+    }
+    if (lastAutoOpenedIdRef.current === autoOpenEvent.id) return;
+    lastAutoOpenedIdRef.current = autoOpenEvent.id;
+    setSelectedEvent(autoOpenEvent);
+    setDetailsModalVisible(true);
+    queueMicrotask(() => onAutoOpenEventHandled?.());
+  }, [autoOpenEvent, onAutoOpenEventHandled]);
+
   const handleEventPress = (event: Event | null) => {
     if (!event) return;
     setSelectedEvent(event);
@@ -44,6 +61,7 @@ export default function Calendar({
       visible={detailsModalVisible && !!selectedEvent}
       event={selectedEvent}
       onClose={handleCloseDetailsModal}
+      onRSVPChange={onRSVPChange}
     />
   );
 
@@ -56,7 +74,6 @@ export default function Calendar({
           </View>
         ) : (
           <>
-            {/* Set up calendar to group events by MONTH. Label groups with MONTH. Add filters to the calendar when ready. */}
             {eventList}
             {details}
           </>

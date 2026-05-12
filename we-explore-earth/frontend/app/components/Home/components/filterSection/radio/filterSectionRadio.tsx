@@ -72,7 +72,7 @@ function FilterSectionRadio(
         <>
             {/** Filter header */}
             <View style={styles.filterHeaderWrapper}>
-                <Text style={[typography.h2, styles.filterHeader]}>{header}</Text>
+                <Text style={[typography.h3, styles.filterHeader]}>{header}</Text>
                 <TouchableOpacity onPress={handleReset}>
                     <Text style={[typography.body, styles.reset]}>Reset</Text>
                 </TouchableOpacity>

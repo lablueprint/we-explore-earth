@@ -3,7 +3,12 @@ import { useRouter, useNavigation } from "expo-router";
 import { Alert } from "react-native";
 import type { EventFormState, FirestoreTimestamp } from "@shared/types/event";
 import { useEventFormDirty } from "../../EventFormDirtyContext";
-import { combineDateAndTime, timestampToDate } from "@/utils/eventUtils";
+import {
+  apiResponseToEvent,
+  combineDateAndTime,
+  timestampToDate,
+} from "@/utils/eventUtils";
+import { usePendingUpdatedAdminEvent } from "../../PendingUpdatedAdminEventContext";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -41,6 +46,7 @@ export function useEventFormPage(id: string | undefined) {
   const router = useRouter();
   const navigation = useNavigation();
   const { setEventFormDirty, isEventFormDirty } = useEventFormDirty();
+  const { setPendingUpdatedEvent } = usePendingUpdatedAdminEvent();
 
   const isCreate = id === "new" || !id;
   const eventId = isCreate ? null : (id as string);
@@ -226,12 +232,12 @@ export function useEventFormPage(id: string | undefined) {
       maxAttendees: form.maxAttendees,
     };
 
-    const onSuccess = () => {
+    const onCreateSuccess = () => {
       setEventFormDirty(false);
-      Alert.alert("Success", `Event ${isCreate ? "created" : "updated"} successfully!`, [
+      Alert.alert("Success", "Event created successfully!", [
         { text: "OK", onPress: () => router.replace("/(admin)/home" as const) },
       ]);
-      if (isCreate) setForm(getEmptyFormState());
+      setForm(getEmptyFormState());
     };
 
     const onError = (msg: string) => Alert.alert("Error", msg);
@@ -248,7 +254,7 @@ export function useEventFormPage(id: string | undefined) {
           onError((data.error as string) || "Failed to create event");
           return;
         }
-        onSuccess();
+        onCreateSuccess();
       } else if (eventId) {
         const response = await fetch(`${API_URL}/events/${eventId}`, {
           method: "PUT",
@@ -260,7 +266,16 @@ export function useEventFormPage(id: string | undefined) {
           onError((data.error as string) || "Failed to update event");
           return;
         }
-        onSuccess();
+        setEventFormDirty(false);
+        const updated = apiResponseToEvent(data as Record<string, unknown>);
+        if (updated) {
+          setPendingUpdatedEvent(updated);
+          router.replace("/(admin)/home" as const);
+        } else {
+          Alert.alert("Success", "Event updated successfully!", [
+            { text: "OK", onPress: () => router.replace("/(admin)/home" as const) },
+          ]);
+        }
       }
     } catch (error) {
       console.error(
@@ -275,7 +290,14 @@ export function useEventFormPage(id: string | undefined) {
             : "Failed to update event"
       );
     }
-  }, [form, isCreate, eventId, setEventFormDirty, router]);
+  }, [
+    form,
+    isCreate,
+    eventId,
+    setEventFormDirty,
+    router,
+    setPendingUpdatedEvent,
+  ]);
 
   const updateField = useCallback(<K extends keyof EventFormState>(
     field: K,

@@ -1,39 +1,82 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import EventFiltersModal from "@/app/components/Home/components/eventFiltersModal/eventFiltersModal";
 import HomeCalendar from "@/app/components/Home/homeCalendar";
+
 import type { Event } from "@shared/types/event";
+import type { Filter } from "@shared/types/filter";
+import { usePendingUpdatedAdminEvent } from "../PendingUpdatedAdminEventContext";
+import { sortEventsForCalendar } from "@/utils/eventUtils";
 
 export default function AdminHomeScreen() {
+  //STATE VARIABLES
   const [events, setEvents] = useState<Event[]>([]);
+  const [filters, setFilters] = useState<Filter>({});
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [autoOpenEvent, setAutoOpenEvent] = useState<Event | null>(null);
 
-  useEffect(() => {
-    async function fetchEvents() {
-      const baseUrl = process.env.EXPO_PUBLIC_API_URL;
+  const { consumePendingUpdatedEvent } = usePendingUpdatedAdminEvent();
 
-      if (!baseUrl) {
-        console.log("Config Error", "EXPO_PUBLIC_API_URL is not set.");
-        setLoading(false);
-        return;
-      }
+  useFocusEffect(
+    useCallback(() => {
+      const updated = consumePendingUpdatedEvent();
+      if (!updated) return;
+      setEvents((prev) => {
+        const idx = prev.findIndex((e) => e.id === updated.id);
+        if (idx === -1) {
+          return [...prev, updated].sort(sortEventsForCalendar);
+        }
+        const next = [...prev];
+        next[idx] = updated;
+        return next.sort(sortEventsForCalendar);
+      });
+      setAutoOpenEvent(updated);
+    }, [consumePendingUpdatedEvent])
+  );
 
-      try {
-        const response = await fetch(`${baseUrl}/events`);
-        if (!response.ok) throw new Error("Failed to fetch events.");
+  const fetchFilteredEvents = useCallback(async () => {
+    const baseUrl = process.env.EXPO_PUBLIC_API_URL;
 
-        const data: Event[] = await response.json();
-        setEvents(data);
-      } catch (error) {
-        console.log(error instanceof Error ? error.message : "Failed to fetch events.");
-      } finally {
-        setLoading(false);
-      }
+    if (!baseUrl) {
+      console.log("Config Error: EXPO_PUBLIC_API_URL is not set.");
+      setLoading(false);
+      return;
     }
 
-    fetchEvents();
-  }, []);
+    try {
+      setLoading(true);
 
+      const response = await fetch(`${baseUrl}/events/filtered`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(filters),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch filtered events.");
+      }
+
+      const data: Event[] = await response.json();
+      setEvents(data);
+    } catch (error) {
+      console.log(
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch filtered events."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [filters]);
+
+  useEffect(() => {
+    fetchFilteredEvents();
+  }, [fetchFilteredEvents]);
+
+  //RENDER
   return (
     <SafeAreaView
       style={{
@@ -46,7 +89,17 @@ export default function AdminHomeScreen() {
       <HomeCalendar
         events={events}
         loading={loading}
-        showFilters={false}
+        showFilters
+        onPressFilters={() => setFilterModalVisible(true)}
+        onRSVPChange={fetchFilteredEvents}
+        autoOpenEvent={autoOpenEvent}
+        onAutoOpenEventHandled={() => setAutoOpenEvent(null)}
+      />
+
+      <EventFiltersModal
+        setFilters={setFilters}
+        filterModalVisible={filterModalVisible}
+        setFilterModalVisible={setFilterModalVisible}
       />
     </SafeAreaView>
   );
