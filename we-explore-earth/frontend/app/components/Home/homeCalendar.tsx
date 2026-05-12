@@ -20,6 +20,9 @@ type Props = {
   showFilters?: boolean;
   onPressFilters?: () => void;
   onRSVPChange?: () => void;
+  /** After an admin saves an edit, open this event in the details sheet. */
+  autoOpenEvent?: Event | null;
+  onAutoOpenEventHandled?: () => void;
 };
 
 export default function HomeCalendar({
@@ -28,6 +31,8 @@ export default function HomeCalendar({
   showFilters = true,
   onPressFilters,
   onRSVPChange,
+  autoOpenEvent,
+  onAutoOpenEventHandled,
 }: Props) {
   //REACT HOOKS
   const router = useRouter();
@@ -57,7 +62,12 @@ export default function HomeCalendar({
         <View style={styles.adminHeader}>
           <Text style={textStyles.upcoming}>Upcoming</Text>
         </View>
-        <Calendar loading={loading} events={events} />
+        <Calendar
+          loading={loading}
+          events={events}
+          autoOpenEvent={autoOpenEvent}
+          onAutoOpenEventHandled={onAutoOpenEventHandled}
+        />
       </View>
     );
   }
@@ -108,7 +118,13 @@ export default function HomeCalendar({
         ) : null}
       </View>
 
-      <Calendar loading={loading} events={events} onRSVPChange={onRSVPChange} />
+      <Calendar
+        loading={loading}
+        events={events}
+        onRSVPChange={onRSVPChange}
+        autoOpenEvent={autoOpenEvent}
+        onAutoOpenEventHandled={onAutoOpenEventHandled}
+      />
     </View>
   );
 }
