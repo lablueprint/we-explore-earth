@@ -10,6 +10,7 @@ type Props = {
   loading: boolean;
   showFilters?: boolean;
   onPressFilters?: () => void;
+  onRSVPChange?: () => void;
 };
 
 export default function HomeCalendar({
@@ -18,6 +19,7 @@ export default function HomeCalendar({
   loading,
   showFilters = true,
   onPressFilters,
+  onRSVPChange,
 }: Props) {
   return (
     <View style={styles.container}>
@@ -35,7 +37,7 @@ export default function HomeCalendar({
         )} 
       </View>
 
-      <Calendar loading={loading} events={events} />
+      <Calendar loading={loading} events={events} onRSVPChange={onRSVPChange} />
     </View>
   );
 }
