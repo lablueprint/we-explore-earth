@@ -10,6 +10,22 @@ import { Filter } from '@shared/types/filter';
 import { styles } from './styles';
 import { typography } from '@shared/typography/typography';
 
+enum DateOption {
+    AnyDate = 'Any date',
+    Today = 'Today',
+    Tomorrow = 'Tomorrow',
+    ThisWeek = 'This week',
+    ThisWeekend = 'This weekend',
+    Custom = 'Custom'
+}
+
+enum EventPriceOption {
+    AnyPrice = 'Any price',
+    FreeOnly = 'Free events only',
+    UpTo25 = 'Up to $25',
+    UpTo50 = 'Up to $50'
+}
+
 function EventFiltersModal(
     {
         setFilters,
@@ -23,8 +39,8 @@ function EventFiltersModal(
         setFilterModalVisible: React.Dispatch<any>
     }
 ) {
-    const dateOptions : Array<string> = ['Any date', 'Today', 'Tomorrow', 'This week', 'This weekend', 'Custom'];
-    const [selectedDate, setSelectedDate] = useState<string>(dateOptions[0]);
+    const dateOptions : Array<DateOption> = [DateOption.AnyDate, DateOption.Today, DateOption.Tomorrow, DateOption.ThisWeek, DateOption.ThisWeekend, DateOption.Custom];
+    const [selectedDate, setSelectedDate] = useState<DateOption>(DateOption.AnyDate);
     const [startDate, setStartDate] = useState<Date | undefined>(undefined);
     const [endDate, setEndDate] = useState<Date | undefined>(undefined);
     const [showInvalidDateRangeMessage, setShowInvalidDateRangeMessage] = useState<boolean>(false);
@@ -32,8 +48,8 @@ function EventFiltersModal(
     const [categoryOptions, setCategoryOptions] = useState<Array<string>>([]);
     const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
 
-    const eventPriceOptions : Array<string> = ['Any price', 'Free events only', 'Up to $25', 'Up to $50']; // default option = first option
-    const [selectedEventPrice, setSelectedEventPrice] = useState<string>(eventPriceOptions[0]);
+    const eventPriceOptions : Array<EventPriceOption> = [EventPriceOption.AnyPrice, EventPriceOption.FreeOnly, EventPriceOption.UpTo25, EventPriceOption.UpTo50];
+    const [selectedEventPrice, setSelectedEventPrice] = useState<EventPriceOption>(EventPriceOption.AnyPrice);
 
     const [accommodationOptions, setAccommodationOptions] = useState<Array<string>>([]);
     const [selectedAccommodations, setSelectedAccommodations] = useState<Set<string>>(new Set());
@@ -42,9 +58,9 @@ function EventFiltersModal(
 
     const handleClear = () => {
         // Reset all filters: deselect all options or select default options
-        setSelectedDate(dateOptions[0]);
+        setSelectedDate(DateOption.AnyDate);
         setSelectedCategories(new Set());
-        setSelectedEventPrice(eventPriceOptions[0]);
+        setSelectedEventPrice(EventPriceOption.AnyPrice);
         setSelectedAccommodations(new Set());
     }
 
@@ -78,16 +94,16 @@ function EventFiltersModal(
         // ===========================================================================================
         // Convert selected event price option to numerical inclusive upper bound
         switch (selectedEventPrice) {
-            case 'Free events only':
+            case EventPriceOption.FreeOnly:
                 result.maxEventPrice = 0;
                 break;
-            case 'Up to $25':
+            case EventPriceOption.UpTo25:
                 result.maxEventPrice = 25;
                 break;
-            case 'Up to $50':
+            case EventPriceOption.UpTo50:
                 result.maxEventPrice = 50;
                 break;
-            case 'Any price':
+            case EventPriceOption.AnyPrice:
             default: // (default == any price)
                 result.maxEventPrice = undefined;
                 break;
@@ -149,26 +165,26 @@ function EventFiltersModal(
         setShowInvalidDateRangeMessage(false);
 
         switch (selectedDate) {
-            case 'Today':  // startDate == endDate == current day
+            case DateOption.Today:  // startDate == endDate == current day
                 break;
-            case 'Tomorrow':  // startDate == endDate == next day
+            case DateOption.Tomorrow:  // startDate == endDate == next day
                 newStartDate.setDate(today.getDate() + 1);
                 newEndDate.setDate(today.getDate() + 1);
                 break;
-            case 'This week':  // Monday to Sunday of current week
+            case DateOption.ThisWeek:  // Monday to Sunday of current week
                 var day = today.getDay();
                 newStartDate.setDate(today.getDate() - day + 1);    // Start of the week (Monday)
                 newEndDate.setDate(today.getDate() + (6-day) + 1);  // End of the week (Sunday)
                 break;
-            case 'This weekend':  // Saturday to Sunday of current week
+            case DateOption.ThisWeekend:  // Saturday to Sunday of current week
                 var day = today.getDay();
                 newStartDate.setDate(today.getDate() + (7-day-1));
                 newEndDate.setDate(today.getDate() + (7-day));
                 break;
-            case 'Custom':
+            case DateOption.Custom:
                 setCalendarVisible(true);
                 return;
-            case 'Any date':  // startDate == endDate == undefined (backend will filter events with range: today and on)
+            case DateOption.AnyDate:  // startDate == endDate == undefined (backend will filter events with range: today and on)
             default:
                 newStartDate = undefined;
                 newEndDate = undefined;
@@ -208,7 +224,7 @@ function EventFiltersModal(
                 {dateOptions && dateOptions.length >= 0 &&
                     <FilterSectionRadio
                         header='Date'
-                        defaultOption={dateOptions[0]}
+                        defaultOption={DateOption.AnyDate}
                         options={dateOptions}
                         selectedOption={selectedDate}
                         setSelectedOption={setSelectedDate}
@@ -266,7 +282,7 @@ function EventFiltersModal(
                 {eventPriceOptions && eventPriceOptions.length >= 0 &&
                     <FilterSectionRadio
                         header='Event Price'
-                        defaultOption={eventPriceOptions[0]}
+                        defaultOption={EventPriceOption.AnyPrice}
                         options={eventPriceOptions}
                         selectedOption={selectedEventPrice}
                         setSelectedOption={setSelectedEventPrice}
