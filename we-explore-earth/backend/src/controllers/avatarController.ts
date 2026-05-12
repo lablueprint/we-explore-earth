@@ -1,19 +1,11 @@
-import { s3Client, bucketName } from "../s3Client";
-import { PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Request, Response } from "express";
-import admin from "firebase-admin";
+import { db } from "../firestore";
+import {
+  uploadAvatarToS3AndFirestore,
+  signAvatarObjectKey,
+} from "../services/avatarUploadService";
 
-const db = admin.firestore();
 const SIGNED_URL_EXPIRES_IN = 60 * 60;
-
-async function generateSignedUrl(key: string): Promise<string> {
-  const command = new GetObjectCommand({
-    Bucket: bucketName,
-    Key: key,
-  });
-  return getSignedUrl(s3Client, command, { expiresIn: SIGNED_URL_EXPIRES_IN });
-}
 
 // POST /avatars/upload ;upload avatar to S3 and append its key to config/shared.avatars
 export async function uploadAvatar(req: Request, res: Response) {
@@ -22,32 +14,18 @@ export async function uploadAvatar(req: Request, res: Response) {
       return res.status(400).json({ error: "No file provided" });
     }
 
-    if (!bucketName) {
-      return res.status(500).json({ error: "S3 bucket not configured" });
-    }
-
-    const originalName = req.file.originalname;
-    const key = `avatars/${Date.now()}-${originalName.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
-
-    await s3Client.send(
-      new PutObjectCommand({
-        Bucket: bucketName,
-        Key: key,
-        Body: req.file.buffer,
-        ContentType: req.file.mimetype,
-      })
-    );
-
-    await db.doc("config/shared").update({
-      avatars: admin.firestore.FieldValue.arrayUnion(key),
+    const { key, url } = await uploadAvatarToS3AndFirestore({
+      buffer: req.file.buffer,
+      contentType: req.file.mimetype,
+      originalFilename: req.file.originalname,
     });
-
-    const url = await generateSignedUrl(key);
 
     return res.status(201).json({ key, url });
   } catch (error) {
     console.error("Error uploading avatar:", error);
-    return res.status(500).json({ error: "Failed to upload avatar" });
+    const message =
+      error instanceof Error ? error.message : "Failed to upload avatar";
+    return res.status(500).json({ error: message });
   }
 }
 
@@ -60,7 +38,7 @@ export async function getAllAvatars(req: Request, res: Response) {
     const avatars = await Promise.all(
       keys.map(async (key) => ({
         key,
-        url: await generateSignedUrl(key),
+        url: await signAvatarObjectKey(key),
       }))
     );
 
@@ -80,15 +58,13 @@ export async function getAvatarSignedUrl(req: Request, res: Response) {
       return res.status(400).json({ error: "Missing required query parameter: key" });
     }
 
-    if (!bucketName) {
-      return res.status(500).json({ error: "S3 bucket not configured" });
-    }
-
-    const signedUrl = await generateSignedUrl(key);
+    const signedUrl = await signAvatarObjectKey(key);
 
     return res.json({ url: signedUrl, expiresIn: SIGNED_URL_EXPIRES_IN });
   } catch (error) {
     console.error("Error generating signed URL:", error);
-    return res.status(500).json({ error: "Failed to generate signed URL" });
+    const message =
+      error instanceof Error ? error.message : "Failed to generate signed URL";
+    return res.status(500).json({ error: message });
   }
 }

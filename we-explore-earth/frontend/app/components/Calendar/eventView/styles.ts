@@ -26,6 +26,8 @@ export const styles = StyleSheet.create({
   imagePlaceholder: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: '#d0d0d0',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   content: {
     flex: 1,

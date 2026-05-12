@@ -3,22 +3,36 @@ import { Request, Response } from "express";
 import admin from "firebase-admin";
 import { FirestoreTimestamp, RSVPStatus, EventRSVP, Event, FirestoreEventData } from "@shared/types/event";
 import { Filter } from "@shared/types/filter";
+import {
+  uploadEventCoverToS3,
+  signEventImageKey,
+} from "../services/eventImageUploadService";
 
-// create event
+function parseStringArray(value: unknown): string[] {
+  if (Array.isArray(value)) return value.map(String);
+  if (typeof value === "string") {
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed.map(String) : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
+
+// create event (JSON body, or multipart with field `cover` for image upload)
 export async function createEvent(req: Request, res: Response) {
   try {
-    const {
-      title,
-      description,
-      location,
-      timeStart,
-      timeEnd,
-      price,
-      maxAttendees,
-      hostedBy,
-      category,
-      accommodation,
-    } = req.body;
+    const body = req.body as Record<string, unknown>;
+    const title = String(body.title ?? "").trim();
+    const description = String(body.description ?? "").trim();
+    const location = String(body.location ?? "").trim();
+    const timeStart = body.timeStart;
+    const timeEnd = body.timeEnd;
+    const price = body.price;
+    const maxAttendees = body.maxAttendees;
+    const hostedBy = String(body.hostedBy ?? "").trim();
 
     if (
       !title ||
@@ -27,27 +41,50 @@ export async function createEvent(req: Request, res: Response) {
       !timeStart ||
       !timeEnd ||
       price == null ||
-      !maxAttendees ||
+      maxAttendees == null ||
       !hostedBy
     ) {
       return res.status(400).json({ error: "All fields are required" });
+    }
+
+    const category = parseStringArray(body.category);
+    const accommodation = parseStringArray(body.accommodation);
+
+    let eventImage: string | null =
+      body.eventImage === undefined || body.eventImage === null || body.eventImage === ""
+        ? null
+        : String(body.eventImage);
+
+    if (req.file) {
+      try {
+        const uploaded = await uploadEventCoverToS3({
+          buffer: req.file.buffer,
+          contentType: req.file.mimetype || "application/octet-stream",
+          originalFilename: req.file.originalname || "cover.jpg",
+        });
+        eventImage = uploaded.key;
+      } catch (uploadErr) {
+        console.error("Event cover upload failed:", uploadErr);
+        return res.status(500).json({ error: "Failed to upload event image to S3" });
+      }
     }
 
     const eventData: FirestoreEventData = {
       title,
       description,
       location,
-      timeStart: new Date(timeStart),
-      timeEnd: new Date(timeEnd),
+      timeStart: new Date(timeStart as string),
+      timeEnd: new Date(timeEnd as string),
       hostedBy,
-      category: (category ?? []) as string[],
-      accommodation: (accommodation ?? []) as string[],
-      price: typeof price === "string" ? parseInt(price, 10) : price,
+      category,
+      accommodation,
+      price: typeof price === "string" ? parseInt(price, 10) : Number(price),
       maxAttendees:
         typeof maxAttendees === "string"
           ? parseInt(maxAttendees, 10)
-          : maxAttendees,
+          : Number(maxAttendees),
       attendees: [] as EventRSVP[],
+      eventImage,
     };
 
     const docRef = await db.collection("events").add(eventData);
@@ -56,6 +93,22 @@ export async function createEvent(req: Request, res: Response) {
   } catch (error) {
     console.error("Error creating event:", error);
     return res.status(500).json({ error: "Failed to create event" });
+  }
+}
+
+export async function getEventImageSignedUrl(req: Request, res: Response) {
+  try {
+    const key = req.query.key as string | undefined;
+    if (!key) {
+      return res.status(400).json({ error: "Missing query parameter: key" });
+    }
+
+    const url = await signEventImageKey(key);
+    return res.json({ url, expiresIn: 3600 });
+  } catch (error: unknown) {
+    console.error("Error signing event image URL:", error);
+    const message = error instanceof Error ? error.message : "Failed to sign URL";
+    return res.status(500).json({ error: message });
   }
 }
 
@@ -229,22 +282,19 @@ export async function getFilteredEvents(req: Request, res: Response) {
   }
 }
 
-// update event
+// update event (JSON body, or multipart with field `cover` for new cover upload)
 export async function updateEvent(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const {
-      title,
-      description,
-      location,
-      timeStart,
-      timeEnd,
-      price,
-      maxAttendees,
-      hostedBy,
-      category,
-      accommodation,
-    } = req.body;
+    const body = req.body as Record<string, unknown>;
+    const title = String(body.title ?? "").trim();
+    const description = String(body.description ?? "").trim();
+    const location = String(body.location ?? "").trim();
+    const timeStart = body.timeStart;
+    const timeEnd = body.timeEnd;
+    const price = body.price;
+    const maxAttendees = body.maxAttendees;
+    const hostedBy = String(body.hostedBy ?? "").trim();
 
     if (
       !title ||
@@ -253,14 +303,13 @@ export async function updateEvent(req: Request, res: Response) {
       !timeStart ||
       !timeEnd ||
       price == null ||
-      !maxAttendees ||
+      maxAttendees == null ||
       !hostedBy
     ) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
-    // Check if event exists
-    const eventRef = db.collection("events").doc(id as any);
+    const eventRef = db.collection("events").doc(id as string);
     const eventDoc = await eventRef.get();
 
     if (!eventDoc.exists) {
@@ -270,24 +319,56 @@ export async function updateEvent(req: Request, res: Response) {
     const existingData = eventDoc.data();
     const existingAttendees: EventRSVP[] = existingData?.attendees || [];
 
+    let eventImage: string | null =
+      existingData?.eventImage === undefined || existingData?.eventImage === null
+        ? null
+        : String(existingData.eventImage);
+
+    if (req.file) {
+      try {
+        const uploaded = await uploadEventCoverToS3({
+          buffer: req.file.buffer,
+          contentType: req.file.mimetype || "application/octet-stream",
+          originalFilename: req.file.originalname || "cover.jpg",
+        });
+        eventImage = uploaded.key;
+      } catch (uploadErr) {
+        console.error("Event cover upload failed:", uploadErr);
+        return res.status(500).json({ error: "Failed to upload event image to S3" });
+      }
+    } else {
+      if (body.eventImage === null || body.eventImage === "") {
+        eventImage = null;
+      } else if (body.eventImage !== undefined) {
+        eventImage = String(body.eventImage);
+      }
+    }
+
+    const category = parseStringArray(body.category);
+    const accommodation = parseStringArray(body.accommodation);
+
     const eventData: FirestoreEventData = {
       title,
       description,
       location,
-      timeStart: new Date(timeStart),
-      timeEnd: new Date(timeEnd),
+      timeStart: new Date(timeStart as string),
+      timeEnd: new Date(timeEnd as string),
       hostedBy,
-      category: (category ?? []) as string[],
-      accommodation: (accommodation ?? []) as string[],
-      price: typeof price === "string" ? parseInt(price, 10) : price,
+      category,
+      accommodation,
+      price: typeof price === "string" ? parseInt(price, 10) : Number(price),
       maxAttendees:
         typeof maxAttendees === "string"
           ? parseInt(maxAttendees, 10)
-          : maxAttendees,
+          : Number(maxAttendees),
       attendees: existingAttendees,
+      eventImage,
     };
 
-    await eventRef.update(eventData as any);
+    await eventRef.update({
+      ...eventData,
+      eventImageUrl: admin.firestore.FieldValue.delete(),
+    } as any);
 
     return res.status(200).json({ id, ...eventData });
   } catch (error) {

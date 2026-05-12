@@ -1,7 +1,8 @@
 import { useCallback, useState, useEffect } from "react";
 import { useRouter, useNavigation } from "expo-router";
 import { Alert } from "react-native";
-import type { EventFormState, FirestoreTimestamp } from "@shared/types/event";
+import type { FirestoreTimestamp } from "@shared/types/event";
+import type { EventFormState } from "../eventForm.types";
 import { useEventFormDirty } from "../../EventFormDirtyContext";
 import { combineDateAndTime, timestampToDate } from "@/utils/eventUtils";
 
@@ -23,6 +24,7 @@ function getEmptyFormState(): EventFormState {
     accommodation: [],
     maxAttendees: "",
     imageUri: null,
+    eventImage: null,
   };
 }
 
@@ -144,6 +146,27 @@ export function useEventFormPage(id: string | undefined) {
         const start = splitTimestamp(event.timeStart as FirestoreTimestamp | number);
         const end = splitTimestamp(event.timeEnd as FirestoreTimestamp | number);
 
+        const eventImageKey =
+          typeof event.eventImage === "string" && event.eventImage
+            ? event.eventImage
+            : null;
+
+        let previewUri: string | null = null;
+        if (eventImageKey && API_URL) {
+          try {
+            const signedRes = await fetch(
+              `${API_URL}/events/signed-url?key=${encodeURIComponent(eventImageKey)}`
+            );
+            if (signedRes.ok) {
+              const signedData = await signedRes.json();
+              previewUri =
+                typeof signedData.url === "string" ? signedData.url : null;
+            }
+          } catch {
+            /* preview unavailable */
+          }
+        }
+
         setForm({
           title: (event.title as string) || "",
           description: (event.description as string) || "",
@@ -161,7 +184,8 @@ export function useEventFormPage(id: string | undefined) {
           accommodation: Array.isArray(event.accommodation)
             ? event.accommodation
             : [],
-          imageUri: null,
+          imageUri: previewUri,
+          eventImage: eventImageKey,
         });
       } catch (error) {
         console.error("Error fetching event:", error);
@@ -224,6 +248,7 @@ export function useEventFormPage(id: string | undefined) {
       category: form.category,
       accommodation: form.accommodation,
       maxAttendees: form.maxAttendees,
+      eventImage: form.eventImage,
     };
 
     const onSuccess = () => {
@@ -236,32 +261,78 @@ export function useEventFormPage(id: string | undefined) {
 
     const onError = (msg: string) => Alert.alert("Error", msg);
 
+    const isRemoteImageUri =
+      form.imageUri != null && /^https?:\/\//i.test(form.imageUri.trim());
+    const hasNewLocalImage =
+      form.imageUri != null && !isRemoteImageUri;
+
     try {
-      if (isCreate) {
-        const response = await fetch(`${API_URL}/events/create`, {
+      let response: Response;
+
+      if (hasNewLocalImage && form.imageUri) {
+        const fd = new FormData();
+        fd.append("title", payload.title);
+        fd.append("description", payload.description);
+        fd.append("location", payload.location);
+        fd.append("timeStart", payload.timeStart);
+        fd.append("timeEnd", payload.timeEnd);
+        fd.append("price", String(payload.price));
+        fd.append("hostedBy", payload.hostedBy);
+        fd.append("maxAttendees", String(payload.maxAttendees));
+        fd.append("category", JSON.stringify(payload.category));
+        fd.append("accommodation", JSON.stringify(payload.accommodation));
+
+        const uri = form.imageUri;
+        const baseName =
+          uri.split("/").pop()?.split("?")[0] || "cover.jpg";
+        const ext = baseName.includes(".")
+          ? baseName.split(".").pop()?.toLowerCase()
+          : "";
+        const mime =
+          ext === "png"
+            ? "image/png"
+            : ext === "webp"
+              ? "image/webp"
+              : "image/jpeg";
+
+        fd.append("cover", {
+          uri,
+          name: baseName || "cover.jpg",
+          type: mime,
+        } as unknown as Blob);
+
+        const url = isCreate
+          ? `${API_URL}/events/create`
+          : `${API_URL}/events/${eventId}`;
+        response = await fetch(url, {
+          method: isCreate ? "POST" : "PUT",
+          body: fd,
+        });
+      } else if (isCreate) {
+        response = await fetch(`${API_URL}/events/create`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
-        const data = await response.json();
-        if (!response.ok) {
-          onError((data.error as string) || "Failed to create event");
-          return;
-        }
-        onSuccess();
       } else if (eventId) {
-        const response = await fetch(`${API_URL}/events/${eventId}`, {
+        response = await fetch(`${API_URL}/events/${eventId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
-        const data = await response.json();
-        if (!response.ok) {
-          onError((data.error as string) || "Failed to update event");
-          return;
-        }
-        onSuccess();
+      } else {
+        return;
       }
+
+      const data = await response.json();
+      if (!response.ok) {
+        onError(
+          (data.error as string) ||
+            (isCreate ? "Failed to create event" : "Failed to update event")
+        );
+        return;
+      }
+      onSuccess();
     } catch (error) {
       console.error(
         isCreate ? "Error creating event:" : "Error updating event:",
@@ -281,7 +352,26 @@ export function useEventFormPage(id: string | undefined) {
     field: K,
     value: EventFormState[K]
   ) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
+    setForm((prev: EventFormState) => ({ ...prev, [field]: value }));
+  }, []);
+
+  /** Local gallery pick clears persisted `eventImage` key until S3 upload on save */
+  const setCoverImageUri = useCallback((uri: string | null) => {
+    setForm((prev: EventFormState) => {
+      if (uri === null) {
+        return {
+          ...prev,
+          imageUri: null,
+          eventImage: null,
+        };
+      }
+      const remote = /^https?:\/\//i.test(uri.trim());
+      return {
+        ...prev,
+        imageUri: uri,
+        eventImage: remote ? prev.eventImage : null,
+      };
+    });
   }, []);
 
   return {
@@ -293,5 +383,6 @@ export function useEventFormPage(id: string | undefined) {
     loading,
     isCreate,
     handleSubmit,
+    setCoverImageUri,
   };
 }

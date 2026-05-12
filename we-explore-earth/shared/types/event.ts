@@ -1,4 +1,4 @@
-// We have to make our own firestore timestamp because /shared/types doesn't have firebase node modules local to it
+// Plain Firestore timestamp shape (no firebase SDK in /shared)
 export interface FirestoreTimestamp {
   _seconds: number;
   _nanoseconds: number;
@@ -6,66 +6,43 @@ export interface FirestoreTimestamp {
 
 export type RSVPStatus = "YES" | "MAYBE";
 
-//THIS HERE SHOULD BE ALL YOU NEED BUT IF NOT RUN IT BY PLs TO DOUBLE CHECK
-//CONSOLDATE EVERYTHING TO
-// EventRSVP
-// NewEvent
-// Event (which should extend from NewEvent)
-
+/** One row in an event’s `attendees` array (Firestore). */
 export interface EventRSVP {
   userID: string;
   status: RSVPStatus;
   checkedIn: boolean;
 }
 
-// Event interface for reading from Firestore (uses FirestoreTimestamp)
-export interface Event {
-id: string;
-title: string;
-description: string;
-location: string;
-timeStart: FirestoreTimestamp;
-timeEnd: FirestoreTimestamp;
-category: string[];
-accommodation: string[];
-price: number;
-maxAttendees: number;
-attendees: EventRSVP[];
-/** Stored when creating/updating; may be missing on older events */
-hostedBy?: string;
-}
-
-/** Form state for event create/edit UI. Uses split date/time and string inputs for pickers. */
-export interface EventFormState {
+/** Event document as stored / returned by the API (Firestore field types). */
+export interface NewEvent {
   title: string;
   description: string;
-  dateStart: Date;
-  timeStart: Date;
-  dateEnd: Date;
-  timeEnd: Date;
   location: string;
-  price: string;
-  hostedBy: string;
+  timeStart: FirestoreTimestamp;
+  timeEnd: FirestoreTimestamp;
   category: string[];
   accommodation: string[];
-  maxAttendees: string;
-  imageUri: string | null;
-}
-
-/** Event with user's RSVP status (e.g. from GET /users/:id/events) */
-export type EventWithStatus = Event & { status?: RSVPStatus };
-
-// Event data for writing to Firestore (uses Date - Firestore converts to FirestoreTimestamp)
-export interface FirestoreEventData {
-  title: string;
-  description: string;
-  location: string;
-  timeStart: Date;
-  timeEnd: Date;
   price: number;
   maxAttendees: number;
-  hostedBy: string;
-  category: string[];
-  accommodation: string[];
-  attendees?: EventRSVP[];
+  attendees: EventRSVP[];
+  hostedBy?: string;
+  /** S3 object key `events/…` */
+  eventImage?: string | null;
 }
+
+export interface Event extends NewEvent {
+  id: string;
+}
+
+/** `GET /users/:id/events` adds the current user’s RSVP on the event. */
+export type EventWithStatus = Event & { status?: RSVPStatus };
+
+/** Body the backend writes with `Date` (Firestore converts to timestamps). */
+export type FirestoreEventData = Omit<
+  NewEvent,
+  "timeStart" | "timeEnd" | "attendees"
+> & {
+  timeStart: Date;
+  timeEnd: Date;
+  attendees?: EventRSVP[];
+};

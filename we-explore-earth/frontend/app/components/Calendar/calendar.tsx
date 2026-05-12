@@ -1,33 +1,52 @@
-//STANDARD LIBRARY
-import { useState } from 'react';
-
-//THIRD-PARTY LIBRARIES
-import { View, ActivityIndicator, ScrollView } from 'react-native';
+// STANDARD / THIRD-PARTY IMPORTS
+import { useState } from "react";
+import {
+  View,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+} from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-//LOCAL FILES
-import EventView from './eventView/eventView';
-import EventDetails from './eventDetails/eventDetails';
-import { styles } from './styles';
-import type { Event } from '@shared/types/event';
+// LOCAL COMPONENTS
+import EventView from "./eventView/eventView";
+import EventDetails from "./eventDetails/eventDetails";
+import EventAttendees from "./eventAttendees/eventAttendees";
+import RSVPModal from "./RSVPModal/RSVPModal";
 
-export default function Calendar({
-  loading,
-  events,
-  embedded = false,
-}: {
-  loading: boolean;
-  events: Event[];
-  embedded?: boolean;
-}) {
-  //STATE VARIABLES
+// TYPES
+import type { Event, RSVPStatus } from "@shared/types/event";
+
+// HOOKS
+import { useUser } from "../../../hooks/useUser";
+
+export default function Calendar(
+  {
+    loading,
+    events = [],
+    embedded = false,
+  }
+  :
+  {
+    loading: boolean,
+    events?: Array<Event | null | undefined>,
+    embedded?: boolean,
+  }
+) {
+  const { user } = useUser();
+
+  // STATE VARIABLES
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
+  const [rsvpModalVisible, setRsvpModalVisible] = useState(false);
+  const [currentRSVP, setCurrentRSVP] = useState<RSVPStatus | null>(null);
 
-  //HANDLERS
+  // HANDLERS
   const handleEventPress = (event: Event | null) => {
     if (!event) return;
     setSelectedEvent(event);
+    const existingRSVP = user?.events?.find((e) => e.eventID === event.id);
+    setCurrentRSVP(existingRSVP ? (existingRSVP.status as RSVPStatus) : null);
     setDetailsModalVisible(true);
   };
 
@@ -35,53 +54,68 @@ export default function Calendar({
     setDetailsModalVisible(false);
   };
 
-  const eventList = events.filter(Boolean).map((event) => (
-    <EventView key={event.id} event={event} onPress={handleEventPress} />
-  ));
+  const handleRSVPPress = () => {
+    if (!user) {
+      Alert.alert("Sign In Required", "Please sign in to RSVP to events.");
+      return;
+    }
+    setDetailsModalVisible(false);
+    setRsvpModalVisible(true);
+  };
 
-  const details = (
-    <EventDetails
-      visible={detailsModalVisible && !!selectedEvent}
-      event={selectedEvent}
-      onClose={handleCloseDetailsModal}
-    />
-  );
+  const handleCloseRSVPModal = () => {
+    setRsvpModalVisible(false);
+    setDetailsModalVisible(true);
+  };
 
-  if (embedded) {
-    return (
-      <View>
-        {loading ? (
-          <View style={styles.embeddedLoading}>
-            <ActivityIndicator size="large" />
-          </View>
-        ) : (
-          <>
-            {/* Set up calendar to group events by MONTH. Label groups with MONTH. Add filters to the calendar when ready. */}
-            {eventList}
-            {details}
-          </>
-        )}
-      </View>
-    );
-  }
+  const handleRSVPChange = (status: RSVPStatus | null) => {
+    setCurrentRSVP(status);
+  };
+
+  // only display events with non null values
+  const visibleEvents = events.filter((event): event is Event => Boolean(event));
+
+  // RENDER
+  const Container = embedded ? View : SafeAreaView;
 
   return (
-    <SafeAreaView style={styles.screen}>
-      <View style={styles.flexFill}>
+    <Container style={{ flex: 1, backgroundColor: "#fff" }}>
+      <View style={{ flex: 1 }}>
         {loading ? (
-          <View style={styles.loadingCenter}>
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
             <ActivityIndicator size="large" />
           </View>
         ) : (
           <>
             {/** TODO: Group events by MONTH. Label groups with MONTH. */}
-            <ScrollView contentContainerStyle={styles.scrollContent}>
-              {eventList}
+            <ScrollView>
+              {visibleEvents.map((event) => (
+                <EventView
+                  key={event.id}
+                  event={event}
+                  onPress={handleEventPress}
+                />
+              ))}
             </ScrollView>
-            {details}
+
+            <EventDetails
+              visible={detailsModalVisible && !!selectedEvent}
+              event={selectedEvent}
+              onClose={handleCloseDetailsModal}
+            />
+
+            <RSVPModal
+              visible={rsvpModalVisible && !!selectedEvent}
+              event={selectedEvent}
+              currentRSVP={currentRSVP}
+              onClose={handleCloseRSVPModal}
+              onRSVPChange={handleRSVPChange}
+            />
           </>
         )}
       </View>
-    </SafeAreaView>
+    </Container>
   );
 }

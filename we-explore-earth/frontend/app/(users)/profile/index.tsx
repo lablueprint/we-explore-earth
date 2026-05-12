@@ -8,11 +8,13 @@ import { SvgUri } from 'react-native-svg';
 import { styles } from './styles';
 import { User } from "@shared/types/user";
 import { useUser } from '../../../hooks/useUser';
-import { useAppSelector } from '@/app/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/app/redux/hooks';
+import { updateUserState } from '@/app/redux/slices/userSlice';
 
 export default function ProfileScreen() {
   //REACT HOOKS
   const { userId } = useUser();
+  const dispatch = useAppDispatch();
   const reduxUser = useAppSelector(state => state.user);
   //STATE VARIABLES
   const [user, setUser] = useState<User | null>(null);
@@ -71,6 +73,7 @@ export default function ProfileScreen() {
       const updatedUserData: User = await response.json();
       setUser(updatedUserData);
       setNotificationTokenEnabled(updatedUserData.notificationToken !== null);
+      dispatch(updateUserState(updatedUserData));
       Alert.alert('Success', 'Profile updated successfully!');
     } catch(error: any) {
       console.error('Error while updating user:', error);

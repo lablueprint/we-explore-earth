@@ -14,6 +14,7 @@ export default function EventFormPage() {
     loading,
     isCreate,
     handleSubmit,
+    setCoverImageUri,
   } = useEventFormPage(id);
 
   if (!isCreate && loading) {
@@ -54,7 +55,7 @@ export default function EventFormPage() {
       maxAttendees={form.maxAttendees}
       setMaxAttendees={withDirty((v) => updateField("maxAttendees", v))}
       imageUri={form.imageUri}
-      setImageUri={withDirty((v) => updateField("imageUri", v))}
+      setImageUri={withDirty(setCoverImageUri)}
       onSubmit={handleSubmit}
       submitButtonText={isCreate ? "Create Event" : "Update Event"}
       formTitle={isCreate ? "Create New Event" : "Edit Event"}

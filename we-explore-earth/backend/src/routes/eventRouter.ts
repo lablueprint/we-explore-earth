@@ -1,4 +1,5 @@
 import express from "express";
+import multer from "multer";
 import {
   createEvent,
   getEvent,
@@ -7,18 +8,27 @@ import {
   updateEvent,
   addOrUpdateRSVP,
   removeRSVP,
+  getEventImageSignedUrl,
 } from "../controllers/eventController";
 
 const router = express.Router();
 
-// POST /events/create
-router.post("/create", createEvent);
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 15 * 1024 * 1024 },
+});
+
+// POST /events/create (optional multipart field `cover` for cover image → S3)
+router.post("/create", upload.single("cover"), createEvent);
 
 // POST /events/filtered (see note in eventController.ts)
 router.post("/filtered", getFilteredEvents);
 
-// PUT /events/:id
-router.put("/:id", updateEvent);
+// PUT /events/:id (optional multipart field `cover`)
+router.put("/:id", upload.single("cover"), updateEvent);
+
+// GET /events/signed-url?key=events/... — same pattern as GET /avatars/signed-url
+router.get("/signed-url", getEventImageSignedUrl);
 
 // GET /events/:id
 router.get("/:id", getEvent);

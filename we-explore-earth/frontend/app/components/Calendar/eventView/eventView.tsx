@@ -2,7 +2,7 @@
 import React from 'react';
 
 //THIRD-PARTY LIBRARIES
-import { TouchableOpacity, Text, View } from 'react-native';
+import { TouchableOpacity, Text, View, Image, StyleSheet, ActivityIndicator } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 //LOCAL FILES
@@ -10,6 +10,7 @@ import { styles, clockIconSize, clockIconColor, cardActiveOpacity } from './styl
 import type { Event } from '@shared/types/event';
 import { typography } from '@shared/typography/typography';
 import { useUser } from '../../../../hooks/useUser';
+import { useEventSignedImageUrl } from '../../../../hooks/useEventSignedImageUrl';
 
 type Props = {
   event: Event;
@@ -34,6 +35,9 @@ function formatEventDate(seconds: number): string {
 export default function EventView({ event, onPress }: Props) {
   //REACT HOOKS
   const { userId } = useUser();
+  const { url: coverUrl, loading: coverLoading } = useEventSignedImageUrl(
+    event.eventImage
+  );
 
   const rsvp = userId ? event.attendees?.find((a) => a.userID === userId) : undefined;
   const rsvpStatus = rsvp?.status ?? null;
@@ -46,7 +50,20 @@ export default function EventView({ event, onPress }: Props) {
       activeOpacity={cardActiveOpacity}
     >
       <View style={styles.imageWrap}>
-        <View style={styles.imagePlaceholder} />
+        {coverUrl ? (
+          <Image
+            source={{ uri: coverUrl }}
+            style={StyleSheet.absoluteFillObject}
+            resizeMode="cover"
+            accessibilityIgnoresInvertColors
+          />
+        ) : (
+          <View style={styles.imagePlaceholder}>
+            {coverLoading && event.eventImage ? (
+              <ActivityIndicator />
+            ) : null}
+          </View>
+        )}
       </View>
 
       <View style={styles.content}>

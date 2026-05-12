@@ -61,6 +61,12 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 20,
+    overflow: 'hidden',
+  },
+
+  coverImage: {
+    width: '100%',
+    height: '100%',
   },
   
   imagePlaceholderText: {

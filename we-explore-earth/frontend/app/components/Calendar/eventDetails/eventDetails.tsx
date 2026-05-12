@@ -7,11 +7,13 @@ import {
   Alert,
   ScrollView,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import { styles } from "./styles";
 import type { Event, FirestoreTimestamp } from "@shared/types/event";
 import RSVPModal from "../RSVPModal/RSVPModal";
 import { useUser } from "../../../../hooks/useUser";
+import { useEventSignedImageUrl } from "../../../../hooks/useEventSignedImageUrl";
 import { typography } from "../../../../../shared/typography/typography";
 
 type Props = {
@@ -74,6 +76,10 @@ export default function EventDetails({
     setLocalRSVP(status);
     onRSVPChange?.();
   };
+
+  const { url: coverUrl, loading: coverLoading } = useEventSignedImageUrl(
+    event?.eventImage
+  );
   
   const displayRSVP = rsvpModalVisible ? localRSVP : currentRSVP;
   
@@ -102,7 +108,18 @@ export default function EventDetails({
               </View>
 
               <View style={styles.imagePlaceholder}>
-                <Text style={styles.imagePlaceholderText}>Image</Text>
+                {coverUrl ? (
+                  <Image
+                    source={{ uri: coverUrl }}
+                    style={styles.coverImage}
+                    resizeMode="cover"
+                    accessibilityIgnoresInvertColors
+                  />
+                ) : coverLoading && event.eventImage ? (
+                  <ActivityIndicator />
+                ) : (
+                  <Text style={styles.imagePlaceholderText}>Image</Text>
+                )}
               </View>
 
               <Text style={typography.h1}>{event.title}</Text>

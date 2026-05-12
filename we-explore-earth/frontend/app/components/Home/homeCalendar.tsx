@@ -1,10 +1,11 @@
 //STANDARD LIBRARY
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 //THIRD-PARTY LIBRARIES
 import { View, Text, TouchableOpacity } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
+import { SvgUri } from "react-native-svg";
 
 //LOCAL FILES
 import Calendar from "@/app/components/Calendar/calendar";
@@ -32,6 +33,7 @@ export default function HomeCalendar({
   //REACT HOOKS
   const router = useRouter();
   const { user } = useUser();
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   const displayName = user?.firstName?.trim() || "there";
 
@@ -50,6 +52,23 @@ export default function HomeCalendar({
     setBrewingDetailsVisible(true);
   };
 
+  useEffect(() => {
+    if (!user?.avatar) {
+      setAvatarUrl(null);
+      return;
+    }
+
+    fetch(
+      `${process.env.EXPO_PUBLIC_API_URL}/avatars/signed-url?key=${encodeURIComponent(user.avatar)}`
+    )
+      .then((res) => res.json())
+      .then((data) => setAvatarUrl(data.url))
+      .catch((err) => {
+        console.error("Failed to fetch avatar URL:", err);
+        setAvatarUrl(null);
+      });
+  }, [user?.avatar]);
+
   //RENDER
   if (user?.isAdmin) {
     return (
@@ -67,7 +86,11 @@ export default function HomeCalendar({
       <View style={styles.heroBlock}>
         <View style={styles.heroRow}>
           <View style={styles.avatar} accessibilityLabel="Profile avatar placeholder">
-            <Ionicons {...homeIcons.avatarCamera} />
+            {avatarUrl ? (
+              <SvgUri uri={avatarUrl} width={46} height={46} />
+            ) : (
+              <Ionicons {...homeIcons.avatarCamera} />
+            )}
           </View>
           <Text style={textStyles.trailCalling} numberOfLines={2}>
             The trail is calling, {displayName}
