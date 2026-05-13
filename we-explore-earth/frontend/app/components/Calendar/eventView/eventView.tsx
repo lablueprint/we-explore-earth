@@ -4,9 +4,10 @@ import React from 'react';
 //THIRD-PARTY LIBRARIES
 import { TouchableOpacity, Text, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 //LOCAL FILES
-import { styles, clockIconSize, clockIconColor, cardActiveOpacity } from './styles';
+import { styles, cardGradient, clockIconSize, clockIconColor, cardActiveOpacity } from './styles';
 import type { Event } from '@shared/types/event';
 import { typography } from '@shared/typography/typography';
 import { useUser } from '../../../../hooks/useUser';
@@ -41,16 +42,22 @@ export default function EventView({ event, onPress }: Props) {
   //RENDER
   return (
     <TouchableOpacity
-      style={styles.card}
       onPress={() => onPress(event)}
       activeOpacity={cardActiveOpacity}
     >
+      <LinearGradient
+        colors={cardGradient.colors}
+        locations={cardGradient.locations}
+        start={cardGradient.start}
+        end={cardGradient.end}
+        style={styles.card}
+      >
       <View style={styles.imageWrap}>
         <View style={styles.imagePlaceholder} />
       </View>
 
       <View style={styles.content}>
-        <Text style={[typography.h1, styles.title]} numberOfLines={3}>
+        <Text style={[typography.h1, styles.title]} numberOfLines={2}>
           {event.title}
         </Text>
 
@@ -74,6 +81,7 @@ export default function EventView({ event, onPress }: Props) {
           </View>
         )}
       </View>
+      </LinearGradient>
     </TouchableOpacity>
   );
 }

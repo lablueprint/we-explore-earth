@@ -2,7 +2,7 @@
 import { useState, useMemo } from "react";
 
 //THIRD-PARTY LIBRARIES
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
 
@@ -20,7 +20,6 @@ type Props = {
   showFilters?: boolean;
   onPressFilters?: () => void;
   onRSVPChange?: () => void;
-  /** After an admin saves an edit, open this event in the details sheet. */
   autoOpenEvent?: Event | null;
   onAutoOpenEventHandled?: () => void;
 };
@@ -36,7 +35,7 @@ export default function HomeCalendar({
 }: Props) {
   //REACT HOOKS
   const router = useRouter();
-  const { user } = useUser();
+  const { user, userId } = useUser();
 
   const displayName = user?.firstName?.trim() || "there";
 
@@ -46,8 +45,10 @@ export default function HomeCalendar({
 
   const brewingPreviewEvent = useMemo(() => {
     if (!events.length) return null;
-    return [...events].sort((a, b) => a.timeStart._seconds - b.timeStart._seconds)[0];
-  }, [events]);
+    return [...events]
+      .filter((e) => e.attendees?.some((a) => a.userID === userId && (a.status === 'YES' || a.status === 'MAYBE')))
+      .sort((a, b) => a.timeStart._seconds - b.timeStart._seconds)[0] ?? null;
+  }, [events, userId]);
 
   //HANDLERS
   const handleBrewingEventPress = (event: Event) => {
@@ -56,24 +57,8 @@ export default function HomeCalendar({
   };
 
   //RENDER
-  if (user?.isAdmin) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.adminHeader}>
-          <Text style={textStyles.upcoming}>Upcoming</Text>
-        </View>
-        <Calendar
-          loading={loading}
-          events={events}
-          autoOpenEvent={autoOpenEvent}
-          onAutoOpenEventHandled={onAutoOpenEventHandled}
-        />
-      </View>
-    );
-  }
-
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
       <View style={styles.heroBlock}>
         <View style={styles.heroRow}>
           <View style={styles.avatar} accessibilityLabel="Profile avatar placeholder">
@@ -98,24 +83,30 @@ export default function HomeCalendar({
         )}
       </View>
 
-      <View style={styles.brewingSection}>
-        <View style={styles.brewingHeaderRow}>
-          <Text style={styles.brewingTitleLine} numberOfLines={2}>
-            <Text style={textStyles.brewingLead}>Brewing</Text>
-            <Text style={textStyles.brewingTail}> next...</Text>
-          </Text>
-          <TouchableOpacity
-            onPress={() => router.push("/(users)/events" as const)}
-            style={styles.viewAllButton}
-            accessibilityRole="button"
-            accessibilityLabel="View all my events"
-          >
-            <Text style={textStyles.viewAll}>VIEW ALL {">"}</Text>
-          </TouchableOpacity>
+      {!user?.isAdmin && (
+        <View style={styles.brewingSection}>
+          <View style={styles.brewingHeaderRow}>
+            <Text style={styles.brewingTitleLine} numberOfLines={2}>
+              <Text style={textStyles.brewingLead}>Brewing</Text>
+              <Text style={textStyles.brewingTail}> next...</Text>
+            </Text>
+            <TouchableOpacity
+              onPress={() => router.push("/(users)/events" as const)}
+              style={styles.viewAllButton}
+              accessibilityRole="button"
+              accessibilityLabel="View all my events"
+            >
+              <Text style={textStyles.viewAll}>VIEW ALL {">"}</Text>
+            </TouchableOpacity>
+          </View>
+          {brewingPreviewEvent ? (
+            <EventView event={brewingPreviewEvent} onPress={handleBrewingEventPress} />
+          ) : null}
         </View>
-        {brewingPreviewEvent ? (
-          <EventView event={brewingPreviewEvent} onPress={handleBrewingEventPress} />
-        ) : null}
+      )}
+
+      <View style={[styles.upcomingHeader, user?.isAdmin && { marginTop: -16 }]}>
+        <Text style={textStyles.upcoming}>Upcoming</Text>
       </View>
 
       <Calendar
@@ -125,6 +116,15 @@ export default function HomeCalendar({
         autoOpenEvent={autoOpenEvent}
         onAutoOpenEventHandled={onAutoOpenEventHandled}
       />
-    </View>
+
+      {!user?.isAdmin && (
+        <EventDetails
+          visible={brewingDetailsVisible && !!brewingSelectedEvent}
+          event={brewingSelectedEvent}
+          onClose={() => setBrewingDetailsVisible(false)}
+          onRSVPChange={onRSVPChange}
+        />
+      )}
+    </ScrollView>
   );
 }
