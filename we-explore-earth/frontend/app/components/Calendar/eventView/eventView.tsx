@@ -73,7 +73,7 @@ export default function EventView({ event, onPress }: Props) {
           </Text>
         </View>
 
-        {rsvpStatus && (
+        {(rsvpStatus === 'YES' || rsvpStatus === 'MAYBE') && (
           <View style={[styles.rsvpBadge, rsvpStatus === 'YES' ? styles.rsvpGoing : styles.rsvpMaybe]}>
             <Text style={[typography.body, styles.rsvpText]}>
               {rsvpStatus === 'YES' ? 'Going' : 'Maybe'}
