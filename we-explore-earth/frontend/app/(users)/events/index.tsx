@@ -12,39 +12,21 @@ import {
 
 //THIRD-PARTY LIBRARIES
 import { useFocusEffect } from 'expo-router';
-import Ionicons from '@expo/vector-icons/Ionicons';
 
 //LOCAL FILES
 import { useUser } from '../../../hooks/useUser';
+import EventView from '../../components/Calendar/eventView/eventView';
 import EventDetails from '../../components/Calendar/eventDetails/eventDetails';
 import type { Event, EventWithStatus } from '@shared/types/event';
 import { typography } from '@shared/typography/typography';
 import {
   styles,
-  eventCardActiveOpacity,
   activityIndicatorSize,
-  clockIconSize,
-  clockIconColor,
 } from './styles';
 
 type Tab = 'Upcoming' | 'Past';
 
 const getEventDate = (e: EventWithStatus) => e.timeStart._seconds * 1000;
-
-function formatEventDate(ms: number) {
-  const date = new Date(ms);
-  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const dayName = days[date.getDay()];
-  const monthName = months[date.getMonth()];
-  const day = date.getDate();
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  const hour12 = hours % 12 || 12;
-  const minuteStr = minutes === 0 ? '' : `:${String(minutes).padStart(2, '0')}`;
-  return `${dayName} ${monthName} ${day}, ${hour12}${minuteStr}${ampm}`;
-}
 
 export default function MyEventsScreen() {
   //REACT HOOKS
@@ -166,49 +148,9 @@ export default function MyEventsScreen() {
                 </Text>
               </View>
             ) : (
-              list.map((event) => {
-                const status = event.status ?? null;
-                return (
-                  <TouchableOpacity
-                    key={event.id}
-                    style={styles.eventCard}
-                    onPress={() => handleEventPress(event)}
-                    activeOpacity={eventCardActiveOpacity}
-                  >
-                    <View style={styles.eventThumbnailWrap}>
-                      <View style={styles.eventThumbnail} />
-                    </View>
-                    <View style={styles.eventCardContent}>
-                      <Text style={[typography.h1, styles.eventTitle]} numberOfLines={2}>
-                        {event.title}
-                      </Text>
-                      <View style={styles.datePill}>
-                        <Ionicons
-                          name="time-outline"
-                          size={clockIconSize}
-                          color={clockIconColor}
-                          style={styles.clockIcon}
-                        />
-                        <Text style={[typography.body, styles.eventDate]}>
-                          {formatEventDate(getEventDate(event))}
-                        </Text>
-                      </View>
-                      {status && (
-                        <View
-                          style={[
-                            styles.rsvpPill,
-                            status === 'YES' ? styles.rsvpGoing : styles.rsvpMaybe,
-                          ]}
-                        >
-                          <Text style={[typography.body, styles.rsvpPillText]}>
-                            {status === 'YES' ? 'Going' : 'Maybe'}
-                          </Text>
-                        </View>
-                      )}
-                    </View>
-                  </TouchableOpacity>
-                );
-              })
+              list.map((event) => (
+                <EventView key={event.id} event={event} onPress={handleEventPress} />
+              ))
             )}
           </ScrollView>
         )}
