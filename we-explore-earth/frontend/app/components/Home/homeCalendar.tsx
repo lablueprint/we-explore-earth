@@ -106,7 +106,7 @@ export default function HomeCalendar({
       )}
 
       <View style={[styles.upcomingHeader, user?.isAdmin && { marginTop: -16 }]}>
-        <Text style={textStyles.upcoming}>Upcoming</Text>
+        <Text style={textStyles.upcoming}>Explore events</Text>
       </View>
 
       <Calendar
