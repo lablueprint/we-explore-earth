@@ -1,5 +1,6 @@
 import { useCallback, useState, useEffect } from "react";
 import { useRouter, useNavigation } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
 import { Alert } from "react-native";
 import type { FirestoreTimestamp } from "@shared/types/event";
 import type { EventFormState } from "../eventForm.types";
@@ -100,110 +101,127 @@ export function useEventFormPage(id: string | undefined) {
   }, [navigation, isCreate, isEventFormDirty]);
 
   useEffect(() => {
-    const unsubBlur = navigation.addListener("blur", resetForm);
+    const unsubBlur = navigation.addListener("blur", () => {
+      if (isCreate) resetForm();
+    });
     return unsubBlur;
-  }, [navigation, resetForm]);
+  }, [navigation, resetForm, isCreate]);
 
   useEffect(() => {
     if (id === "new" || !id) resetForm();
   }, [id, resetForm]);
 
-  // --- Fetch event when editing ---
-  useEffect(() => {
-    if (isCreate || !eventId) return;
+  // --- Load event each time the edit screen is focused (survives blur + same eventId) ---
+  useFocusEffect(
+    useCallback(() => {
+      if (isCreate || !eventId || !API_URL) return;
 
-    (async () => {
-      try {
-        const response = await fetch(`${API_URL}/events/${eventId}`, {
-          method: "GET",
-        });
+      let cancelled = false;
+      setLoading(true);
 
-        if (!response.ok) {
-          Alert.alert(
-            "Error",
-            response.status === 404 ? "Event not found" : "Failed to fetch event"
-          );
-          setLoading(false);
-          return;
-        }
+      void (async () => {
+        try {
+          const response = await fetch(`${API_URL}/events/${eventId}`, {
+            method: "GET",
+          });
 
-        const event: Record<string, unknown> = await response.json();
-
-        if (!event || (!event.title && !event.id)) {
-          Alert.alert("Error", "Invalid event data received");
-          setLoading(false);
-          return;
-        }
-
-        const missing: string[] = [];
-        if (!event.timeStart) missing.push("timeStart");
-        if (!event.timeEnd) missing.push("timeEnd");
-        if ((event.maxAttendees as number) == null) missing.push("maxAttendees");
-
-        if (missing.length > 0) {
-          Alert.alert(
-            "Error",
-            `Event data is missing required fields: ${missing.join(", ")}. Cannot edit this event.`
-          );
-          setLoading(false);
-          return;
-        }
-
-        const start = splitTimestamp(event.timeStart as FirestoreTimestamp | number);
-        const end = splitTimestamp(event.timeEnd as FirestoreTimestamp | number);
-
-        const eventImageKey =
-          typeof event.eventImage === "string" && event.eventImage
-            ? event.eventImage
-            : null;
-
-        let previewUri: string | null = null;
-        if (eventImageKey && API_URL) {
-          try {
-            const signedRes = await fetch(
-              `${API_URL}/events/signed-url?key=${encodeURIComponent(eventImageKey)}`
-            );
-            if (signedRes.ok) {
-              const signedData = await signedRes.json();
-              previewUri =
-                typeof signedData.url === "string" ? signedData.url : null;
+          if (!response.ok) {
+            if (!cancelled) {
+              Alert.alert(
+                "Error",
+                response.status === 404 ? "Event not found" : "Failed to fetch event"
+              );
             }
-          } catch {
-            /* preview unavailable */
+            return;
           }
-        }
 
-        setForm({
-          title: (event.title as string) || "",
-          description: (event.description as string) || "",
-          location: (event.location as string) || "",
-          dateStart: start.date,
-          timeStart: start.time,
-          dateEnd: end.date,
-          timeEnd: end.time,
-          price:
-            event.price != null ? String(event.price) : "0",
-          hostedBy: (event.hostedBy as string) || "",
-          maxAttendees:
-            event.maxAttendees != null ? String(event.maxAttendees) : "",
-          category: Array.isArray(event.category) ? event.category : [],
-          accommodation: Array.isArray(event.accommodation)
-            ? event.accommodation
-            : [],
-          imageUri: previewUri,
-          eventImage: eventImageKey,
-        });
-      } catch (error) {
-        console.error("Error fetching event:", error);
-        Alert.alert(
-          "Error",
-          error instanceof Error ? error.message : "Failed to fetch event"
-        );
-      } finally {
+          const event: Record<string, unknown> = await response.json();
+
+          if (!event || (!event.title && !event.id)) {
+            if (!cancelled) Alert.alert("Error", "Invalid event data received");
+            return;
+          }
+
+          const missing: string[] = [];
+          if (!event.timeStart) missing.push("timeStart");
+          if (!event.timeEnd) missing.push("timeEnd");
+          if ((event.maxAttendees as number) == null) missing.push("maxAttendees");
+
+          if (missing.length > 0) {
+            if (!cancelled) {
+              Alert.alert(
+                "Error",
+                `Event data is missing required fields: ${missing.join(", ")}. Cannot edit this event.`
+              );
+            }
+            return;
+          }
+
+          const start = splitTimestamp(event.timeStart as FirestoreTimestamp | number);
+          const end = splitTimestamp(event.timeEnd as FirestoreTimestamp | number);
+
+          const eventImageKey =
+            typeof event.eventImage === "string" && event.eventImage
+              ? event.eventImage
+              : null;
+
+          let previewUri: string | null = null;
+          if (eventImageKey && API_URL) {
+            try {
+              const signedRes = await fetch(
+                `${API_URL}/events/signed-url?key=${encodeURIComponent(eventImageKey)}`
+              );
+              if (signedRes.ok) {
+                const signedData = await signedRes.json();
+                previewUri =
+                  typeof signedData.url === "string" ? signedData.url : null;
+              }
+            } catch {
+              /* preview unavailable */
+            }
+          }
+
+          if (cancelled) return;
+
+          setForm({
+            title: (event.title as string) || "",
+            description: (event.description as string) || "",
+            location: (event.location as string) || "",
+            dateStart: start.date,
+            timeStart: start.time,
+            dateEnd: end.date,
+            timeEnd: end.time,
+            price:
+              event.price != null ? String(event.price) : "0",
+            hostedBy: (event.hostedBy as string) || "",
+            maxAttendees:
+              event.maxAttendees != null ? String(event.maxAttendees) : "",
+            category: Array.isArray(event.category) ? event.category : [],
+            accommodation: Array.isArray(event.accommodation)
+              ? event.accommodation
+              : [],
+            imageUri: previewUri,
+            eventImage: eventImageKey,
+          });
+        } catch (error) {
+          console.error("Error fetching event:", error);
+          if (!cancelled) {
+            Alert.alert(
+              "Error",
+              error instanceof Error ? error.message : "Failed to fetch event"
+            );
+          }
+        } finally {
+          if (!cancelled) setLoading(false);
+        }
+      })();
+
+      return () => {
+        cancelled = true;
         setLoading(false);
-      }
-    })();
-  }, [eventId, isCreate]);
+      };
+    }, [eventId, isCreate])
+  );
 
   // --- Fetch categories and accommodations ---
   useEffect(() => {

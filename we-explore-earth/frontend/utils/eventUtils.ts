@@ -32,6 +32,16 @@ export const timestampToDate = (
     return new Date((timestamp as FirestoreTimestamp)._seconds * 1000);
   }
 
+  // Firestore Timestamp JSON / REST shape (`seconds`, no underscore)
+  if (
+    typeof timestamp === "object" &&
+    "seconds" in timestamp &&
+    typeof (timestamp as { seconds: unknown }).seconds === "number"
+  ) {
+    const t = timestamp as { seconds: number; nanoseconds?: number };
+    return new Date(t.seconds * 1000 + (t.nanoseconds ?? 0) / 1e6);
+  }
+
   // If it's already a Date object
   if (timestamp instanceof Date) {
     return timestamp;
@@ -95,6 +105,12 @@ export function apiResponseToEvent(raw: Record<string, unknown>): Event | null {
       raw.hostedBy != null && raw.hostedBy !== ""
         ? String(raw.hostedBy)
         : undefined,
+    eventImage:
+      raw.eventImage === undefined ||
+      raw.eventImage === null ||
+      raw.eventImage === ""
+        ? null
+        : String(raw.eventImage),
   };
 }
 
