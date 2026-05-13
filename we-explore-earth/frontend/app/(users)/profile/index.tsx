@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Alert } from 'react-native';
+import { View, Text, Alert, ScrollView } from 'react-native';
 import { useState, useEffect} from 'react';
 import { TouchableOpacity } from 'react-native';
 import { SvgUri } from 'react-native-svg';
@@ -98,7 +98,11 @@ export default function ProfileScreen() {
 
   //RENDER
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.scrollContent}
+      showsVerticalScrollIndicator={false}
+    >
       <View style={styles.contentContainer}>
         <Text style={styles.title}>Hi @{user?.username}!</Text>
         <Text style={styles.infoText}>Email: {user?.email}</Text>
@@ -114,7 +118,7 @@ export default function ProfileScreen() {
 
         <View style={styles.notificationContainer}>
           <Text style={styles.label}>Enable Notifications:</Text>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.checkbox}
             onPress={handleToggleNotification}
           >
@@ -128,7 +132,7 @@ export default function ProfileScreen() {
         </View>
       </View>
 
-      <TouchableOpacity 
+      <TouchableOpacity
         style={[styles.updateButton, isUpdating && styles.updateButtonDisabled]}
         onPress={handleUpdate}
         disabled={isUpdating}
@@ -137,6 +141,6 @@ export default function ProfileScreen() {
           {isUpdating ? 'Updating...' : 'Update Profile'}
         </Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }

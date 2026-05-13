@@ -20,6 +20,7 @@ const MAPPING = {
   'chevron.right': 'chevron-right',
   'calendar': 'event',
   'bell.fill': 'notifications',
+  'person.circle.fill': 'account-circle',
 } as IconMapping;
 
 /**

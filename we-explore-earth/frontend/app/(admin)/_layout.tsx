@@ -1,10 +1,12 @@
+import { BlurView } from "expo-blur";
 import { Tabs, useRouter, usePathname } from "expo-router";
 import React from "react";
-import { Alert } from "react-native";
+import { Alert, useWindowDimensions, View } from "react-native";
 
 import { EventFormDirtyProvider, useEventFormDirty } from "./EventFormDirtyContext";
 import { HapticTab } from "../components/Native/haptic-tab";
 import { IconSymbol } from "../components/Native/icon-symbol";
+import { styles } from "./styles";
 
 const NEW_EVENT_HREF = "/(admin)/events/new";
 
@@ -61,7 +63,17 @@ function NewEventTabButton(
   );
 }
 
+function BubbleIcon({ name, focused }: { name: React.ComponentProps<typeof IconSymbol>["name"]; focused: boolean }) {
+  return (
+    <View style={focused ? styles.bubbleIconFocused : undefined}>
+      <IconSymbol name={name} color={focused ? "white" : "#8A8A8A"} />
+    </View>
+  );
+}
+
 export default function AdminLayout() {
+  const { width } = useWindowDimensions();
+  const sideMargin = Math.round(width * 0.07);
 
   return (
     <EventFormDirtyProvider>
@@ -69,14 +81,20 @@ export default function AdminLayout() {
         screenOptions={{
           headerShown: false,
           tabBarButton: ConfirmLeaveEventFormTabButton,
+          tabBarStyle: [styles.tabBar, { start: sideMargin, end: sideMargin }],
+          tabBarIconStyle: styles.tabBarIcon,
+          tabBarShowLabel: false,
+          tabBarBackground: () => (
+            <BlurView intensity={70} tint="light" style={styles.tabBarBlur} />
+          ),
         }}
       >
         <Tabs.Screen
           name="home/index"
           options={{
             title: "Home",
-            tabBarIcon: ({ color }) => (
-              <IconSymbol size={28} name="house.fill" color={color} />
+            tabBarIcon: ({ focused }) => (
+              <BubbleIcon name="house.fill" focused={focused} />
             ),
           }}
         />
@@ -84,8 +102,8 @@ export default function AdminLayout() {
           name="events/[id]"
           options={{
             title: "New Event",
-            tabBarIcon: ({ color }) => (
-              <IconSymbol size={28} name="calendar" color={color} />
+            tabBarIcon: ({ focused }) => (
+              <BubbleIcon name="plus" focused={focused} />
             ),
             tabBarButton: NewEventTabButton,
           }}
@@ -94,8 +112,8 @@ export default function AdminLayout() {
           name="notifications/index"
           options={{
             title: "Notify",
-            tabBarIcon: ({ color }) => (
-              <IconSymbol size={28} name="bell.fill" color={color} />
+            tabBarIcon: ({ focused }) => (
+              <BubbleIcon name="bell.fill" focused={focused} />
             ),
           }}
         />
@@ -103,8 +121,8 @@ export default function AdminLayout() {
           name="profile/index"
           options={{
             title: "Profile",
-            tabBarIcon: ({ color }) => (
-              <IconSymbol size={28} name="paperplane.fill" color={color} />
+            tabBarIcon: ({ focused }) => (
+              <BubbleIcon name="person.circle.fill" focused={focused} />
             ),
           }}
         />

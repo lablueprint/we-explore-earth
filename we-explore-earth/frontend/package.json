@@ -25,6 +25,7 @@
     "@reduxjs/toolkit": "^2.11.2",
     "expo": "^55.0.18",
     "expo-auth-session": "^55.0.15",
+    "expo-blur": "~55.0.14",
     "expo-checkbox": "~55.0.4",
     "expo-constants": "~55.0.15",
     "expo-crypto": "~55.0.14",
