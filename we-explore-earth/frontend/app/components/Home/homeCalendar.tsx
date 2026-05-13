@@ -91,7 +91,6 @@ export default function HomeCalendar({
               accessibilityRole="button"
               accessibilityLabel="Open event filters"
             >
-              <Text style={textStyles.filters}>Filters</Text>
               <Ionicons {...homeIcons.filterOptions} />
             </TouchableOpacity>
           </View>

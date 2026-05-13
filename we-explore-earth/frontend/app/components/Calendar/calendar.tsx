@@ -1,5 +1,8 @@
+//STANDARD LIBRARY
 import React, { useState, useEffect, useRef } from 'react';
-import { View, ActivityIndicator, ScrollView } from 'react-native';
+
+//THIRD-PARTY LIBRARIES
+import { Text, View, ActivityIndicator, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import EventView from './eventView/eventView';
@@ -88,9 +91,17 @@ export default function Calendar({
           </View>
         ) : (
           <>
-            <ScrollView contentContainerStyle={styles.scrollContent}>
-              {eventList}
-            </ScrollView>
+            {events && events.length > 0
+              ?
+              <ScrollView contentContainerStyle={styles.scrollContent}>
+                {eventList}
+              </ScrollView>
+              :
+              <View>
+                <Text style={styles.noEventsMessage}>No events found for these dates.</Text>
+              </View>
+            }
+
             {details}
           </>
         )}

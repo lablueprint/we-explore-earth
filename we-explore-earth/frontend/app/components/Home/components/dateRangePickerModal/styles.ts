@@ -1,103 +1,97 @@
 import { StyleSheet } from 'react-native';
 
-// Calendar styles (not the modal)
+// Date range styles (for calendar that's imported from 'react-native-calendar')
+const SELECTED_BACKGROUND_COLOR = '#D6E6CB';
+const SELECTED_EDGE_BORDER_RADIUS = 50;
+const SELECTED_EDGE_CIRCLE_COLOR = '#507C30';
+const SELECTED_EDGE_TEXT_COLOR = '#FCFCFC';
+const SELECTED_MIDDLE_TEXT_COLOR = '#2B2E29';
 
-// TODO: Placeholder colors for calendar.
-const SELECTED_EDGE_COLOR = '#50cebb';
-const SELECTED_MIDDLE_COLOR = '#70d7c7';
-const SELECTED_TEXT_COLOR = '#ffffff';
-// ---------------------------------------------
+/* 
+ * Width of the calendar is 322, so each day has a width of 46 (322 / 7).
+ * Middle days have a background that spans the entire width.
+ * Edge days have a background that spans 70% of the width.
+ */
+const RANGE_DAY_WIDTH = 46;
+const SELECTED_EDGE_BACKGROUND_WIDTH = Math.round(RANGE_DAY_WIDTH * 0.7);
+const EDGE_PADDING = RANGE_DAY_WIDTH - SELECTED_EDGE_BACKGROUND_WIDTH;
 
+// Base container style for all selected days. Start dates, end dates, and single dates override some of these styles.
 const baseContainerStyle = {
-    height: 34,
-    width: 38,
+    width: RANGE_DAY_WIDTH,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: SELECTED_BACKGROUND_COLOR,
+    borderRadius: 0,
 };
 
-export const calendarStyles = {
-    // TODO: Placeholder colors for calendar.
-    todayColor: '#e67e22',
-    arrowColor: '#000000',
-    // ---------------------------------------------
+// Edge days are indicated with a dark green circle overlay.
+const edgeCircleStyle = {
+    color: SELECTED_EDGE_TEXT_COLOR,
+    backgroundColor: SELECTED_EDGE_CIRCLE_COLOR,
+    borderRadius: SELECTED_EDGE_BORDER_RADIUS,
+    width: 26,
+    height: 26,
+    lineHeight: 26,
+    textAlign: 'center',
+}
+
+export const dateRangeStyles = {
     startDay: {
         container: {
             ...baseContainerStyle,
-            backgroundColor: SELECTED_EDGE_COLOR,
-            borderRadius: 0,
-            borderTopLeftRadius: 16,
-            borderBottomLeftRadius: 16,
+            borderTopLeftRadius: SELECTED_EDGE_BORDER_RADIUS,
+            borderBottomLeftRadius: SELECTED_EDGE_BORDER_RADIUS,
+            marginRight: -EDGE_PADDING,  // Shifts background to the right so that the circle overlay can be on the left edge of the day
         },
         text: {
-            color: SELECTED_TEXT_COLOR
-        },
+            ...edgeCircleStyle,
+            marginRight: EDGE_PADDING, // Shifts text (day number) to the left so that the text does not shift with the container and remains centered with the day of the week 
+        }
     },
     endDay: {
         container: {
             ...baseContainerStyle,
-            backgroundColor: SELECTED_EDGE_COLOR,
-            borderRadius: 0,
-            borderTopRightRadius: 16,
-            borderBottomRightRadius: 16,
+            borderTopRightRadius: SELECTED_EDGE_BORDER_RADIUS,
+            borderBottomRightRadius: SELECTED_EDGE_BORDER_RADIUS,
+            marginLeft: -EDGE_PADDING,  // Shifts background to the left so that the circle overlay can be on the right edge of the day
         },
         text: {
-            color: SELECTED_TEXT_COLOR
-        },
+            ...edgeCircleStyle,
+            marginLeft: EDGE_PADDING,  // Shifts text (day number) to the right so that the text does not shift with the container and remains centered with the day of the week
+        }
     },
     singleDay: {
         container: {
             ...baseContainerStyle,
-            backgroundColor: SELECTED_EDGE_COLOR,
-            borderRadius: 16,
+            width: SELECTED_EDGE_BACKGROUND_WIDTH,
+            borderRadius: SELECTED_EDGE_BORDER_RADIUS,
         },
         text: {
-            color: SELECTED_TEXT_COLOR
-        },
+            ...edgeCircleStyle,
+        }
     },
     middleDay: {
         container: {
             ...baseContainerStyle,
-            backgroundColor: SELECTED_MIDDLE_COLOR,
-            borderRadius: 0,
         },
         text: {
-            color: SELECTED_TEXT_COLOR
-        },
+            color: SELECTED_MIDDLE_TEXT_COLOR,
+        }
     },
 };
 
-// TODO: Modal styles (placeholder)
-export const modalStyles = StyleSheet.create({
-    centeredView: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    modalView: {
-        margin: 20,
-        backgroundColor: '#ffffff',
+// Modal styles (parent container of the calendar)
+export const calendarStyles = StyleSheet.create({
+    wrapper: {
+        marginTop: 12,
+        padding: 16,
+        width: 354,
+        alignSelf: 'center',
+        backgroundColor: '#F0F0F0',
+        borderWidth: 1,
         borderRadius: 20,
-        padding: 35,
-        alignItems: 'center',
-        shadowColor: '#000000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
+        borderColor: '#DEDEDE',
         elevation: 5,
-    },
-    submit: {
-        marginTop: 24,
-        padding: 4,
-        borderRadius: 4,
-        backgroundColor: 'lightgrey',
-    },
-    submitText: {
-        textAlign: 'center',
-        fontWeight: 700, /** bold */
-        fontSize: 16,
-        color: '#3c3b3b',
     },
 })
