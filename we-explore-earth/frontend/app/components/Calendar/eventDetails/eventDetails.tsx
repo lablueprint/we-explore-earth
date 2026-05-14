@@ -7,7 +7,7 @@ import {
   Alert,
   ScrollView,
 } from "react-native";
-import { router, useRouter, useSegments } from "expo-router";
+import { useRouter, useSegments } from "expo-router";
 
 import { styles } from "./styles";
 import type { Event, FirestoreTimestamp } from "@shared/types/event";
@@ -82,6 +82,14 @@ export default function EventDetails({
     setLocalRSVP(status);
     setHasLocalChange(true);
     onRSVPChange?.();
+  };
+
+  const handleTermsPress = () => {
+    setRsvpModalVisible(false);
+    onClose();
+    requestAnimationFrame(() => {
+      router.push("/rsvp-terms-placeholder");
+    });
   };
 
   const handleEditEvent = () => {
@@ -229,6 +237,7 @@ export default function EventDetails({
         currentRSVP={localRSVP}
         onClose={() => setRsvpModalVisible(false)}
         onRSVPChange={handleRSVPChange}
+        onTermsPress={handleTermsPress}
       />
     </>
   );
