@@ -1,5 +1,5 @@
 //STANDARD LIBRARY
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
 
 //THIRD-PARTY LIBRARIES
 import {
@@ -33,6 +33,7 @@ import {
   termsTextStyle,
   termsLinkStyle,
   rsvpButtonTextStyle,
+  cancelButtonTextStyle,
   closeIconSize,
   closeIconColor,
   checkmarkIconSize,
@@ -66,15 +67,61 @@ export default function RSVPModal({
   const { user, userId } = useUser();
   const dispatch = useAppDispatch();
 
+  const attendeeRSVP = userId
+    ? (event?.attendees?.find((a) => a.userID === userId)?.status ?? null)
+    : null;
+  const effectiveRSVP = currentRSVP ?? attendeeRSVP;
+
   //STATE VARIABLES
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState<RSVPStatus | null>(
-    currentRSVP,
-  );
-
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState<RSVPStatus | null>(effectiveRSVP);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
+  useEffect(() => {
+    if (visible) {
+      setSelectedStatus(effectiveRSVP);
+      setAgreedToTerms(false);
+    }
+  }, [visible]);
+
   //HANDLERS
+  const handleCancel = async () => {
+    if (!event || !userId) return;
+    const baseUrl = process.env.EXPO_PUBLIC_API_URL;
+    if (!baseUrl) {
+      Alert.alert('Config Error', 'EXPO_PUBLIC_API_URL is not set.');
+      return;
+    }
+    setIsCancelling(true);
+    try {
+      const eventRes = await fetch(`${baseUrl}/events/${event.id}/rsvp`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userID: userId }),
+      });
+      if (!eventRes.ok) {
+        Alert.alert('Error', 'Failed to cancel event RSVP.');
+        return;
+      }
+      const userRes = await fetch(`${baseUrl}/users/${userId}/rsvp`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eventID: event.id }),
+      });
+      if (!userRes.ok) {
+        Alert.alert('Error', 'Failed to cancel user RSVP.');
+        return;
+      }
+      onRSVPChange(null);
+      onClose();
+    } catch {
+      Alert.alert('Network Error', 'Could not cancel RSVP.');
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!selectedStatus) {
       Alert.alert("Selection Required", "Please select Yes or Maybe.");
@@ -260,13 +307,23 @@ export default function RSVPModal({
                 style={styles.submittingIndicator}
               />
             ) : (
-              <TouchableOpacity
-                style={styles.rsvpButton}
-                onPress={handleSubmit}
-                activeOpacity={0.85}
-              >
-                <Text style={rsvpButtonTextStyle}>RSVP</Text>
+              <TouchableOpacity style={styles.rsvpButton} onPress={handleSubmit} activeOpacity={0.85}>
+                <Text style={rsvpButtonTextStyle}>{effectiveRSVP ? 'Update RSVP' : 'RSVP'}</Text>
               </TouchableOpacity>
+            )}
+
+            {effectiveRSVP && (
+              isCancelling ? (
+                <ActivityIndicator
+                  size="large"
+                  color="#C0392B"
+                  style={styles.submittingIndicator}
+                />
+              ) : (
+                <TouchableOpacity style={styles.cancelButton} onPress={handleCancel} activeOpacity={0.85}>
+                  <Text style={cancelButtonTextStyle}>Cancel RSVP</Text>
+                </TouchableOpacity>
+              )
             )}
           </ScrollView>
         </LinearGradient>

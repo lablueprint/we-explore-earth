@@ -147,6 +147,8 @@ export default function SignupPage() {
                             value={password}
                             onChangeText={setPassword}
                             secureTextEntry
+                            textContentType="newPassword"   // tells iOS this is a new password field
+                            autoComplete="new-password"     // disables AutoFill suggestion banner
                             placeholderTextColor="#8A8A8A"
                         />
 
@@ -156,6 +158,8 @@ export default function SignupPage() {
                             value={checkPassword}
                             onChangeText={setCheckPassword}
                             secureTextEntry
+                            textContentType="newPassword"   // tells iOS this is a new password field
+                            autoComplete="new-password"     // disables AutoFill suggestion banner
                             placeholderTextColor="#8A8A8A"
                         />
 
