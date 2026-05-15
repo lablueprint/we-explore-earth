@@ -5,7 +5,6 @@ import { View, Text, TouchableOpacity, TextInput, ScrollView, Alert, ImageBackgr
 import { router } from 'expo-router';
 //LOCAL FILES
 import { styles } from './styles';
-import BackButton from '@/app/components/BackButton/backButton'
 
 export default function SignupPage() {
     //REACT HOOKS
@@ -94,7 +93,6 @@ export default function SignupPage() {
             resizeMode="cover"
         >
             <SafeAreaView style={styles.safeArea}>
-                <BackButton route="/launch" />
                 <KeyboardAvoidingView 
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                     style={styles.keyboardView}
