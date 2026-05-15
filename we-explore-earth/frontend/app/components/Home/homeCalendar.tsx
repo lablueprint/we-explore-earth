@@ -75,7 +75,7 @@ export default function HomeCalendar({
     }
 
     fetch(
-      `${process.env.EXPO_PUBLIC_API_URL}/avatars/signed-url?key=${encodeURIComponent(user.avatar)}`
+      `${process.env.EXPO_PUBLIC_API_URL}/users/avatars/signed-url?key=${encodeURIComponent(user.avatar)}`
     )
       .then((res) => res.json())
       .then((data) => setAvatarUrl(data.url))

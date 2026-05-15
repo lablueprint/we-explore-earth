@@ -1,8 +1,66 @@
 import { db } from "../firestore";
 import { Request, Response } from "express";
 import admin from "firebase-admin";
+import { GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { s3Client, bucketName } from "../s3Client";
 import { User, NewUser, UserRSVP } from "@shared/types/user";
 import nodemailer from 'nodemailer';
+
+const AVATAR_SIGNED_URL_EXPIRES_IN = 60 * 60;
+
+async function signAvatarObjectKey(key: string): Promise<string> {
+  if (!bucketName) {
+    throw new Error("S3 bucket not configured");
+  }
+
+  const command = new GetObjectCommand({
+    Bucket: bucketName,
+    Key: key,
+  });
+
+  return getSignedUrl(s3Client, command, { expiresIn: AVATAR_SIGNED_URL_EXPIRES_IN });
+}
+
+// GET /users/avatars
+export async function getAllAvatars(req: Request, res: Response) {
+  try {
+    const snap = await db.doc("config/shared").get();
+    const keys: string[] = snap.data()?.avatars ?? [];
+
+    const avatars = await Promise.all(
+      keys.map(async (key) => ({
+        key,
+        url: await signAvatarObjectKey(key),
+      }))
+    );
+
+    return res.json(avatars);
+  } catch (error) {
+    console.error("Error fetching avatars:", error);
+    return res.status(500).json({ error: "Failed to fetch avatars" });
+  }
+}
+
+// GET /users/avatars/signed-url?key=avatars/...
+export async function getAvatarSignedUrl(req: Request, res: Response) {
+  try {
+    const key = req.query.key as string | undefined;
+
+    if (!key) {
+      return res.status(400).json({ error: "Missing required query parameter: key" });
+    }
+
+    const signedUrl = await signAvatarObjectKey(key);
+
+    return res.json({ url: signedUrl, expiresIn: AVATAR_SIGNED_URL_EXPIRES_IN });
+  } catch (error) {
+    console.error("Error generating signed URL:", error);
+    const message =
+      error instanceof Error ? error.message : "Failed to generate signed URL";
+    return res.status(500).json({ error: message });
+  }
+}
 
 // GET /users - get all users
 export async function getAllUsers(req: Request, res: Response) {

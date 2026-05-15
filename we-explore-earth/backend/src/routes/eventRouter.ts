@@ -27,7 +27,7 @@ router.post("/filtered", getFilteredEvents);
 // PUT /events/:id (optional multipart field `cover`)
 router.put("/:id", upload.single("cover"), updateEvent);
 
-// GET /events/signed-url?key=events/... — same pattern as GET /avatars/signed-url
+// GET /events/signed-url?key=events/... — same pattern as GET /users/avatars/signed-url
 router.get("/signed-url", getEventImageSignedUrl);
 
 // GET /events/:id

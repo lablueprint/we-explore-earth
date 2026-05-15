@@ -1,6 +1,8 @@
 import express from "express";
 import {
   getAllUsers,
+  getAllAvatars,
+  getAvatarSignedUrl,
   getUser,
   getUserEvents,
   getUserRSVPs,
@@ -17,6 +19,10 @@ const router = express.Router();
 
 // GET /users
 router.get("/", getAllUsers);
+
+// Avatar catalog (must be before /:id)
+router.get("/avatars/signed-url", getAvatarSignedUrl);
+router.get("/avatars", getAllAvatars);
 
 // GET /users/:id/events
 router.get("/:id/events", getUserEvents);

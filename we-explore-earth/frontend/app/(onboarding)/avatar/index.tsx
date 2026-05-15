@@ -27,7 +27,7 @@ export default function AvatarPage() {
   //HANDLERS
   async function fetchAvatars() {
     try {
-      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/avatars`);
+      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/avatars`);
       const data = await res.json();
       setAvatars(data);
     } catch (error) {
