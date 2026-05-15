@@ -74,7 +74,7 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
   },
   signupButton: {
-    backgroundColor: '#8A8A8A', 
+    backgroundColor: '#355E2B', 
     padding: 15,
     borderRadius: 30,
     alignItems: 'center',

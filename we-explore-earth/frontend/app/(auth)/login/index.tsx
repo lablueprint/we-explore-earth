@@ -5,7 +5,6 @@ import { View, Text, TouchableOpacity, TextInput, Alert, ImageBackground, SafeAr
 import { router } from "expo-router";
 //LOCAL FILES
 import { styles } from "./styles";
-import BackButton from "@/app/components/BackButton/backButton";
 import { useAppDispatch } from "@/app/redux/hooks";
 import { setUserState } from "@/app/redux/slices/userSlice";
 
@@ -74,7 +73,6 @@ export default function LoginPage() {
             resizeMode="cover"
         >
             <SafeAreaView style={styles.safeArea}>
-                <BackButton route="/launch" />
                 <KeyboardAvoidingView 
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                     style={styles.container}

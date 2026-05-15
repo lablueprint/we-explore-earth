@@ -131,9 +131,9 @@ export async function getUser(req: Request, res: Response) {
 // POST /users/signup
 export async function signupUser(req: Request, res: Response) {
   try {
-    const { email, password, username, firstName, lastName, notifications, phoneNumber } = req.body;
+    const { email, password, firstName, lastName, notificationsEnabled, phoneNumber } = req.body;
 
-    if (!email || !password || !username || !firstName || !lastName || !phoneNumber) {
+    if (!email || !password || !firstName || !lastName || !phoneNumber) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -184,7 +184,6 @@ export async function signupUser(req: Request, res: Response) {
 
     //Part 2: Create user document
     const userData: NewUser = {
-      username,
       email,
       firstName,
       lastName,
@@ -192,7 +191,8 @@ export async function signupUser(req: Request, res: Response) {
       isAdmin: isAdmin,
       events: [],
       avatar: null,
-      hasOnboarded: false
+      hasOnboarded: false,
+      notificationsEnabled: notificationsEnabled
     };
 
     //Part 3: POST user document to Firestore collection
@@ -213,7 +213,7 @@ export async function signupUser(req: Request, res: Response) {
 export async function updateUser(req: Request, res:Response) {
   try {
     const { id } = req.params;
-    const { username, email, firstName, lastName, isAdmin, hasOnboarded, phoneNumber } = req.body;
+    const { email, firstName, lastName, isAdmin, hasOnboarded, phoneNumber } = req.body;
 
     if (!id) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -229,7 +229,6 @@ export async function updateUser(req: Request, res:Response) {
     
     if (hasOnboarded !== undefined) userData.hasOnboarded = hasOnboarded;
     if (phoneNumber !== undefined) userData.phoneNumber = phoneNumber;
-    if (username !== undefined) userData.username = username;
     if (firstName !== undefined) userData.firstName = firstName;
     if (lastName !== undefined) userData.lastName = lastName;
   

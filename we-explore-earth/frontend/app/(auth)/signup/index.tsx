@@ -5,7 +5,6 @@ import { View, Text, TouchableOpacity, TextInput, ScrollView, Alert, ImageBackgr
 import { router } from 'expo-router';
 //LOCAL FILES
 import { styles } from './styles';
-import BackButton from '@/app/components/BackButton/backButton'
 
 export default function SignupPage() {
     //REACT HOOKS
@@ -14,18 +13,18 @@ export default function SignupPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [checkPassword, setCheckPassword] = useState('');
-    const [username, setUsername] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
-    const [age, setAge] = useState(false);
-    const [notifications, setNotifications] = useState(false);
+
+    const [notificationsEnabled, setNotificationsEnabled] = useState(false);
     const [privacy, setPrivacy] = useState(false);
-    
+    const [age, setAge] = useState(false);
+
     //HANDLERS
     async function handleSignup() {
         // Basic validation
-        if (!email || !password || !username || !firstName || !lastName || !phoneNumber) {
+        if (!email || !password || !firstName || !lastName || !phoneNumber) {
             Alert.alert('Error', 'Please fill in all required fields');
             return;
         }
@@ -52,11 +51,10 @@ export default function SignupPage() {
                 body: JSON.stringify({
                     email,
                     password,
-                    username,
                     firstName,
                     lastName,
                     phoneNumber,
-                    notifications
+                    notificationsEnabled
                 })
             });
 
@@ -95,7 +93,6 @@ export default function SignupPage() {
             resizeMode="cover"
         >
             <SafeAreaView style={styles.safeArea}>
-                <BackButton route="/launch" />
                 <KeyboardAvoidingView 
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                     style={styles.keyboardView}
@@ -125,15 +122,6 @@ export default function SignupPage() {
 
                         <TextInput
                             style={styles.input}
-                            placeholder="Username"
-                            value={username}
-                            onChangeText={setUsername}
-                            autoCapitalize="none"
-                            placeholderTextColor="#8A8A8A"
-                        />
-
-                        <TextInput
-                            style={styles.input}
                             placeholder="Email"
                             value={email}
                             onChangeText={setEmail}
@@ -157,6 +145,8 @@ export default function SignupPage() {
                             value={password}
                             onChangeText={setPassword}
                             secureTextEntry
+                            textContentType="newPassword"   // tells iOS this is a new password field
+                            autoComplete="new-password"     // disables AutoFill suggestion banner
                             placeholderTextColor="#8A8A8A"
                         />
 
@@ -166,6 +156,8 @@ export default function SignupPage() {
                             value={checkPassword}
                             onChangeText={setCheckPassword}
                             secureTextEntry
+                            textContentType="newPassword"   // tells iOS this is a new password field
+                            autoComplete="new-password"     // disables AutoFill suggestion banner
                             placeholderTextColor="#8A8A8A"
                         />
 
@@ -181,10 +173,10 @@ export default function SignupPage() {
 
                         <TouchableOpacity 
                             style={styles.checkboxContainer} 
-                            onPress={() => setNotifications(!notifications)}
+                            onPress={() => setNotificationsEnabled(!notificationsEnabled)}
                         >
-                            <View style={[styles.checkbox, notifications && styles.checkboxChecked]}>
-                                {notifications && <Text style={styles.checkmark}>✓</Text>}
+                            <View style={[styles.checkbox, notificationsEnabled && styles.checkboxChecked]}>
+                                {notificationsEnabled && <Text style={styles.checkmark}>✓</Text>}
                             </View>
                             <Text style={styles.checkboxText}>I consent to notifications</Text>
                         </TouchableOpacity>

@@ -207,15 +207,16 @@ export default function EventDetails({
                   <View key={i} style={styles.avatar} />
                 ))}
               </View>
-
-              <TouchableOpacity
+              
+              {!isAdmin && (<TouchableOpacity
                 onPress={handleRSVPPress}
                 style={styles.rsvpButton}
               >
                 <Text style={styles.rsvpButtonText}>
                   {displayRSVP ? "Update RSVP" : "RSVP"}
                 </Text>
-              </TouchableOpacity>
+              </TouchableOpacity>)}
+              
 
               {isAdmin && (
                 <TouchableOpacity
