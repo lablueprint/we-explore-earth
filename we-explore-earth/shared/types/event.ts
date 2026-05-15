@@ -38,7 +38,7 @@ export type EventWithStatus = Event & { status?: RSVPStatus };
 /** Body the backend writes with `Date` (Firestore converts to timestamps). */
 export type FirestoreEventData = Omit<
   Event,
-  "timeStart" | "timeEnd" | "attendees"
+  "id" | "timeStart" | "timeEnd" | "attendees"
 > & {
   timeStart: Date;
   timeEnd: Date;
