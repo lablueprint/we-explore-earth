@@ -126,12 +126,17 @@ export default function EventDetails({
               <Text style={typography.h1}>{event.title}</Text>
 
               <View style={styles.tagRow}>
-                <View style={styles.tagPill}>
-                  <Text style={styles.tagText}>Westwood</Text>
-                </View>
-                <View style={styles.tagPill}>
-                  <Text style={styles.tagText}>Hiking & Nature Walks</Text>
-                </View>
+                {event.category?.map((item) => (
+                  <View key={item} style={styles.categoryPill}>
+                    <Text style={styles.tagText}>{item}</Text>
+                  </View>
+                ))}
+
+                {event.accommodation?.map((item) => (
+                  <View key={item} style={styles.accommodationPill}>
+                    <Text style={styles.tagText}>{item}</Text>
+                  </View>
+                ))}
               </View>
 
               <View style={styles.infoRow}>
@@ -151,14 +156,13 @@ export default function EventDetails({
                 <Text style={styles.infoIcon}>📍</Text>
                 <View>
                   <Text style={styles.infoTitle}>{event.location}</Text>
-                  <Text style={styles.infoSub}>1155 N Lemon St, CA 92832</Text>
                 </View>
               </View>
 
               <Text style={styles.sectionLabel}>ATTENDEES</Text>
 
               <View style={styles.attendeeHeader}>
-                <Text style={styles.attendeeCount}>30 People on the List</Text>
+                <Text style={styles.attendeeCount}>{event.attendees?.length ?? 0} People on the List</Text>
 
                 {isAdmin && (
                   <TouchableOpacity
@@ -174,12 +178,6 @@ export default function EventDetails({
                     <Text style={styles.backText}>View All</Text>
                   </TouchableOpacity>
                 )}
-              </View>
-
-              <View style={styles.avatarRow}>
-                {[1, 2, 3, 4, 5, 6, 7].map((i) => (
-                  <View key={i} style={styles.avatar} />
-                ))}
               </View>
 
               <TouchableOpacity
@@ -207,17 +205,6 @@ export default function EventDetails({
                 {event.description || "No description provided."}
               </Text>
 
-              <Text style={styles.sectionLabel}>DESCRIPTION</Text>
-              <Text style={styles.body}>
-                We'll move through riparian and chaparral woodland habitats,
-                stopping frequently to explore edible properties of local
-                species.
-              </Text>
-
-              <Text style={styles.sectionLabel}>WHAT TO BRING</Text>
-              <Text style={styles.body}>
-                • Water{"\n"}• Comfortable closed-toe shoes
-              </Text>
             </ScrollView>
           </View>
         </View>
