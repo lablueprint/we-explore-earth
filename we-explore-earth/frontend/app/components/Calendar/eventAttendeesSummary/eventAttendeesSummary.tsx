@@ -8,7 +8,7 @@ import { Modal, View, Text, TouchableOpacity } from 'react-native';
 import { styles } from './styles';
 import type { Event } from '@shared/types/event';
 import type { User } from '@shared/types/user';
-import { useUser } from '../../../../hooks/useUser';
+import { useUser } from '@/app/redux/hooks/useUser';
 import EventAttendees from '../eventAttendees/eventAttendees';
 
 

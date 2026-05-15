@@ -11,7 +11,7 @@ import { useRouter } from "expo-router";
 import Calendar from "@/app/components/Calendar/calendar";
 import EventView from "@/app/components/Calendar/eventView/eventView";
 import EventDetails from "@/app/components/Calendar/eventDetails/eventDetails";
-import { useUser } from "@/hooks/useUser";
+import { useUser } from "@/app/redux/hooks/useUser";
 import type { Event } from "@shared/types/event";
 import { styles, homeIcons, textStyles } from "./styles";
 

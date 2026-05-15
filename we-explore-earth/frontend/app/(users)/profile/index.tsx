@@ -7,7 +7,7 @@ import { SvgUri } from 'react-native-svg';
 //LOCAL FILES
 import { styles } from './styles';
 import { User } from "@shared/types/user";
-import { useUser } from '../../../hooks/useUser';
+import { useUser } from '@/app/redux/hooks/useUser';
 
 export default function ProfileScreen() {
   //REACT HOOKS

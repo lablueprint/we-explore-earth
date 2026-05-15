@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 
-import { useAppDispatch, useAppSelector } from '../app/redux/hooks';
-import { clearAvatarUrl, setAvatarUrl } from '../app/redux/slices/userSlice';
+import { useAppDispatch, useAppSelector } from '@/app/redux/hooks';
+import { clearAvatarUrl, setAvatarUrl } from '@/app/redux/slices/userSlice';
 
 const AVATAR_URL_EXPIRY_BUFFER_MS = 60_000;
 

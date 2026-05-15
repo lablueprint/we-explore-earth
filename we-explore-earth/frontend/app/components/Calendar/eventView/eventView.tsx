@@ -10,7 +10,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { styles, cardGradient, clockIconSize, clockIconColor, cardActiveOpacity } from './styles';
 import type { Event } from '@shared/types/event';
 import { typography } from '@shared/typography/typography';
-import { useUser } from '../../../../hooks/useUser';
+import { useUser } from '@/app/redux/hooks/useUser';
 
 type Props = {
   event: Event;
