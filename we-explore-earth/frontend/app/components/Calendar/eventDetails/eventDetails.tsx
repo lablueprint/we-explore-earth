@@ -12,7 +12,7 @@ import { useRouter, useSegments } from "expo-router";
 import { styles } from "./styles";
 import type { Event, FirestoreTimestamp } from "@shared/types/event";
 import RSVPModal from "../RSVPModal/RSVPModal";
-import { useUser } from "../../../../hooks/useUser";
+import { useUser } from '@/app/redux/hooks/useUser';
 import { typography } from "../../../../../shared/typography/typography";
 
 type Props = {

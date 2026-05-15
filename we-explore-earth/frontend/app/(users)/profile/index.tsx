@@ -7,18 +7,15 @@ import { SvgUri } from 'react-native-svg';
 //LOCAL FILES
 import { styles } from './styles';
 import { User } from "@shared/types/user";
-import { useUser } from '../../../hooks/useUser';
-import { useAppSelector } from '@/app/redux/hooks';
+import { useUser } from '@/app/redux/hooks/useUser';
 
 export default function ProfileScreen() {
   //REACT HOOKS
-  const { userId } = useUser();
-  const reduxUser = useAppSelector(state => state.user);
+  const { userId, avatarUrl } = useUser();
   //STATE VARIABLES
   const [user, setUser] = useState<User | null>(null);
   const [notificationTokenEnabled, setNotificationTokenEnabled] = useState<boolean>(false);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   //HANDLERS
   const fetchUser = async (userId: string) => {
@@ -86,14 +83,6 @@ export default function ProfileScreen() {
       fetchUser(userId);
     }
   }, [userId]);
-
-  useEffect(() => {
-    if (!reduxUser?.avatar) return;
-    fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/avatars/signed-url?key=${encodeURIComponent(reduxUser.avatar)}`)
-      .then(res => res.json())
-      .then(data => setAvatarUrl(data.url))
-      .catch(err => console.error("Failed to fetch avatar URL:", err));
-  }, [reduxUser?.avatar]);
 
 
   //RENDER

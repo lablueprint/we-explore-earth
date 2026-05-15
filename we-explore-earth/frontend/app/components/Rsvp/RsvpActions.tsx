@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, TouchableOpacity, Text, ActivityIndicator, Alert } from 'react-native';
-import { useUser } from '../../../hooks/useUser';
+import { useUser } from '@/app/redux/hooks/useUser';
 import type { RSVPStatus } from '@shared/types/event';
 
 type Props = {

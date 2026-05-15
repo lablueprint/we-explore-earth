@@ -4,13 +4,14 @@ import { useState, useMemo } from "react";
 //THIRD-PARTY LIBRARIES
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { SvgUri } from "react-native-svg";
 import { useRouter } from "expo-router";
 
 //LOCAL FILES
 import Calendar from "@/app/components/Calendar/calendar";
 import EventView from "@/app/components/Calendar/eventView/eventView";
 import EventDetails from "@/app/components/Calendar/eventDetails/eventDetails";
-import { useUser } from "@/hooks/useUser";
+import { useUser } from "@/app/redux/hooks/useUser";
 import type { Event } from "@shared/types/event";
 import { styles, homeIcons, textStyles } from "./styles";
 
@@ -35,7 +36,7 @@ export default function HomeCalendar({
 }: Props) {
   //REACT HOOKS
   const router = useRouter();
-  const { user, userId } = useUser();
+  const { user, userId, avatarUrl } = useUser();
 
   const displayName = user?.firstName?.trim() || "there";
 
@@ -61,8 +62,17 @@ export default function HomeCalendar({
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
       <View style={styles.heroBlock}>
         <View style={styles.heroRow}>
-          <View style={styles.avatar} accessibilityLabel="Profile avatar placeholder">
-            <Ionicons {...homeIcons.avatarCamera} />
+          <View
+            style={styles.avatar}
+            accessibilityLabel={
+              avatarUrl ? "Your profile avatar" : "Profile avatar placeholder"
+            }
+          >
+            {avatarUrl ? (
+              <SvgUri uri={avatarUrl} width={48} height={48} />
+            ) : (
+              <Ionicons {...homeIcons.avatarCamera} />
+            )}
           </View>
           <Text style={textStyles.trailCalling} numberOfLines={2}>
             The trail is calling, {displayName}

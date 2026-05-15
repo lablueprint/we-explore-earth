@@ -14,7 +14,7 @@ import {
 import { useFocusEffect } from 'expo-router';
 
 //LOCAL FILES
-import { useUser } from '../../../hooks/useUser';
+import { useUser } from '@/app/redux/hooks/useUser';
 import EventView from '../../components/Calendar/eventView/eventView';
 import EventDetails from '../../components/Calendar/eventDetails/eventDetails';
 import type { Event, EventWithStatus } from '@shared/types/event';
