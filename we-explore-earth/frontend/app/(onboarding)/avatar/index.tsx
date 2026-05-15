@@ -27,7 +27,7 @@ export default function AvatarPage() {
   //HANDLERS
   async function fetchAvatars() {
     try {
-      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/avatars`);
+      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/avatars`);
       const data = await res.json();
       setAvatars(data);
     } catch (error) {
@@ -63,8 +63,28 @@ export default function AvatarPage() {
         throw new Error(errData.error || "Failed to save avatar");
       }
 
-      dispatch(updateUserState({ ...user, avatar: selectedAvatar.key }));
-      router.push('/(onboarding)/notifications');
+      const onboardingRes = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/users/${user.id}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ hasOnboarded: true }),
+        }
+      );
+
+      if (!onboardingRes.ok) {
+        throw new Error('Failed to update onboarding status');
+      }
+
+      const nextRoute = user.isAdmin ? '/(admin)/home' : '/(users)/home';
+      dispatch(
+        updateUserState({
+          ...user,
+          avatar: selectedAvatar.key,
+          hasOnboarded: true,
+        })
+      );
+      router.replace(nextRoute as any);
     } catch (error) {
       console.error("Error saving avatar:", error);
       Alert.alert("Error", error instanceof Error ? error.message : "Failed to save avatar");

@@ -89,7 +89,7 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     if (!reduxUser?.avatar) return;
-    fetch(`${process.env.EXPO_PUBLIC_API_URL}/avatars/signed-url?key=${encodeURIComponent(reduxUser.avatar)}`)
+    fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/avatars/signed-url?key=${encodeURIComponent(reduxUser.avatar)}`)
       .then(res => res.json())
       .then(data => setAvatarUrl(data.url))
       .catch(err => console.error("Failed to fetch avatar URL:", err));
