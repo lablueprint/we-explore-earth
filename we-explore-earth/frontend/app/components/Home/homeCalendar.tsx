@@ -1,9 +1,10 @@
 //STANDARD LIBRARY
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 //THIRD-PARTY LIBRARIES
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { SvgUri } from "react-native-svg";
 import { useRouter } from "expo-router";
 
 //LOCAL FILES
@@ -50,6 +51,36 @@ export default function HomeCalendar({
       .sort((a, b) => a.timeStart._seconds - b.timeStart._seconds)[0] ?? null;
   }, [events, userId]);
 
+  const avatarKey = user?.avatar ?? null;
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    setAvatarUrl(null);
+
+    const baseUrl = process.env.EXPO_PUBLIC_API_URL;
+    if (!avatarKey || !baseUrl) return;
+
+    const controller = new AbortController();
+
+    (async () => {
+      try {
+        const res = await fetch(
+          `${baseUrl}/users/avatars/signed-url?key=${encodeURIComponent(avatarKey)}`,
+          { signal: controller.signal }
+        );
+        if (!res.ok) throw new Error(`Avatar URL request failed: ${res.status}`);
+
+        const { url } = (await res.json()) as { url?: string };
+        if (url) setAvatarUrl(url);
+      } catch (err) {
+        if ((err as Error).name === "AbortError") return;
+        console.error("Failed to load avatar URL:", err);
+      }
+    })();
+
+    return () => controller.abort();
+  }, [avatarKey]);
+
   //HANDLERS
   const handleBrewingEventPress = (event: Event) => {
     setBrewingSelectedEvent(event);
@@ -61,8 +92,17 @@ export default function HomeCalendar({
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
       <View style={styles.heroBlock}>
         <View style={styles.heroRow}>
-          <View style={styles.avatar} accessibilityLabel="Profile avatar placeholder">
-            <Ionicons {...homeIcons.avatarCamera} />
+          <View
+            style={styles.avatar}
+            accessibilityLabel={
+              avatarUrl ? "Your profile avatar" : "Profile avatar placeholder"
+            }
+          >
+            {avatarUrl ? (
+              <SvgUri uri={avatarUrl} width={48} height={48} />
+            ) : (
+              <Ionicons {...homeIcons.avatarCamera} />
+            )}
           </View>
           <Text style={textStyles.trailCalling} numberOfLines={2}>
             The trail is calling, {displayName}

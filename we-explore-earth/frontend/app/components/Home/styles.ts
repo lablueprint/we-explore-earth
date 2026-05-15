@@ -46,6 +46,7 @@ export const styles = StyleSheet.create({
     borderColor: "#e5e5e5",
     alignItems: "center",
     justifyContent: "center",
+    overflow: "hidden",
   },
   brewingSection: {
     marginBottom: 22,
