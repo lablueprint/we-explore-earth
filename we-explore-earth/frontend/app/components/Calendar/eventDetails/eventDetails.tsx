@@ -16,6 +16,7 @@ import RSVPModal from "../RSVPModal/RSVPModal";
 import { useUser } from '@/app/redux/hooks/useUser';
 import { typography } from "../../../../../shared/typography/typography";
 import { EventCoverImage } from "@/app/components/Calendar/eventCoverImage/eventCoverImage";
+import EventAttendeesSummary from '../eventAttendeesSummary/eventAttendeesSummary';
 
 type Props = {
   visible: boolean;
@@ -183,19 +184,10 @@ export default function EventDetails({
                 <Text style={styles.attendeeCount}>{event.attendees?.length ?? 0} People on the List</Text>
 
                 {isAdmin && (
-                  <TouchableOpacity
-                    style={styles.viewAllButton}
-                    onPress={() => {
-                      if (event?.id) {
-                        router.push(
-                          `/(admin)/events/${event.id}/attendees` as const
-                        );
-                      }
-                    }}
-                  >
-                    <Text style={styles.backText}>View All</Text>
-                  </TouchableOpacity>
+                   <EventAttendeesSummary selectedEvent={event} /> 
                 )}
+              
+               
               </View>
 
               <View style={styles.avatarRow}>

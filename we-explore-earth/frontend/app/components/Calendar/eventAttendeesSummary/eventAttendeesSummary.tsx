@@ -12,6 +12,7 @@ import { useUser } from '@/app/redux/hooks/useUser';
 import EventAttendees from '../eventAttendees/eventAttendees';
 
 
+
 // NOTE: This component currently also shows a placeholder for the profile pictures of 5 attendees, if we decide not to 
 // implement that feature, we can remove the attendeesPreview state and the fetchAttendees function, and just show the total number of attendees.
 
@@ -26,10 +27,15 @@ export default function EventAttendeesSummary({ selectedEvent }: Props) {
   //STATE VARIABLES
   const [showAll, setShowAll] = useState(false);
   
+  
   return (
     <>
       {user?.isAdmin && (
-        <TouchableOpacity style={styles.viewAllButton} onPress={() => setShowAll(true)}>
+        <TouchableOpacity style={styles.viewAllButton} onPress={() => {
+            console.log("View All clicked");
+            setShowAll(true);
+          }}
+        >
           <Text style={styles.closeText}>View All</Text>
         </TouchableOpacity>
       )}
@@ -40,8 +46,11 @@ export default function EventAttendeesSummary({ selectedEvent }: Props) {
         onRequestClose={() => setShowAll(false)}
       >
         <View>
-          <TouchableOpacity style={styles.closeButton} onPress={() => setShowAll(false)}>
-            <Text style={styles.closeText}>Close</Text>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => setShowAll(false)}
+          >
+            <Text style={styles.closeText}>Done</Text>
           </TouchableOpacity>
         </View>
         {selectedEvent && <EventAttendees eventId={selectedEvent.id} />}

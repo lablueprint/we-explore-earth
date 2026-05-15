@@ -1,4 +1,6 @@
 import { StyleSheet } from 'react-native';
+import { typography } from '../../../../../shared/typography/typography';
+
 
 export const styles = StyleSheet.create({
   backdrop: {
@@ -30,21 +32,20 @@ export const styles = StyleSheet.create({
     marginBottom: 4,
   },
   viewAllButton: {
-    marginTop: 12,
     padding: 10,
-    backgroundColor: '#007AFF',
     borderRadius: 6,
     alignItems: 'center',
   },
   closeButton: {
-    marginTop: 40,
+    marginTop: 20,
     padding: 10,
-    backgroundColor: '#007AFF',
+    marginRight: 16,
     borderRadius: 6,
-    alignItems: 'center',
+    alignSelf: 'flex-end',
   },
   closeText: {
-    color: '#fff',
+    ...typography.body,
+    color: '#006e0d',
     fontWeight: '600',
   },
 });

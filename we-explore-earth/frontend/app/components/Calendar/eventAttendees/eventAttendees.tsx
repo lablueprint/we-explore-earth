@@ -4,7 +4,8 @@ import { useState, useEffect} from 'react';
 import type { Event } from '@shared/types/event';
 import type { User } from '@shared/types/user';
 import { styles } from './styles';
-
+import { typography } from "../../../../../shared/typography/typography";
+import {Search} from "lucide-react-native";
 type Props = {
   eventId: string;
 };
@@ -85,7 +86,6 @@ export default function EventAttendees({eventId}: Props){
     const filtered = rsvpFiltered.filter(item =>
       (item.firstName.toLowerCase().includes(text.toLowerCase()) ||
       item.lastName.toLowerCase().includes(text.toLowerCase()) ||
-      item.username.toLowerCase().includes(text.toLowerCase()) ||
       item.email.toLowerCase().includes(text.toLowerCase()) ) 
     );
     setSearchFilteredData(filtered);
@@ -95,15 +95,17 @@ export default function EventAttendees({eventId}: Props){
   <View style={styles.container}>
     {event && (
       <>
-        <Text style={styles.header}> {event.title}</Text>
+        <Text style={ styles.header}> {event.title}</Text>
         <Text style={styles.subheading}>RSVP List</Text>      
-        <TextInput
-          style={styles.searchBar}
-          placeholder="Search here..."
-          value={search}
-          onChangeText={handleSearch}
-         />
-
+        <View style={styles.searchWrapper}>
+          <Search size={16} color="#8e8e93" strokeWidth={3} />
+          <TextInput
+            style={styles.searchBar}
+            placeholder="Search attendees"
+            value={search}
+            onChangeText={handleSearch}
+          />
+        </View>
         <View style={styles.tabRow}>
           <TouchableOpacity onPress={() => setTab("YES")}>
             <Text style={tab === "YES" ? styles.tabTextActive : styles.tabText}>
@@ -122,6 +124,7 @@ export default function EventAttendees({eventId}: Props){
         <Text style={styles.attendeeName}>No attendees that meet this criteria</Text>
         ) : ( 
         <FlatList
+          style={styles.listCard}
           data={searchfilteredData}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
@@ -129,7 +132,6 @@ export default function EventAttendees({eventId}: Props){
               <Text style={styles.attendeeName}>
                 {item.firstName} {item.lastName}
               </Text>
-              <Text style={styles.attendeeUsername}>{item.username}</Text>
               <Text style={styles.attendeeEmail}>{item.email}</Text>
             </View>
           )}
