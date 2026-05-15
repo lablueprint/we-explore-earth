@@ -18,6 +18,10 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 32,
+  },
   heroBlock: {
     marginTop: 16,
     marginBottom: 20,

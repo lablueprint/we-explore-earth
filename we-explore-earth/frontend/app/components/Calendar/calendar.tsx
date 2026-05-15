@@ -1,9 +1,6 @@
 //STANDARD LIBRARY
 import React, { useState, useEffect, useRef } from 'react';
-
-//THIRD-PARTY LIBRARIES
-import { Text, View, ActivityIndicator, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, ActivityIndicator } from 'react-native';
 
 import EventView from './eventView/eventView';
 import EventDetails from './eventDetails/eventDetails';
@@ -13,16 +10,13 @@ import type { Event } from '@shared/types/event';
 export default function Calendar({
   loading,
   events,
-  embedded = false,
   onRSVPChange,
   autoOpenEvent,
   onAutoOpenEventHandled,
 }: {
   loading: boolean;
   events: Event[];
-  embedded?: boolean;
   onRSVPChange?: () => void;
-  /** When set, opens details for this event once (e.g. after admin edit). */
   autoOpenEvent?: Event | null;
   onAutoOpenEventHandled?: () => void;
 }) {
@@ -52,60 +46,25 @@ export default function Calendar({
     setDetailsModalVisible(false);
   };
 
-  const eventList = events.filter(Boolean).map((event) => (
-    <EventView key={event.id} event={event} onPress={handleEventPress} />
-  ));
-
-  const details = (
-    <EventDetails
-      visible={detailsModalVisible && !!selectedEvent}
-      event={selectedEvent}
-      onClose={handleCloseDetailsModal}
-      onRSVPChange={onRSVPChange}
-    />
-  );
-
-  if (embedded) {
-    return (
-      <View>
-        {loading ? (
-          <View style={styles.embeddedLoading}>
-            <ActivityIndicator size="large" />
-          </View>
-        ) : (
-          <>
-            {eventList}
-            {details}
-          </>
-        )}
-      </View>
-    );
-  }
-
   return (
-    <SafeAreaView style={styles.screen}>
-      <View style={styles.flexFill}>
-        {loading ? (
-          <View style={styles.loadingCenter}>
-            <ActivityIndicator size="large" />
-          </View>
-        ) : (
-          <>
-            {events && events.length > 0
-              ?
-              <ScrollView contentContainerStyle={styles.scrollContent}>
-                {eventList}
-              </ScrollView>
-              :
-              <View>
-                <Text style={styles.noEventsMessage}>No events found for these dates.</Text>
-              </View>
-            }
-
-            {details}
-          </>
-        )}
-      </View>
-    </SafeAreaView>
+    <View>
+      {loading ? (
+        <View style={styles.embeddedLoading}>
+          <ActivityIndicator size="large" />
+        </View>
+      ) : (
+        <>
+          {events.filter(Boolean).map((event) => (
+            <EventView key={event.id} event={event} onPress={handleEventPress} />
+          ))}
+          <EventDetails
+            visible={detailsModalVisible && !!selectedEvent}
+            event={selectedEvent}
+            onClose={handleCloseDetailsModal}
+            onRSVPChange={onRSVPChange}
+          />
+        </>
+      )}
+    </View>
   );
 }
