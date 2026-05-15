@@ -46,3 +46,25 @@ export type FirestoreEventData = Omit<
   timeEnd: Date;
   attendees?: EventRSVP[];
 };
+
+/**
+ * Admin create/edit event screen state (date pickers + text fields).
+ * Differs from `Event` / Firestore shape (`timeStart`/`timeEnd` are split for UI).
+ */
+export interface EventFormState {
+  title: string;
+  description: string;
+  dateStart: Date;
+  timeStart: Date;
+  dateEnd: Date;
+  timeEnd: Date;
+  location: string;
+  price: string;
+  hostedBy: string;
+  category: string[];
+  accommodation: string[];
+  maxAttendees: string;
+  imageUri: string | null;
+  /** S3 object key `events/…`; display via GET /events/signed-url */
+  eventImage: string | null;
+}

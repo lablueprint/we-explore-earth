@@ -1,7 +1,72 @@
 import { db } from "../firestore";
 import { Request, Response } from "express";
+import type { DocumentData } from "firebase-admin/firestore";
 import { FirestoreTimestamp, EventRSVP, Event, FirestoreEventData } from "@shared/types/event";
 import { Filter } from "@shared/types/filter";
+import { signEventImageKey, uploadEventCoverToS3 } from "../services/eventImageUploadService";
+
+const EVENT_IMAGE_SIGNED_URL_EXPIRES_IN = 60 * 60;
+
+function firestoreTimestampToDate(ts: unknown): Date {
+  if (ts == null || typeof ts !== "object") {
+    return new Date(NaN);
+  }
+  const o = ts as {
+    toDate?: () => Date;
+    seconds?: unknown;
+    _seconds?: unknown;
+    nanoseconds?: unknown;
+    _nanoseconds?: unknown;
+  };
+  if (typeof o.toDate === "function") {
+    return o.toDate();
+  }
+  const secRaw = o._seconds ?? o.seconds;
+  const nsecRaw = o._nanoseconds ?? o.nanoseconds ?? 0;
+  const sec = typeof secRaw === "number" ? secRaw : NaN;
+  const nsec = typeof nsecRaw === "number" ? nsecRaw : 0;
+  if (!Number.isFinite(sec)) {
+    return new Date(NaN);
+  }
+  return new Date(sec * 1000 + nsec / 1e6);
+}
+
+function toApiFirestoreTimestamp(ts: unknown): FirestoreTimestamp {
+  const d = firestoreTimestampToDate(ts);
+  const ms = d.getTime();
+  if (!Number.isFinite(ms)) {
+    return { _seconds: 0, _nanoseconds: 0 };
+  }
+  return {
+    _seconds: Math.floor(ms / 1000),
+    _nanoseconds: Math.round((ms % 1000) * 1e6),
+  };
+}
+
+/** Multipart sends `category` / `accommodation` as JSON strings; JSON body may send arrays. */
+function parseStringArrayField(raw: unknown): string[] {
+  if (Array.isArray(raw)) {
+    return raw.filter((x) => typeof x === "string") as string[];
+  }
+  if (typeof raw === "string") {
+    try {
+      const p = JSON.parse(raw);
+      return Array.isArray(p) ? p.filter((x) => typeof x === "string") : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
+
+function jsonResponseEvent(id: string, data: DocumentData) {
+  return {
+    id,
+    ...data,
+    timeStart: toApiFirestoreTimestamp(data.timeStart),
+    timeEnd: toApiFirestoreTimestamp(data.timeEnd),
+  };
+}
 
 // create event
 export async function createEvent(req: Request, res: Response) {
@@ -17,6 +82,7 @@ export async function createEvent(req: Request, res: Response) {
       hostedBy,
       category,
       accommodation,
+      eventImage: bodyEventImage,
     } = req.body;
 
     if (
@@ -32,6 +98,24 @@ export async function createEvent(req: Request, res: Response) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
+    const categoryArr = parseStringArrayField(category);
+    const accommodationArr = parseStringArrayField(accommodation);
+
+    let eventImageKey: string | null | undefined;
+    if (req.file) {
+      const { key } = await uploadEventCoverToS3({
+        buffer: req.file.buffer,
+        contentType: req.file.mimetype || "image/jpeg",
+        originalFilename: req.file.originalname || "cover.jpg",
+      });
+      eventImageKey = key;
+    } else if (
+      typeof bodyEventImage === "string" &&
+      bodyEventImage.trim() !== ""
+    ) {
+      eventImageKey = bodyEventImage.trim();
+    }
+
     const eventData: FirestoreEventData = {
       title,
       description,
@@ -39,8 +123,8 @@ export async function createEvent(req: Request, res: Response) {
       timeStart: new Date(timeStart),
       timeEnd: new Date(timeEnd),
       hostedBy,
-      category: (category ?? []) as string[],
-      accommodation: (accommodation ?? []) as string[],
+      category: categoryArr,
+      accommodation: accommodationArr,
       price: typeof price === "string" ? parseInt(price, 10) : price,
       maxAttendees:
         typeof maxAttendees === "string"
@@ -49,11 +133,21 @@ export async function createEvent(req: Request, res: Response) {
       attendees: [] as EventRSVP[],
     };
 
-    const docRef = await db.collection("events").add(eventData);
+    if (eventImageKey != null) {
+      eventData.eventImage = eventImageKey;
+    }
 
-    return res.status(201).json({ id: docRef.id, ...eventData });
+    const docRef = await db.collection("events").add(eventData);
+    const created = await docRef.get();
+    const d = created.data()!;
+    return res.status(201).json(jsonResponseEvent(docRef.id, d));
   } catch (error) {
     console.error("Error creating event:", error);
+    const message =
+      error instanceof Error ? error.message : "Failed to create event";
+    if (message.includes("S3 bucket not configured")) {
+      return res.status(503).json({ error: message });
+    }
     return res.status(500).json({ error: "Failed to create event" });
   }
 }
@@ -67,10 +161,37 @@ export async function getEvent(req: Request, res: Response) {
     if (!event.exists) {
       return res.status(404).json({ error: "Event not found" });
     }
-    res.json({ id: event.id, ...event.data() });
+    res.json(jsonResponseEvent(event.id, event.data()!));
   } catch (error) {
     console.error("Error fetching event: ", error);
     return res.status(500).json({ error: "Failed to fetch event" });
+  }
+}
+
+// GET /events/signed-url?key=events/...
+export async function getEventImageSignedUrl(req: Request, res: Response) {
+  try {
+    const key = req.query.key as string | undefined;
+
+    if (!key) {
+      return res.status(400).json({
+        error: "Missing required query parameter: key",
+      });
+    }
+
+    const signedUrl = await signEventImageKey(key);
+
+    return res.json({
+      url: signedUrl,
+      expiresIn: EVENT_IMAGE_SIGNED_URL_EXPIRES_IN,
+    });
+  } catch (error) {
+    console.error("Error generating event image signed URL:", error);
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Failed to generate signed URL";
+    return res.status(500).json({ error: message });
   }
 }
 
@@ -82,10 +203,7 @@ export async function getAllEvents(req: Request, res: Response) {
     //maps the docs into an array
     const events = snapshot.docs.map((doc) => {
       const data = doc.data();
-      return {
-        id: doc.id,
-        ...data, // '...' merges into one object
-      };
+      return jsonResponseEvent(doc.id, data);
     });
 
     //send data back
@@ -107,12 +225,6 @@ export async function getAllEvents(req: Request, res: Response) {
  * - If filters grows large, we may exceed url length when adding filters as query parameters to API endpoint.
  */
 export async function getFilteredEvents(req: Request, res: Response) {
-  // Helper function for converting an event's startTime and endTime to Date objects
-  const convertFirestoreTimestampToDate = (timestamp: FirestoreTimestamp): Date => {
-    const milliseconds = (timestamp._seconds * 1000) + (timestamp._nanoseconds / 1000000);
-    return new Date(milliseconds);
-  };
-
   try {
     // Grab all events from database
     const snapshot = await db.collection("events").get();
@@ -158,17 +270,19 @@ export async function getFilteredEvents(req: Request, res: Response) {
     // Filter events
     const events: Event[] = [];
     snapshot.docs.forEach((doc) => {
-      // Mapping
+      const raw = doc.data();
       const event: Event = {
         id: doc.id,
-        ...doc.data()
+        ...raw,
+        timeStart: toApiFirestoreTimestamp(raw.timeStart),
+        timeEnd: toApiFirestoreTimestamp(raw.timeEnd),
       } as Event;
 
       // Filtering
       // If default case (any date; no date range is selected), only include events that start on or after today
       // Only default case has a start date but no end date because all valid date ranges will have both start and end dates.
       if (filterStartDate && !filterEndDate) {
-        const eventStartDate = convertFirestoreTimestampToDate(event.timeStart)
+        const eventStartDate = firestoreTimestampToDate(raw.timeStart);
         eventStartDate.setHours(0, 0, 0, 0); // normalize event's start date
         // only compare event's start date with selected date range; ignore event's end date
         if (eventStartDate < filterStartDate) {
@@ -177,7 +291,7 @@ export async function getFilteredEvents(req: Request, res: Response) {
       }
       // If a valid date range is selected (via date filter options or calendar picker)
       else if (filterStartDate && filterEndDate) {
-        const eventStartDate = convertFirestoreTimestampToDate(event.timeStart);
+        const eventStartDate = firestoreTimestampToDate(raw.timeStart);
         eventStartDate.setHours(0, 0, 0, 0); // normalize event's start date
         if (eventStartDate < filterStartDate || filterEndDate < eventStartDate) {
           return;
@@ -222,10 +336,10 @@ export async function getFilteredEvents(req: Request, res: Response) {
     // Sort filtered events
     events.sort((a: Event, b: Event) => {
       // derive start and end dates
-      const eventStartDateA = convertFirestoreTimestampToDate(a.timeStart);
-      const eventStartDateB = convertFirestoreTimestampToDate(b.timeStart);
-      const eventEndDateA = convertFirestoreTimestampToDate(a.timeEnd);
-      const eventEndDateB = convertFirestoreTimestampToDate(b.timeEnd);
+      const eventStartDateA = firestoreTimestampToDate(a.timeStart);
+      const eventStartDateB = firestoreTimestampToDate(b.timeStart);
+      const eventEndDateA = firestoreTimestampToDate(a.timeEnd);
+      const eventEndDateB = firestoreTimestampToDate(b.timeEnd);
 
       // 1. Sort by start date (ascending).
       // 2. If start dates are the same, sort by end date (ascending).
@@ -274,7 +388,6 @@ export async function updateEvent(req: Request, res: Response) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
-    // Check if event exists
     const eventRef = db.collection("events").doc(id as any);
     const eventDoc = await eventRef.get();
 
@@ -285,6 +398,9 @@ export async function updateEvent(req: Request, res: Response) {
     const existingData = eventDoc.data();
     const existingAttendees: EventRSVP[] = existingData?.attendees || [];
 
+    const categoryArr = parseStringArrayField(category);
+    const accommodationArr = parseStringArrayField(accommodation);
+
     const eventData: FirestoreEventData = {
       title,
       description,
@@ -292,8 +408,8 @@ export async function updateEvent(req: Request, res: Response) {
       timeStart: new Date(timeStart),
       timeEnd: new Date(timeEnd),
       hostedBy,
-      category: (category ?? []) as string[],
-      accommodation: (accommodation ?? []) as string[],
+      category: categoryArr,
+      accommodation: accommodationArr,
       price: typeof price === "string" ? parseInt(price, 10) : price,
       maxAttendees:
         typeof maxAttendees === "string"
@@ -302,11 +418,33 @@ export async function updateEvent(req: Request, res: Response) {
       attendees: existingAttendees,
     };
 
+    if (req.file) {
+      const { key } = await uploadEventCoverToS3({
+        buffer: req.file.buffer,
+        contentType: req.file.mimetype || "image/jpeg",
+        originalFilename: req.file.originalname || "cover.jpg",
+      });
+      eventData.eventImage = key;
+    } else if ("eventImage" in req.body) {
+      const v = req.body.eventImage;
+      if (v === null || v === "") {
+        eventData.eventImage = null;
+      } else if (typeof v === "string") {
+        eventData.eventImage = v.trim() || null;
+      }
+    }
+
     await eventRef.update(eventData as any);
 
-    return res.status(200).json({ id, ...eventData });
+    const updated = await eventRef.get();
+    return res.status(200).json(jsonResponseEvent(id as string, updated.data()!));
   } catch (error) {
     console.error("Error updating event:", error);
+    const message =
+      error instanceof Error ? error.message : "Failed to update event";
+    if (message.includes("S3 bucket not configured")) {
+      return res.status(503).json({ error: message });
+    }
     return res.status(500).json({ error: "Failed to update event" });
   }
 }

@@ -8,7 +8,14 @@ import HomeCalendar from "@/app/components/Home/homeCalendar";
 import type { Event } from "@shared/types/event";
 import type { Filter } from "@shared/types/filter";
 import { usePendingUpdatedAdminEvent } from "../PendingUpdatedAdminEventContext";
-import { sortEventsForCalendar } from "@/utils/eventUtils";
+
+function sortEventsForCalendar(a: Event, b: Event): number {
+  const byStart = a.timeStart._seconds - b.timeStart._seconds;
+  if (byStart !== 0) return byStart;
+  const byEnd = a.timeEnd._seconds - b.timeEnd._seconds;
+  if (byEnd !== 0) return byEnd;
+  return a.title.localeCompare(b.title);
+}
 
 export default function AdminHomeScreen() {
   //STATE VARIABLES

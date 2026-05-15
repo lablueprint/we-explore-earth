@@ -94,12 +94,10 @@ export default function Calendar({
   }
 
   return (
-    <Container style={{ flex: 1, backgroundColor: "#fff" }}>
-      <View style={{ flex: 1 }}>
+    <Container style={styles.screen}>
+      <View style={styles.flexFill}>
         {loading ? (
-          <View
-            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-          >
+          <View style={styles.loadingCenter}>
             <ActivityIndicator size="large" />
           </View>
         ) : (
