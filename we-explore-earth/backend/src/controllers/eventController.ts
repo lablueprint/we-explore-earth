@@ -3,9 +3,58 @@ import { Request, Response } from "express";
 import type { DocumentData } from "firebase-admin/firestore";
 import { FirestoreTimestamp, EventRSVP, Event, FirestoreEventData } from "@shared/types/event";
 import { Filter } from "@shared/types/filter";
-import { signEventImageKey, uploadEventCoverToS3 } from "../services/eventImageUploadService";
+import { PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { s3Client, bucketName } from "../s3Client";
 
 const EVENT_IMAGE_SIGNED_URL_EXPIRES_IN = 60 * 60;
+const EVENT_IMAGE_PREFIX = "events/";
+
+function buildEventImageObjectKey(originalFilename: string): string {
+  const safe = originalFilename.replace(/[^a-zA-Z0-9.-]/g, "_");
+  return `${EVENT_IMAGE_PREFIX}${Date.now()}-${safe}`;
+}
+
+async function uploadEventCoverToS3(opts: {
+  buffer: Buffer;
+  contentType: string;
+  originalFilename: string;
+}): Promise<{ key: string }> {
+  if (!bucketName) {
+    throw new Error("S3 bucket not configured");
+  }
+
+  const key = buildEventImageObjectKey(opts.originalFilename);
+
+  await s3Client.send(
+    new PutObjectCommand({
+      Bucket: bucketName,
+      Key: key,
+      Body: opts.buffer,
+      ContentType: opts.contentType || "application/octet-stream",
+    })
+  );
+
+  return { key };
+}
+
+async function signEventImageKey(key: string): Promise<string> {
+  if (!bucketName) {
+    throw new Error("S3 bucket not configured");
+  }
+  if (!key.startsWith(EVENT_IMAGE_PREFIX)) {
+    throw new Error("Invalid event image key");
+  }
+
+  const command = new GetObjectCommand({
+    Bucket: bucketName,
+    Key: key,
+  });
+
+  return getSignedUrl(s3Client, command, {
+    expiresIn: EVENT_IMAGE_SIGNED_URL_EXPIRES_IN,
+  });
+}
 
 function firestoreTimestampToDate(ts: unknown): Date {
   if (ts == null || typeof ts !== "object") {
