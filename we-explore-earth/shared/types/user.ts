@@ -11,7 +11,6 @@ export interface NewUser {
   firstName: string;
   lastName: string;
   phoneNumber: string;
-  notificationToken: string | null;
   isAdmin: boolean;
   events: UserRSVP[];
   avatar: string | null;

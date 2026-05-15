@@ -1,9 +1,9 @@
 //STANDARD LIBRARY
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from "react";
 
 //THIRD-PARTY LIBRARIES
-import { Text, View, ActivityIndicator, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text, View, ActivityIndicator, ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 // LOCAL COMPONENTS
 import EventView from "./eventView/eventView";
@@ -20,7 +20,6 @@ type CalendarProps = {
   events?: Array<Event | null | undefined>;
   embedded?: boolean;
   onRSVPChange?: () => void;
-  /** When set, opens details for this event once (e.g. after admin edit). */
   autoOpenEvent?: Event | null;
   onAutoOpenEventHandled?: () => void;
 };
@@ -102,16 +101,17 @@ export default function Calendar({
           </View>
         ) : (
           <>
-            {events && events.length > 0
-              ?
+            {events && events.length > 0 ? (
               <ScrollView contentContainerStyle={styles.scrollContent}>
                 {eventList}
               </ScrollView>
-              :
+            ) : (
               <View>
-                <Text style={styles.noEventsMessage}>No events found for these dates.</Text>
+                <Text style={styles.noEventsMessage}>
+                  No events found for these dates.
+                </Text>
               </View>
-            }
+            )}
 
             {details}
           </>

@@ -2,7 +2,7 @@
 import { useState, useMemo, useEffect } from "react";
 
 //THIRD-PARTY LIBRARIES
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
 import { SvgUri } from "react-native-svg";
@@ -10,6 +10,7 @@ import { SvgUri } from "react-native-svg";
 //LOCAL FILES
 import Calendar from "@/app/components/Calendar/calendar";
 import EventView from "@/app/components/Calendar/eventView/eventView";
+import EventDetails from "@/app/components/Calendar/eventDetails/eventDetails";
 import { useUser } from "@/hooks/useUser";
 import type { Event } from "@shared/types/event";
 import { styles, homeIcons, textStyles } from "./styles";
@@ -20,7 +21,6 @@ type Props = {
   showFilters?: boolean;
   onPressFilters?: () => void;
   onRSVPChange?: () => void;
-  /** After an admin saves an edit, open this event in the details sheet. */
   autoOpenEvent?: Event | null;
   onAutoOpenEventHandled?: () => void;
 };
@@ -36,19 +36,31 @@ export default function HomeCalendar({
 }: Props) {
   //REACT HOOKS
   const router = useRouter();
-  const { user } = useUser();
+  const { user, userId } = useUser();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   const displayName = user?.firstName?.trim() || "there";
 
   //STATE VARIABLES
   const [brewingDetailsVisible, setBrewingDetailsVisible] = useState(false);
-  const [brewingSelectedEvent, setBrewingSelectedEvent] = useState<Event | null>(null);
+  const [brewingSelectedEvent, setBrewingSelectedEvent] = useState<Event | null>(
+    null
+  );
 
   const brewingPreviewEvent = useMemo(() => {
     if (!events.length) return null;
-    return [...events].sort((a, b) => a.timeStart._seconds - b.timeStart._seconds)[0];
-  }, [events]);
+    return (
+      [...events]
+        .filter((e) =>
+          e.attendees?.some(
+            (a) =>
+              a.userID === userId &&
+              (a.status === "YES" || a.status === "MAYBE")
+          )
+        )
+        .sort((a, b) => a.timeStart._seconds - b.timeStart._seconds)[0] ?? null
+    );
+  }, [events, userId]);
 
   //HANDLERS
   const handleBrewingEventPress = (event: Event) => {
@@ -84,6 +96,7 @@ export default function HomeCalendar({
           loading={loading}
           events={events}
           embedded
+          onRSVPChange={onRSVPChange}
           autoOpenEvent={autoOpenEvent}
           onAutoOpenEventHandled={onAutoOpenEventHandled}
         />
@@ -92,10 +105,17 @@ export default function HomeCalendar({
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.scrollContent}
+      showsVerticalScrollIndicator={false}
+    >
       <View style={styles.heroBlock}>
         <View style={styles.heroRow}>
-          <View style={styles.avatar} accessibilityLabel="Profile avatar placeholder">
+          <View
+            style={styles.avatar}
+            accessibilityLabel="Profile avatar placeholder"
+          >
             {avatarUrl ? (
               <SvgUri uri={avatarUrl} width={46} height={46} />
             ) : (
@@ -136,8 +156,15 @@ export default function HomeCalendar({
           </TouchableOpacity>
         </View>
         {brewingPreviewEvent ? (
-          <EventView event={brewingPreviewEvent} onPress={handleBrewingEventPress} />
+          <EventView
+            event={brewingPreviewEvent}
+            onPress={handleBrewingEventPress}
+          />
         ) : null}
+      </View>
+
+      <View style={styles.upcomingHeader}>
+        <Text style={textStyles.upcoming}>Explore events</Text>
       </View>
 
       <Calendar
@@ -147,6 +174,13 @@ export default function HomeCalendar({
         autoOpenEvent={autoOpenEvent}
         onAutoOpenEventHandled={onAutoOpenEventHandled}
       />
-    </View>
+
+      <EventDetails
+        visible={brewingDetailsVisible && !!brewingSelectedEvent}
+        event={brewingSelectedEvent}
+        onClose={() => setBrewingDetailsVisible(false)}
+        onRSVPChange={onRSVPChange}
+      />
+    </ScrollView>
   );
 }

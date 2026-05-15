@@ -117,6 +117,19 @@ export const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 1,
   },
+  cancelButton: {
+    borderWidth: 1.5,
+    borderColor: '#C0392B',
+    borderRadius: 999,
+    paddingVertical: 18,
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  cancelButtonText: {
+    color: '#C0392B',
+    fontSize: 16,
+    fontWeight: '600',
+  },
 });
 
 export const titleTextStyle = [typography.h1, styles.title];
@@ -128,3 +141,4 @@ export function getOptionTextStyle(isSelected: boolean) {
 export const termsTextStyle = [typography.body, styles.termsText];
 export const termsLinkStyle = [typography.body, styles.termsLink];
 export const rsvpButtonTextStyle = [typography.body, styles.rsvpButtonText];
+export const cancelButtonTextStyle = [typography.body, styles.cancelButtonText];

@@ -4,9 +4,10 @@ import React from 'react';
 //THIRD-PARTY LIBRARIES
 import { TouchableOpacity, Text, View, Image, StyleSheet, ActivityIndicator } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 //LOCAL FILES
-import { styles, clockIconSize, clockIconColor, cardActiveOpacity } from './styles';
+import { styles, cardGradient, clockIconSize, clockIconColor, cardActiveOpacity } from './styles';
 import type { Event } from '@shared/types/event';
 import { typography } from '@shared/typography/typography';
 import { useUser } from '../../../../hooks/useUser';
@@ -45,10 +46,16 @@ export default function EventView({ event, onPress }: Props) {
   //RENDER
   return (
     <TouchableOpacity
-      style={styles.card}
       onPress={() => onPress(event)}
       activeOpacity={cardActiveOpacity}
     >
+      <LinearGradient
+        colors={cardGradient.colors}
+        locations={cardGradient.locations}
+        start={cardGradient.start}
+        end={cardGradient.end}
+        style={styles.card}
+      >
       <View style={styles.imageWrap}>
         {coverUrl ? (
           <Image
@@ -67,7 +74,7 @@ export default function EventView({ event, onPress }: Props) {
       </View>
 
       <View style={styles.content}>
-        <Text style={[typography.h1, styles.title]} numberOfLines={3}>
+        <Text style={[typography.h1, styles.title]} numberOfLines={2}>
           {event.title}
         </Text>
 
@@ -83,7 +90,7 @@ export default function EventView({ event, onPress }: Props) {
           </Text>
         </View>
 
-        {rsvpStatus && (
+        {(rsvpStatus === 'YES' || rsvpStatus === 'MAYBE') && (
           <View style={[styles.rsvpBadge, rsvpStatus === 'YES' ? styles.rsvpGoing : styles.rsvpMaybe]}>
             <Text style={[typography.body, styles.rsvpText]}>
               {rsvpStatus === 'YES' ? 'Going' : 'Maybe'}
@@ -91,6 +98,7 @@ export default function EventView({ event, onPress }: Props) {
           </View>
         )}
       </View>
+      </LinearGradient>
     </TouchableOpacity>
   );
 }

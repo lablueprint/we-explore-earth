@@ -1,26 +1,34 @@
 import { StyleSheet } from 'react-native';
 
-export const clockIconSize = 16;
+export const clockIconSize = 13;
 export const clockIconColor = '#777';
 export const cardActiveOpacity = 0.85;
+
+export const cardGradient = {
+  colors: ['#fbfbfb', '#f7f7f7', '#ffffff'] as const,
+  locations: [0, 0.55, 1] as const,
+  start: { x: 0.5, y: 0 },
+  end: { x: 0.5, y: 1 },
+};
 
 export const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    alignItems: 'flex-start',
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: '#dddddd',
     borderRadius: 20,
-    padding: 14,
-    marginBottom: 12,
-    gap: 12,
+    padding: 12,
+    marginBottom: 10,
+    gap: 10,
+    height: 120,
+    overflow: 'hidden',
   },
   imageWrap: {
+    alignSelf: 'stretch',
     flexShrink: 0,
-    width: '42%',
-    aspectRatio: 1,
-    borderRadius: 12,
+    width: '32%',
+    borderRadius: 10,
     overflow: 'hidden',
   },
   imagePlaceholder: {
@@ -32,13 +40,14 @@ export const styles = StyleSheet.create({
   content: {
     flex: 1,
     minWidth: 0,
-    gap: 10,
+    gap: 6,
+    paddingTop: 2,
   },
   title: {
-    fontSize: 17,
+    fontSize: 15,
     color: '#1a1a1a',
-    lineHeight: 22,
-    letterSpacing: -0.35,
+    lineHeight: 20,
+    letterSpacing: -0.3,
   },
   datePill: {
     flexDirection: 'row',
@@ -49,7 +58,7 @@ export const styles = StyleSheet.create({
     borderColor: '#e0e0e0',
     borderRadius: 999,
     paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingVertical: 4,
   },
   clockIcon: {
     marginRight: 5,
@@ -62,8 +71,8 @@ export const styles = StyleSheet.create({
   rsvpBadge: {
     alignSelf: 'flex-start',
     borderRadius: 999,
-    paddingHorizontal: 16,
-    paddingVertical: 7,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
   },
   rsvpGoing: {
     backgroundColor: '#285F00',
@@ -73,7 +82,8 @@ export const styles = StyleSheet.create({
   },
   rsvpText: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '600',
+    lineHeight: 16,
   },
 });
