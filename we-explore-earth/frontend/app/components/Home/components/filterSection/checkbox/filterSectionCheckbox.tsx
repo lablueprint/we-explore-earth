@@ -1,9 +1,9 @@
-
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Checkbox } from 'expo-checkbox';
 import { styles } from './styles';
+import { typography } from '@shared/typography/typography';
 
-function FilterOption(
+function FilterOptionCheckbox(
     {
         option,
         selectedOptions,
@@ -13,7 +13,7 @@ function FilterOption(
     {
         option: string,
         selectedOptions: Set<string>,
-        setSelectedOptions: React.Dispatch<any>
+        setSelectedOptions: React.Dispatch<Set<string>>
     }
 ) {
     const handleCheck = () => {
@@ -21,28 +21,27 @@ function FilterOption(
         // handle unchecking the box
         if(selectedOptions.has(option)) {
             updated.delete(option);
-            setSelectedOptions(updated);
         }
         // handle checking the box
         else {
             updated.add(option);
-            setSelectedOptions(updated);
         }
+        setSelectedOptions(updated);
     }
 
     return(
         <View style={styles.filterOptionWrapper}>
-            <Text style={styles.filterOption}>{option}</Text>
+            <Text style={typography.body}>{option}</Text>
             <Checkbox
                 value={selectedOptions.has(option)}
                 onValueChange={handleCheck}
-                color={selectedOptions.has(option) ? 'black' : 'mediumgrey'}
+                color={selectedOptions.has(option) ? '#285F00' : '#D9D9D9'}
             />
         </View>
     )
 }
 
-function FilterSection(
+function FilterSectionCheckbox(
     {
         header,
         options,
@@ -54,7 +53,7 @@ function FilterSection(
         header: string,
         options: string[],
         selectedOptions: Set<string>,
-        setSelectedOptions: React.Dispatch<any>
+        setSelectedOptions: React.Dispatch<Set<string>>
     }
 ) {
     const handleReset = () => {
@@ -65,23 +64,25 @@ function FilterSection(
         <>
             {/** Filter header */}
             <View style={styles.filterHeaderWrapper}>
-                <Text style={styles.filterHeader}>{header}</Text>
+                <Text style={[typography.h3, styles.filterHeader]}>{header}</Text>
                 <TouchableOpacity onPress={handleReset}>
-                    <Text style={styles.reset}>Reset</Text>
+                    <Text style={[typography.body, styles.reset]}>Reset</Text>
                 </TouchableOpacity>
             </View>
 
             {/** Filter options */}
-            {options.map((option, index) => 
-                <FilterOption
-                    key={index}
-                    option={option}
-                    selectedOptions={selectedOptions}
-                    setSelectedOptions={setSelectedOptions}
-                />
-            )}
+            <View style={styles.filterOptionContainer}>
+                {options.map((option, index) => 
+                    <FilterOptionCheckbox
+                        key={index}
+                        option={option}
+                        selectedOptions={selectedOptions}
+                        setSelectedOptions={setSelectedOptions}
+                    />
+                )}
+            </View>
         </>
     )
 }
 
-export default FilterSection;
+export default FilterSectionCheckbox;

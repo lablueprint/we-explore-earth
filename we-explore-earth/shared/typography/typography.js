@@ -13,6 +13,12 @@ export const typography = StyleSheet.create({
     letterSpacing: -0.5, // Mimicking that tight look from your image
     color: '#000',
   },
+  h3: {
+    fontFamily: 'HankenGrotesk-Regular',
+    fontWeight: 500,
+    fontSize: 16,
+    color: '#888888',
+  },
   body: {
     fontFamily: 'HankenGrotesk-Regular',
     fontSize: 16,

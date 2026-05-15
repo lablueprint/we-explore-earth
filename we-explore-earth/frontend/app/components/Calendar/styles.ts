@@ -44,4 +44,8 @@ export const styles = StyleSheet.create({
   emptyText: {
     fontSize: 14,
   },
+  noEventsMessage: {
+    fontSize: 20,
+    textAlign: 'center',
+  }
 });
