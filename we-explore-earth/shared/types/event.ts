@@ -64,7 +64,13 @@ export interface EventFormState {
   category: string[];
   accommodation: string[];
   maxAttendees: string;
-  imageUri: string | null;
-  /** S3 object key `events/…`; display via GET /events/signed-url */
+  /**
+   * In form state this is either:
+   *  - an S3 object key (`events/…`) for an existing image, resolved to a
+   *    signed URL via `useEventSignedImageUrl` for display, OR
+   *  - a local URI (`file://…`, `content://…`) from a fresh image picker
+   *    selection, which gets uploaded as multipart on submit.
+   * `null` when there is no cover image.
+   */
   eventImage: string | null;
 }
