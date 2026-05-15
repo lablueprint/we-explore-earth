@@ -6,7 +6,6 @@ export interface UserRSVP {
 }
 
 export interface NewUser {
-  username: string;
   email: string;
   firstName: string;
   lastName: string;
@@ -15,6 +14,7 @@ export interface NewUser {
   events: UserRSVP[];
   avatar: string | null;
   hasOnboarded: boolean;
+  notificationsEnabled: boolean;
 }
 
 export interface User extends NewUser {

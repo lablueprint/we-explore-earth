@@ -14,18 +14,18 @@ export default function SignupPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [checkPassword, setCheckPassword] = useState('');
-    const [username, setUsername] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
-    const [age, setAge] = useState(false);
-    const [notifications, setNotifications] = useState(false);
+
+    const [notificationsEnabled, setNotificationsEnabled] = useState(false);
     const [privacy, setPrivacy] = useState(false);
-    
+    const [age, setAge] = useState(false);
+
     //HANDLERS
     async function handleSignup() {
         // Basic validation
-        if (!email || !password || !username || !firstName || !lastName || !phoneNumber) {
+        if (!email || !password || !firstName || !lastName || !phoneNumber) {
             Alert.alert('Error', 'Please fill in all required fields');
             return;
         }
@@ -52,11 +52,10 @@ export default function SignupPage() {
                 body: JSON.stringify({
                     email,
                     password,
-                    username,
                     firstName,
                     lastName,
                     phoneNumber,
-                    notifications
+                    notificationsEnabled
                 })
             });
 
@@ -125,15 +124,6 @@ export default function SignupPage() {
 
                         <TextInput
                             style={styles.input}
-                            placeholder="Username"
-                            value={username}
-                            onChangeText={setUsername}
-                            autoCapitalize="none"
-                            placeholderTextColor="#8A8A8A"
-                        />
-
-                        <TextInput
-                            style={styles.input}
                             placeholder="Email"
                             value={email}
                             onChangeText={setEmail}
@@ -181,9 +171,9 @@ export default function SignupPage() {
 
                         <TouchableOpacity 
                             style={styles.checkboxContainer} 
-                            onPress={() => setNotifications(!notifications)}
+                            onPress={() => setNotificationsEnabled(!notificationsEnabled)}
                         >
-                            <View style={[styles.checkbox, notifications && styles.checkboxChecked]}>
+                            <View style={[styles.checkbox, notificationsEnabled && styles.checkboxChecked]}>
                                 {notifications && <Text style={styles.checkmark}>✓</Text>}
                             </View>
                             <Text style={styles.checkboxText}>I consent to notifications</Text>
