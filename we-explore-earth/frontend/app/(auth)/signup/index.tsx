@@ -178,7 +178,7 @@ export default function SignupPage() {
                             onPress={() => setNotificationsEnabled(!notificationsEnabled)}
                         >
                             <View style={[styles.checkbox, notificationsEnabled && styles.checkboxChecked]}>
-                                {notifications && <Text style={styles.checkmark}>✓</Text>}
+                                {notificationsEnabled && <Text style={styles.checkmark}>✓</Text>}
                             </View>
                             <Text style={styles.checkboxText}>I consent to notifications</Text>
                         </TouchableOpacity>
