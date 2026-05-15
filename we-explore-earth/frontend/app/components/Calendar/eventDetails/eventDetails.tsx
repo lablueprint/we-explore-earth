@@ -134,17 +134,19 @@ export default function EventDetails({
               <Text style={typography.h1}>{event.title}</Text>
 
               <View style={styles.tagRow}>
-                {event.category?.map((item) => (
-                  <View key={item} style={styles.categoryPill}>
-                    <Text style={styles.tagText}>{item}</Text>
-                  </View>
-                ))}
+                {Array.isArray(event.category) &&
+                  event.category.map((item) => (
+                    <View key={item} style={styles.categoryPill}>
+                      <Text style={styles.tagText}>{item}</Text>
+                    </View>
+                  ))}
 
-                {event.accommodation?.map((item) => (
-                  <View key={item} style={styles.accommodationPill}>
-                    <Text style={styles.tagText}>{item}</Text>
-                  </View>
-                ))}
+                {Array.isArray(event.accommodation) &&
+                  event.accommodation.map((item) => (
+                    <View key={item} style={styles.accommodationPill}>
+                      <Text style={styles.tagText}>{item}</Text>
+                    </View>
+                  ))}
               </View>
 
               <View style={styles.infoRow}>

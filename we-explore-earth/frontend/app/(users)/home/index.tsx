@@ -1,15 +1,13 @@
-import { useState, useEffect, useCallback, use } from "react";
+import { useState, useCallback } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useFocusEffect } from "expo-router";
 
-//LOCAL FILES
 import EventFiltersModal from "../../components/Home/components/eventFiltersModal/eventFiltersModal";
 import HomeCalendar from "@/app/components/Home/homeCalendar";
 import type { Event } from "@shared/types/event";
 import type { Filter } from "@shared/types/filter";
-import { styles } from "./styles";
 
 export default function HomeScreen() {
-  //STATE VARIABLES
   const [events, setEvents] = useState<Event[]>([]);
   const [filters, setFilters] = useState<Filter>({});
   const [filterModalVisible, setFilterModalVisible] = useState(false);
@@ -19,23 +17,24 @@ export default function HomeScreen() {
     const baseUrl = process.env.EXPO_PUBLIC_API_URL;
 
     if (!baseUrl) {
-      console.log("Config Error: EXPO_PUBLIC_API_URL is not set.");
+      console.log("Config Error", "EXPO_PUBLIC_API_URL is not set.");
       setLoading(false);
       return;
     }
 
-    try{
-      setLoading(true); 
+    try {
+      setLoading(true);
+
       const response = await fetch(`${baseUrl}/events/filtered`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(filters),
       });
 
-      if(!response.ok) {
+      if (!response.ok) {
         throw new Error("Failed to fetch filtered events.");
-      } 
-      
+      }
+
       const data: Event[] = await response.json();
       setEvents(data);
     } catch (error) {
@@ -43,16 +42,18 @@ export default function HomeScreen() {
         error instanceof Error
           ? error.message
           : "Failed to fetch filtered events."
-      );   
+      );
     } finally {
-      setLoading(false);  
+      setLoading(false);
     }
   }, [filters]);
 
-  useEffect(() => {
-    fetchFilteredEvents();
-  }, [fetchFilteredEvents]);
-  
+  useFocusEffect(
+    useCallback(() => {
+      fetchFilteredEvents();
+    }, [fetchFilteredEvents])
+  );
+
   return (
     <SafeAreaView
       style={{
@@ -68,7 +69,6 @@ export default function HomeScreen() {
         showFilters
         onPressFilters={() => setFilterModalVisible(true)}
         onRSVPChange={fetchFilteredEvents}
-      
       />
 
       <EventFiltersModal
