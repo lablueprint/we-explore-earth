@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Image, type ImageStyle, type StyleProp } from "react-native";
 
-import { fetchEventCoverSignedUrl } from "@/utils/eventUtils";
+import { fetchEventCoverSignedUrl } from "@/app/(admin)/events/utils/eventUtils";
 
 type Props = {
   imageKey?: string | null;

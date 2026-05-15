@@ -123,11 +123,3 @@ export async function fetchEventCoverSignedUrl(
     return null;
   }
 }
-
-export function sortEventsForCalendar(a: Event, b: Event): number {
-  const byStart = a.timeStart._seconds - b.timeStart._seconds;
-  if (byStart !== 0) return byStart;
-  const byEnd = a.timeEnd._seconds - b.timeEnd._seconds;
-  if (byEnd !== 0) return byEnd;
-  return a.title.localeCompare(b.title);
-}
