@@ -1,5 +1,5 @@
 //STANDARD LIBRARY
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 
 //THIRD-PARTY LIBRARIES
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
@@ -36,7 +36,7 @@ export default function HomeCalendar({
 }: Props) {
   //REACT HOOKS
   const router = useRouter();
-  const { user, userId } = useUser();
+  const { user, userId, avatarUrl } = useUser();
 
   const displayName = user?.firstName?.trim() || "there";
 
@@ -50,36 +50,6 @@ export default function HomeCalendar({
       .filter((e) => e.attendees?.some((a) => a.userID === userId && (a.status === 'YES' || a.status === 'MAYBE')))
       .sort((a, b) => a.timeStart._seconds - b.timeStart._seconds)[0] ?? null;
   }, [events, userId]);
-
-  const avatarKey = user?.avatar ?? null;
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    setAvatarUrl(null);
-
-    const baseUrl = process.env.EXPO_PUBLIC_API_URL;
-    if (!avatarKey || !baseUrl) return;
-
-    const controller = new AbortController();
-
-    (async () => {
-      try {
-        const res = await fetch(
-          `${baseUrl}/users/avatars/signed-url?key=${encodeURIComponent(avatarKey)}`,
-          { signal: controller.signal }
-        );
-        if (!res.ok) throw new Error(`Avatar URL request failed: ${res.status}`);
-
-        const { url } = (await res.json()) as { url?: string };
-        if (url) setAvatarUrl(url);
-      } catch (err) {
-        if ((err as Error).name === "AbortError") return;
-        console.error("Failed to load avatar URL:", err);
-      }
-    })();
-
-    return () => controller.abort();
-  }, [avatarKey]);
 
   //HANDLERS
   const handleBrewingEventPress = (event: Event) => {
