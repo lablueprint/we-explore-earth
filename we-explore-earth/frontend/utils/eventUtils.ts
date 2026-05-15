@@ -95,7 +95,33 @@ export function apiResponseToEvent(raw: Record<string, unknown>): Event | null {
       raw.hostedBy != null && raw.hostedBy !== ""
         ? String(raw.hostedBy)
         : undefined,
+    eventImage:
+      raw.eventImage != null && raw.eventImage !== ""
+        ? String(raw.eventImage)
+        : undefined,
   };
+}
+
+/** Resolve stored S3 key (`events/…`) to a short-lived HTTPS URL for `<Image source={{ uri }} />`. */
+export async function fetchEventCoverSignedUrl(
+  key: string,
+): Promise<string | null> {
+  const baseUrl = process.env.EXPO_PUBLIC_API_URL;
+  if (!baseUrl || !key.startsWith("events/")) {
+    return null;
+  }
+  try {
+    const res = await fetch(
+      `${baseUrl}/events/signed-url?key=${encodeURIComponent(key)}`,
+    );
+    if (!res.ok) {
+      return null;
+    }
+    const data = (await res.json()) as { url?: string };
+    return typeof data.url === "string" ? data.url : null;
+  } catch {
+    return null;
+  }
 }
 
 export function sortEventsForCalendar(a: Event, b: Event): number {

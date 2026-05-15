@@ -62,5 +62,6 @@ export interface EventFormState {
   category: string[];
   accommodation: string[];
   maxAttendees: string;
+  /** Local picker URI or signed HTTPS preview for the cover. */
   eventImage: string | null;
 }

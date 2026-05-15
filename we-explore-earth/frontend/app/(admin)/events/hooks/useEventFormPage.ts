@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, useRef } from "react";
 import { useRouter, useNavigation } from "expo-router";
 import { Alert } from "react-native";
 import type { EventFormState, FirestoreTimestamp } from "@shared/types/event";
@@ -6,6 +6,7 @@ import { useEventFormDirty } from "../../EventFormDirtyContext";
 import {
   apiResponseToEvent,
   combineDateAndTime,
+  fetchEventCoverSignedUrl,
   timestampToDate,
 } from "@/utils/eventUtils";
 import { usePendingUpdatedAdminEvent } from "../../PendingUpdatedAdminEventContext";
@@ -27,7 +28,7 @@ function getEmptyFormState(): EventFormState {
     category: [],
     accommodation: [],
     maxAttendees: "",
-    imageUri: null,
+    eventImage: null,
   };
 }
 
@@ -52,12 +53,15 @@ export function useEventFormPage(id: string | undefined) {
   const eventId = isCreate ? null : (id as string);
 
   const [form, setForm] = useState<EventFormState>(getEmptyFormState);
+  /** Firestore/S3 key for existing cover on edit — excluded from form state. */
+  const persistedCoverKeyRef = useRef<string | null>(null);
   const [categoryOptions, setCategoryOptions] = useState<string[]>([]);
   const [accommodationOptions, setAccommodationOptions] = useState<string[]>([]);
   const [loading, setLoading] = useState(!isCreate);
 
   const resetForm = useCallback(() => {
     setEventFormDirty(false);
+    persistedCoverKeyRef.current = null;
     setForm(getEmptyFormState());
     setLoading(false);
   }, [setEventFormDirty]);
@@ -150,6 +154,19 @@ export function useEventFormPage(id: string | undefined) {
         const start = splitTimestamp(event.timeStart as FirestoreTimestamp | number);
         const end = splitTimestamp(event.timeEnd as FirestoreTimestamp | number);
 
+        const rawImageKey =
+          typeof event.eventImage === "string" &&
+          event.eventImage.startsWith("events/")
+            ? event.eventImage
+            : null;
+
+        persistedCoverKeyRef.current = rawImageKey;
+
+        let previewUri: string | null = null;
+        if (rawImageKey) {
+          previewUri = await fetchEventCoverSignedUrl(rawImageKey);
+        }
+
         setForm({
           title: (event.title as string) || "",
           description: (event.description as string) || "",
@@ -167,7 +184,7 @@ export function useEventFormPage(id: string | undefined) {
           accommodation: Array.isArray(event.accommodation)
             ? event.accommodation
             : [],
-          imageUri: null,
+          eventImage: previewUri,
         });
       } catch (error) {
         console.error("Error fetching event:", error);
@@ -209,6 +226,15 @@ export function useEventFormPage(id: string | undefined) {
     })();
   }, []);
 
+  const setCoverImage = useCallback((value: string | null) => {
+    setForm((prev) => ({ ...prev, eventImage: value }));
+    if (value === null) {
+      persistedCoverKeyRef.current = null;
+    } else if (typeof value === "string" && !value.startsWith("http")) {
+      persistedCoverKeyRef.current = null;
+    }
+  }, []);
+
   // --- Submit handlers ---
   const handleSubmit = useCallback(async () => {
     const { title, description, location } = form;
@@ -219,7 +245,14 @@ export function useEventFormPage(id: string | undefined) {
 
     const timeStart = combineDateAndTime(form.dateStart, form.timeStart);
     const timeEnd = combineDateAndTime(form.dateEnd, form.timeEnd);
-    const payload = {
+    const pickedImageUri = form.eventImage;
+    const isNewLocalImage =
+      typeof pickedImageUri === "string" &&
+      pickedImageUri.length > 0 &&
+      !pickedImageUri.startsWith("http");
+
+    const body = new FormData();
+    for (const [key, value] of Object.entries({
       title,
       description,
       location,
@@ -230,10 +263,30 @@ export function useEventFormPage(id: string | undefined) {
       category: form.category,
       accommodation: form.accommodation,
       maxAttendees: form.maxAttendees,
-    };
+    })) {
+      body.append(
+        key,
+        key === "category" || key === "accommodation"
+          ? JSON.stringify(value)
+          : String(value)
+      );
+    }
+    if (isNewLocalImage) {
+      const lower = pickedImageUri.toLowerCase();
+      const png = lower.endsWith(".png") || lower.includes(".png");
+      body.append("cover", {
+        uri: pickedImageUri,
+        name: png ? "cover.png" : "cover.jpg",
+        type: png ? "image/png" : "image/jpeg",
+      } as any);
+    } else if (!isCreate && eventId) {
+      const key = persistedCoverKeyRef.current;
+      body.append("eventImage", key ?? "");
+    }
 
     const onCreateSuccess = () => {
       setEventFormDirty(false);
+      persistedCoverKeyRef.current = null;
       Alert.alert("Success", "Event created successfully!", [
         { text: "OK", onPress: () => router.replace("/(admin)/home" as const) },
       ]);
@@ -246,8 +299,7 @@ export function useEventFormPage(id: string | undefined) {
       if (isCreate) {
         const response = await fetch(`${API_URL}/events/create`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+          body,
         });
         const data = await response.json();
         if (!response.ok) {
@@ -258,8 +310,7 @@ export function useEventFormPage(id: string | undefined) {
       } else if (eventId) {
         const response = await fetch(`${API_URL}/events/${eventId}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+          body,
         });
         const data = await response.json();
         if (!response.ok) {
@@ -310,6 +361,7 @@ export function useEventFormPage(id: string | undefined) {
     form,
     updateField,
     withDirty,
+    setCoverImage,
     categoryOptions,
     accommodationOptions,
     loading,

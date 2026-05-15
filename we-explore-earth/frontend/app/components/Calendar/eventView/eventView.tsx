@@ -2,7 +2,7 @@
 import React from 'react';
 
 //THIRD-PARTY LIBRARIES
-import { TouchableOpacity, Text, View } from 'react-native';
+import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -11,6 +11,7 @@ import { styles, cardGradient, clockIconSize, clockIconColor, cardActiveOpacity 
 import type { Event } from '@shared/types/event';
 import { typography } from '@shared/typography/typography';
 import { useUser } from '@/app/redux/hooks/useUser';
+import { EventCoverImage } from '@/app/components/Calendar/eventCoverImage/eventCoverImage';
 
 type Props = {
   event: Event;
@@ -53,7 +54,12 @@ export default function EventView({ event, onPress }: Props) {
         style={styles.card}
       >
       <View style={styles.imageWrap}>
-        <View style={styles.imagePlaceholder} />
+        <View style={styles.imagePlaceholder}>
+          <EventCoverImage
+            imageKey={event.eventImage}
+            style={StyleSheet.absoluteFill}
+          />
+        </View>
       </View>
 
       <View style={styles.content}>
