@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -8,7 +8,6 @@ import HomeCalendar from "@/app/components/Home/homeCalendar";
 import type { Event } from "@shared/types/event";
 import type { Filter } from "@shared/types/filter";
 import { usePendingUpdatedAdminEvent } from "../PendingUpdatedAdminEventContext";
-import { sortEventsForCalendar } from "@/utils/eventUtils";
 
 export default function AdminHomeScreen() {
   //STATE VARIABLES
@@ -19,23 +18,6 @@ export default function AdminHomeScreen() {
   const [autoOpenEvent, setAutoOpenEvent] = useState<Event | null>(null);
 
   const { consumePendingUpdatedEvent } = usePendingUpdatedAdminEvent();
-
-  useFocusEffect(
-    useCallback(() => {
-      const updated = consumePendingUpdatedEvent();
-      if (!updated) return;
-      setEvents((prev) => {
-        const idx = prev.findIndex((e) => e.id === updated.id);
-        if (idx === -1) {
-          return [...prev, updated].sort(sortEventsForCalendar);
-        }
-        const next = [...prev];
-        next[idx] = updated;
-        return next.sort(sortEventsForCalendar);
-      });
-      setAutoOpenEvent(updated);
-    }, [consumePendingUpdatedEvent])
-  );
 
   const fetchFilteredEvents = useCallback(async () => {
     const baseUrl = process.env.EXPO_PUBLIC_API_URL;
@@ -72,9 +54,15 @@ export default function AdminHomeScreen() {
     }
   }, [filters]);
 
-  useEffect(() => {
-    fetchFilteredEvents();
-  }, [fetchFilteredEvents]);
+  useFocusEffect(
+    useCallback(() => {
+      const updated = consumePendingUpdatedEvent();
+      if (updated) {
+        setAutoOpenEvent(updated);
+      }
+      void fetchFilteredEvents();
+    }, [consumePendingUpdatedEvent, fetchFilteredEvents])
+  );
 
   //RENDER
   return (

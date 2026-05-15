@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Alert,
   ScrollView,
+  StyleSheet,
 } from "react-native";
 import { useRouter, useSegments } from "expo-router";
 
@@ -14,6 +15,7 @@ import type { Event, FirestoreTimestamp } from "@shared/types/event";
 import RSVPModal from "../RSVPModal/RSVPModal";
 import { useUser } from '@/app/redux/hooks/useUser';
 import { typography } from "../../../../../shared/typography/typography";
+import { EventCoverImage } from "@/app/components/Calendar/eventCoverImage/eventCoverImage";
 
 type Props = {
   visible: boolean;
@@ -128,7 +130,13 @@ export default function EventDetails({
               </View>
 
               <View style={styles.imagePlaceholder}>
-                <Text style={styles.imagePlaceholderText}>Image</Text>
+                <EventCoverImage
+                  imageKey={event.eventImage}
+                  style={StyleSheet.absoluteFill}
+                  fallback={
+                    <Text style={styles.imagePlaceholderText}>Image</Text>
+                  }
+                />
               </View>
 
               <Text style={typography.h1}>{event.title}</Text>

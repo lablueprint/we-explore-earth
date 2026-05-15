@@ -50,8 +50,8 @@ interface EventFormProps {
   setHostedBy: (text: string) => void;
   maxAttendees: string;
   setMaxAttendees: (text: string) => void;
-  imageUri: string|null;
-  setImageUri: (text: string | null) => void;
+  eventImage: string | null;
+  setEventImage: (text: string | null) => void;
   onSubmit: () => void;
   submitButtonText: string;
   formTitle: string;
@@ -133,8 +133,8 @@ export function EventForm({
   onSubmit,
   maxAttendees,
   setMaxAttendees,
-  imageUri,
-  setImageUri,
+  eventImage,
+  setEventImage,
   submitButtonText,
   formTitle,
 }: EventFormProps) {
@@ -246,7 +246,7 @@ export function EventForm({
     });
 
     if (!result.canceled) {
-      setImageUri(result.assets[0].uri);
+      setEventImage(result.assets[0].uri);
     }
   };
 
@@ -271,9 +271,9 @@ export function EventForm({
         keyboardShouldPersistTaps="handled" >
 
       <TouchableOpacity onPress={pickImage} style={styles.coverContainer}>
-        {imageUri ? (
+        {eventImage ? (
           <Image
-            source={{ uri: imageUri }}
+            source={{ uri: eventImage }}
             style={styles.coverImage}
             resizeMode="cover"
           /> 
@@ -281,15 +281,15 @@ export function EventForm({
           <Text style={typography.body}>Add photo</Text>
         )}
 
-        {imageUri && (
+        {eventImage && (
           <TouchableOpacity style={styles.editButton} onPress={pickImage} >
             <Text style={{ fontSize: 16 }}>✎</Text>
           </TouchableOpacity>
         )}
       </TouchableOpacity>
 
-      {imageUri && (
-        <TouchableOpacity onPress={() => setImageUri(null)}>
+      {eventImage && (
+        <TouchableOpacity onPress={() => setEventImage(null)}>
           <Text style={styles.removeImageText}>Remove photo</Text>
         </TouchableOpacity>
       )}

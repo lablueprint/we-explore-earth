@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, use } from "react";
+import { useState, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 //LOCAL FILES
@@ -49,10 +50,12 @@ export default function HomeScreen() {
     }
   }, [filters]);
 
-  useEffect(() => {
-    fetchFilteredEvents();
-  }, [fetchFilteredEvents]);
-  
+  useFocusEffect(
+    useCallback(() => {
+      void fetchFilteredEvents();
+    }, [fetchFilteredEvents])
+  );
+
   return (
     <SafeAreaView
       style={{
