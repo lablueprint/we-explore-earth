@@ -14,7 +14,8 @@ export interface EventRSVP {
 }
 
 /** Event document as stored / returned by the API (Firestore field types). */
-export interface NewEvent {
+export interface Event {
+  id: string;
   title: string;
   description: string;
   location: string;
@@ -30,16 +31,13 @@ export interface NewEvent {
   eventImage?: string | null;
 }
 
-export interface Event extends NewEvent {
-  id: string;
-}
 
 /** `GET /users/:id/events` adds the current user’s RSVP on the event. */
 export type EventWithStatus = Event & { status?: RSVPStatus };
 
 /** Body the backend writes with `Date` (Firestore converts to timestamps). */
 export type FirestoreEventData = Omit<
-  NewEvent,
+  Event,
   "timeStart" | "timeEnd" | "attendees"
 > & {
   timeStart: Date;
@@ -64,13 +62,5 @@ export interface EventFormState {
   category: string[];
   accommodation: string[];
   maxAttendees: string;
-  /**
-   * In form state this is either:
-   *  - an S3 object key (`events/…`) for an existing image, resolved to a
-   *    signed URL via `useEventSignedImageUrl` for display, OR
-   *  - a local URI (`file://…`, `content://…`) from a fresh image picker
-   *    selection, which gets uploaded as multipart on submit.
-   * `null` when there is no cover image.
-   */
   eventImage: string | null;
 }
