@@ -68,13 +68,9 @@ export const styles = StyleSheet.create({
     marginBottom: 12,
   },
   filterButtonWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    columnGap: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 4,
-    borderWidth: 2,
-    borderRadius: 8,
+    padding: 6,
+    borderWidth: 1,
+    borderRadius: 24,
     borderColor: "#999",
   },
   adminHeader: {

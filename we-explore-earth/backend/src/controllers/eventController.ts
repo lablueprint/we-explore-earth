@@ -1,7 +1,6 @@
 import { db } from "../firestore";
 import { Request, Response } from "express";
-import admin from "firebase-admin";
-import { FirestoreTimestamp, RSVPStatus, EventRSVP, Event, FirestoreEventData } from "@shared/types/event";
+import { FirestoreTimestamp, EventRSVP, Event, FirestoreEventData } from "@shared/types/event";
 import { Filter } from "@shared/types/filter";
 
 // create event
@@ -123,10 +122,11 @@ export async function getFilteredEvents(req: Request, res: Response) {
     let filterStartDate: Date | undefined = undefined;
     let filterEndDate: Date | undefined = undefined;
     let filterCategories: Set<string> | undefined = undefined;
+    let filterMaxEventPrice: number | undefined = undefined;
     let filterAccommodations: Set<string> | undefined = undefined;
 
     // Prepare the filters
-    if (!filters.startDate && !filters.startDate) { // default case: no date range selected
+    if (!filters.startDate && !filters.endDate) { // default case: no date range selected (aka: any date)
       filterStartDate = new Date(); // set start date to current date
       filterStartDate.setHours(0, 0, 0, 0); // normalize start date
     }
@@ -140,10 +140,20 @@ export async function getFilteredEvents(req: Request, res: Response) {
     if (filters.categories) {
       filterCategories = new Set(filters.categories);
     }
+    if (filters.maxEventPrice != undefined) {  // compared with undefined because maxEventPrice of 0 is falsy (0 == false)
+      filterMaxEventPrice = filters.maxEventPrice;
+    }
     if (filters.accommodations) {
       filterAccommodations = new Set(filters.accommodations);
     }
-    // console.log('Filters: \n', 'Start date:     ' + filterStartDate + '\n', 'End date:       ' + filterEndDate + '\n', 'Categories:    ', filterCategories, '\n', 'Accommodations:', filterAccommodations, '\n');
+    // console.log(
+    //   'Filters: \n',
+    //   'Start date:      ' + filterStartDate + '\n', 
+    //   'End date:        ' + filterEndDate + '\n',
+    //   'Categories:      ', filterCategories +'\n',
+    //   'Max event price: ', filterMaxEventPrice + '\n',
+    //   'Accommodations:  ', filterAccommodations + '\n'
+    // );
 
     // Filter events
     const events: Event[] = [];
@@ -155,7 +165,7 @@ export async function getFilteredEvents(req: Request, res: Response) {
       } as Event;
 
       // Filtering
-      // If default case (no date range is selected), only include events that start on or after today
+      // If default case (any date; no date range is selected), only include events that start on or after today
       // Only default case has a start date but no end date because all valid date ranges will have both start and end dates.
       if (filterStartDate && !filterEndDate) {
         const eventStartDate = convertFirestoreTimestampToDate(event.timeStart)
@@ -186,6 +196,11 @@ export async function getFilteredEvents(req: Request, res: Response) {
         if (!containsCategory) {
           return;
         }
+      }
+      // If a max event price is set
+      // compared with undefined because maxEventPrice of 0 is falsy (0 == false)
+      if (filterMaxEventPrice != undefined && event.price > filterMaxEventPrice) {
+        return;
       }
       // If at least 1 accommodation is selected
       if (filterAccommodations) {

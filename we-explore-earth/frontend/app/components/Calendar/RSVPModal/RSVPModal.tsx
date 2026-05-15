@@ -12,11 +12,11 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-} from 'react-native';
-import { router, type Href } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Ionicons from '@expo/vector-icons/Ionicons';
+} from "react-native";
+import { router } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 //LOCAL FILES
 import {
@@ -39,11 +39,11 @@ import {
   checkmarkIconSize,
   checkmarkIconColor,
   activityIndicatorColor,
-} from './styles';
-import type { Event, RSVPStatus } from '@shared/types/event';
-import { useUser } from '../../../../hooks/useUser';
-import { useAppDispatch } from '../../../redux/hooks';
-import { updateUserState } from '../../../redux/slices/userSlice';
+} from "./styles";
+import type { Event, RSVPStatus } from "@shared/types/event";
+import { useUser } from "../../../../hooks/useUser";
+import { useAppDispatch } from "../../../redux/hooks";
+import { updateUserState } from "../../../redux/slices/userSlice";
 
 type Props = {
   visible: boolean;
@@ -51,9 +51,17 @@ type Props = {
   currentRSVP: RSVPStatus | null;
   onClose: () => void;
   onRSVPChange: (status: RSVPStatus | null) => void;
+  onTermsPress?: () => void;
 };
 
-export default function RSVPModal({ visible, event, currentRSVP, onClose, onRSVPChange }: Props) {
+export default function RSVPModal({
+  visible,
+  event,
+  currentRSVP,
+  onClose,
+  onRSVPChange,
+  onTermsPress,
+}: Props) {
   //REACT HOOKS
   const insets = useSafeAreaInsets();
   const { user, userId } = useUser();
@@ -116,11 +124,14 @@ export default function RSVPModal({ visible, event, currentRSVP, onClose, onRSVP
 
   const handleSubmit = async () => {
     if (!selectedStatus) {
-      Alert.alert('Selection Required', 'Please select Yes or Maybe.');
+      Alert.alert("Selection Required", "Please select Yes or Maybe.");
       return;
     }
     if (!agreedToTerms) {
-      Alert.alert('Terms Required', 'Please agree to the terms and conditions.');
+      Alert.alert(
+        "Terms Required",
+        "Please agree to the terms and conditions.",
+      );
       return;
     }
     if (!event || !userId || !user) return;
@@ -129,29 +140,29 @@ export default function RSVPModal({ visible, event, currentRSVP, onClose, onRSVP
     const baseUrl = process.env.EXPO_PUBLIC_API_URL;
 
     if (!baseUrl) {
-      Alert.alert('Config Error', 'EXPO_PUBLIC_API_URL is not set.');
+      Alert.alert("Config Error", "EXPO_PUBLIC_API_URL is not set.");
       setIsSubmitting(false);
       return;
     }
 
     try {
       const eventRes = await fetch(`${baseUrl}/events/${event.id}/rsvp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userID: userId, status: selectedStatus }),
       });
       if (!eventRes.ok) {
-        Alert.alert('Error', 'Failed to update event RSVP.');
+        Alert.alert("Error", "Failed to update event RSVP.");
         return;
       }
 
       const userRes = await fetch(`${baseUrl}/users/${userId}/rsvp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ eventID: event.id, status: selectedStatus }),
       });
       if (!userRes.ok) {
-        Alert.alert('Error', 'Failed to update user RSVP.');
+        Alert.alert("Error", "Failed to update user RSVP.");
         return;
       }
 
@@ -161,9 +172,12 @@ export default function RSVPModal({ visible, event, currentRSVP, onClose, onRSVP
 
       onRSVPChange(selectedStatus);
       onClose();
-      Alert.alert('Success', `You have RSVPed "${selectedStatus}" to this event.`);
+      Alert.alert(
+        "Success",
+        `You have RSVPed "${selectedStatus}" to this event.`,
+      );
     } catch {
-      Alert.alert('Network Error', 'Could not submit RSVP.');
+      Alert.alert("Network Error", "Could not submit RSVP.");
     } finally {
       setIsSubmitting(false);
     }
@@ -171,10 +185,15 @@ export default function RSVPModal({ visible, event, currentRSVP, onClose, onRSVP
 
   //RENDER
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+    >
       <KeyboardAvoidingView
         style={styles.backdrop}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <LinearGradient
           colors={gradientColors}
@@ -191,7 +210,11 @@ export default function RSVPModal({ visible, event, currentRSVP, onClose, onRSVP
             ]}
             onPress={onClose}
           >
-            <Ionicons name="close" size={closeIconSize} color={closeIconColor} />
+            <Ionicons
+              name="close"
+              size={closeIconSize}
+              color={closeIconColor}
+            />
           </TouchableOpacity>
 
           <ScrollView
@@ -201,7 +224,8 @@ export default function RSVPModal({ visible, event, currentRSVP, onClose, onRSVP
               {
                 paddingTop: insets.top + scrollPaddingTopExtra,
                 paddingBottom:
-                  Math.max(insets.bottom, scrollPaddingBottomMin) + scrollPaddingBottomExtra,
+                  Math.max(insets.bottom, scrollPaddingBottomMin) +
+                  scrollPaddingBottomExtra,
               },
             ]}
             keyboardShouldPersistTaps="handled"
@@ -210,37 +234,65 @@ export default function RSVPModal({ visible, event, currentRSVP, onClose, onRSVP
 
             <View style={styles.optionRow}>
               <TouchableOpacity
-                style={[styles.optionButton, selectedStatus === 'YES' && styles.optionButtonSelected]}
-                onPress={() => setSelectedStatus('YES')}
+                style={[
+                  styles.optionButton,
+                  selectedStatus === "YES" && styles.optionButtonSelected,
+                ]}
+                onPress={() => setSelectedStatus("YES")}
                 activeOpacity={0.75}
               >
-                <Text style={getOptionTextStyle(selectedStatus === 'YES')}>Yes</Text>
+                <Text style={getOptionTextStyle(selectedStatus === "YES")}>
+                  Yes
+                </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.optionButton, selectedStatus === 'MAYBE' && styles.optionButtonSelected]}
-                onPress={() => setSelectedStatus('MAYBE')}
+                style={[
+                  styles.optionButton,
+                  selectedStatus === "MAYBE" && styles.optionButtonSelected,
+                ]}
+                onPress={() => setSelectedStatus("MAYBE")}
                 activeOpacity={0.75}
               >
-                <Text style={getOptionTextStyle(selectedStatus === 'MAYBE')}>Maybe</Text>
+                <Text style={getOptionTextStyle(selectedStatus === "MAYBE")}>
+                  Maybe
+                </Text>
               </TouchableOpacity>
             </View>
 
             <View style={styles.termsRow}>
-              <TouchableOpacity onPress={() => setAgreedToTerms((v) => !v)} activeOpacity={0.7}>
-                <View style={[styles.checkbox, agreedToTerms && styles.checkboxChecked]}>
+              <TouchableOpacity
+                onPress={() => setAgreedToTerms((v) => !v)}
+                activeOpacity={0.7}
+              >
+                <View
+                  style={[
+                    styles.checkbox,
+                    agreedToTerms && styles.checkboxChecked,
+                  ]}
+                >
                   {agreedToTerms && (
-                    <Ionicons name="checkmark" size={checkmarkIconSize} color={checkmarkIconColor} />
+                    <Ionicons
+                      name="checkmark"
+                      size={checkmarkIconSize}
+                      color={checkmarkIconColor}
+                    />
                   )}
                 </View>
               </TouchableOpacity>
               <Text style={termsTextStyle}>
-                By selecting this check box, you agree to our{' '}
+                By selecting this check box, you agree to our{" "}
                 <Text
                   style={termsLinkStyle}
                   onPress={() => {
-                    onClose();
-                    setTimeout(() => router.push('/rsvp-terms-placeholder' as Href), 0);
+                    if (onTermsPress) {
+                      onTermsPress();
+                    } else {
+                      onClose();
+                      requestAnimationFrame(() => {
+                        router.push("/rsvp-terms-placeholder");
+                      });
+                    }
                   }}
                 >
                   terms and conditions

@@ -42,6 +42,7 @@ export default function RootLayout() {
           <Stack.Screen name="(admin)" />
           <Stack.Screen name="(onboarding)" />
           <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="rsvp-terms-placeholder" />
         </Stack>
       </Provider>
     </SafeAreaProvider>
