@@ -1,16 +1,15 @@
 import { useState, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useFocusEffect } from "expo-router";
 
-import EventFiltersModal from "@/app/components/Home/components/eventFiltersModal/eventFiltersModal";
+import EventFiltersModal from "../../components/Home/components/eventFiltersModal/eventFiltersModal";
 import HomeCalendar from "@/app/components/Home/homeCalendar";
-
 import type { Event } from "@shared/types/event";
 import type { Filter } from "@shared/types/filter";
 import { usePendingUpdatedAdminEvent } from "../PendingUpdatedAdminEventContext";
 
 export default function AdminHomeScreen() {
-  //STATE VARIABLES
   const [events, setEvents] = useState<Event[]>([]);
   const [filters, setFilters] = useState<Filter>({});
   const [filterModalVisible, setFilterModalVisible] = useState(false);
@@ -23,7 +22,7 @@ export default function AdminHomeScreen() {
     const baseUrl = process.env.EXPO_PUBLIC_API_URL;
 
     if (!baseUrl) {
-      console.log("Config Error: EXPO_PUBLIC_API_URL is not set.");
+      console.log("Config Error", "EXPO_PUBLIC_API_URL is not set.");
       setLoading(false);
       return;
     }
@@ -60,11 +59,10 @@ export default function AdminHomeScreen() {
       if (updated) {
         setAutoOpenEvent(updated);
       }
-      void fetchFilteredEvents();
+      fetchFilteredEvents();
     }, [consumePendingUpdatedEvent, fetchFilteredEvents])
   );
 
-  //RENDER
   return (
     <SafeAreaView
       style={{

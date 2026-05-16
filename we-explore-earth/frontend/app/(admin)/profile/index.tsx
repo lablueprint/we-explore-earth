@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, ActivityIndicator } from "react-native";
-import AddAdmin from "../../components/AddAdmin/addAdmin";
+import AddAdmin from "./components/AddAdmin/addAdmin";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 

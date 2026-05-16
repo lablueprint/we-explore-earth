@@ -102,6 +102,23 @@ export const styles = StyleSheet.create({
     color: "#64645F",
   },
 
+  accommodationPill: {
+    borderWidth: 1,
+    borderColor: "#B7D6A8",
+    backgroundColor: "#EAF4E4",
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+  },
+  categoryPill: {
+    borderWidth: 1,
+    borderColor: "#D7D5CF",
+    backgroundColor: "#F7F6F2",
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+  },
+
   infoRow: {
     flexDirection: "row",
     alignItems: "flex-start",
