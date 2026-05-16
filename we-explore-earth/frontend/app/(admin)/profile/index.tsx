@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ActivityIndicator } from "react-native";
-import AddAdmin from "./components/AddAdmin/addAdmin";
+import { ActivityIndicator, ScrollView, Text } from "react-native";
+import { AddAdmin } from "./components/AddAdmin";
+import { ProfileInfo } from "@/app/components/Profile/profileInfo";
+import { styles as profileInfoStyles } from "@/app/components/Profile/profileInfo.styles";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -29,13 +31,11 @@ export default function AdminProfile() {
   }
 
   return (
-    <View style={{ padding: 16 }}>
-      <Text style={{ fontSize: 18, fontWeight: "600", marginBottom: 8 }}>
-        Admins
-      </Text>
+    <ScrollView contentContainerStyle={{ padding: 16, gap: 12 }}>
+      <ProfileInfo />
+
+      <Text style={profileInfoStyles.sectionLabel}>ADMIN</Text>
       <AddAdmin />
-
-
-    </View>
+    </ScrollView>
   );
 }

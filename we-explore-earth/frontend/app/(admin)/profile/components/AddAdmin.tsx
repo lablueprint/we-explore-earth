@@ -4,16 +4,15 @@ import {
   View,
   Text,
   TextInput,
-  Button,
   Alert,
-  FlatList,
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
-export default function AddAdmin() {
+export function AddAdmin() {
   const [email, setEmail] = useState("");
   const [filter, setFilter] = useState("");
 
@@ -94,60 +93,62 @@ export default function AddAdmin() {
   };
 
   return (
-  <View style={styles.container}>
-    <Text style={styles.sectionTitle}>Add Admin</Text>
+    <View style={styles.container}>
+      <View style={styles.sectionHeader}>
+        <Ionicons name="add" size={22} color="#1A1A1A" />
+        <Text style={styles.sectionTitle}>Add new admin by email</Text>
+      </View>
 
-    <TextInput
-      value={email}
-      onChangeText={setEmail}
-      autoCapitalize="none"
-      keyboardType="email-address"
-      placeholder="admin@example.com"
-      style={styles.input}
-    />
+      <TextInput
+        value={email}
+        onChangeText={setEmail}
+        autoCapitalize="none"
+        keyboardType="email-address"
+        placeholder="admin@example.com"
+        placeholderTextColor="#A0A0A0"
+        style={styles.input}
+      />
 
-    <TouchableOpacity
-      onPress={handleAddAdmin}
-      disabled={loadingAdd}
-      style={[
-        styles.button,
-        loadingAdd && styles.buttonDisabled,
-      ]}
-    >
-      <Text style={styles.buttonText}>
-        {loadingAdd ? "Adding..." : "Add Admin"}
-      </Text>
-    </TouchableOpacity>
+      <TouchableOpacity
+        onPress={handleAddAdmin}
+        disabled={loadingAdd}
+        style={[styles.button, loadingAdd && styles.buttonDisabled]}
+      >
+        <Text style={styles.buttonText}>{loadingAdd ? "Adding..." : "Add admin"}</Text>
+      </TouchableOpacity>
 
-    <Text style={[styles.sectionTitle, styles.marginTop]}>
-      Current Admins
-    </Text>
+      <View style={styles.divider} />
 
-    <TextInput
-      value={filter}
-      onChangeText={setFilter}
-      placeholder="Search admins…"
-      autoCapitalize="none"
-      style={styles.input}
-    />
+      <View style={styles.sectionHeader}>
+        <Ionicons name="list" size={22} color="#1A1A1A" />
+        <Text style={styles.sectionTitle}>Current admin list</Text>
+      </View>
 
-    {loadingList ? (
-      <ActivityIndicator />
-    ) : (
-      <FlatList
-        data={filteredAdmins}
-        keyExtractor={(item) => item}
-        renderItem={({ item }) => (
-          <View style={styles.listItem}>
-            <Text>{item}</Text>
+      <View style={styles.searchInputWrapper}>
+        <Ionicons name="search" size={18} color="#A0A0A0" />
+        <TextInput
+          value={filter}
+          onChangeText={setFilter}
+          placeholder="Search admins"
+          placeholderTextColor="#A0A0A0"
+          autoCapitalize="none"
+          style={styles.searchInput}
+        />
+      </View>
+
+      {loadingList ? (
+        <ActivityIndicator />
+      ) : (
+        filteredAdmins.map((item) => (
+          <View key={item} style={styles.listItem}>
+            <Text style={styles.listItemText}>{item}</Text>
 
             <TouchableOpacity onPress={() => removeAdmin(item)}>
-              <Text style={styles.removeText}>✕</Text>
+              <Ionicons name="close" size={20} color="#D32F2F" />
             </TouchableOpacity>
           </View>
-        )}
-      />
-    )}
-  </View>
-);
+        ))
+      )}
+    </View>
+  );
 }

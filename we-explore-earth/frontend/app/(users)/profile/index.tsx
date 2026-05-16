@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Alert } from 'react-native';
+import { View, Text, Alert, ScrollView } from 'react-native';
 import { useState, useEffect} from 'react';
 import { TouchableOpacity } from 'react-native';
 import { SvgUri } from 'react-native-svg';
@@ -8,6 +8,7 @@ import { SvgUri } from 'react-native-svg';
 import { styles } from './styles';
 import { User } from "@shared/types/user";
 import { useUser } from '@/app/redux/hooks/useUser';
+import { ProfileInfo } from '@/app/components/Profile/profileInfo';
 
 export default function ProfileScreen() {
   //REACT HOOKS
@@ -87,7 +88,9 @@ export default function ProfileScreen() {
 
   //RENDER
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={{ padding: 16 }}>
+      <ProfileInfo />
+
       <View style={styles.contentContainer}>
         <Text style={styles.title}>Hi @{user?.username}!</Text>
         <Text style={styles.infoText}>Email: {user?.email}</Text>
@@ -126,6 +129,6 @@ export default function ProfileScreen() {
           {isUpdating ? 'Updating...' : 'Update Profile'}
         </Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }
