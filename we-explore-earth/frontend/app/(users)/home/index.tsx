@@ -6,6 +6,7 @@ import EventFiltersModal from "../../components/Home/components/eventFiltersModa
 import HomeCalendar from "@/app/components/Home/homeCalendar";
 import type { Event } from "@shared/types/event";
 import type { Filter } from "@shared/types/filter";
+import { styles } from "./styles";
 
 export default function HomeScreen() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -55,14 +56,7 @@ export default function HomeScreen() {
   );
 
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        backgroundColor: "white",
-        paddingTop: 20,
-        paddingHorizontal: 20,
-      }}
-    >
+    <SafeAreaView style={styles.screen}>
       <HomeCalendar
         events={events}
         loading={loading}

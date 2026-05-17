@@ -5,8 +5,20 @@ export const clockIconColor = '#777';
 export const cardActiveOpacity = 0.85;
 
 export const cardGradient = {
-  colors: ['#fbfbfb', '#f7f7f7', '#ffffff'] as const,
+  colors: ['#FFFFFF', '#FAFAFA', '#F2F2F2'] as const,
   locations: [0, 0.55, 1] as const,
+  start: { x: 0.5, y: 0 },
+  end: { x: 0.5, y: 1 },
+};
+
+export const glossOverlay = {
+  colors: [
+    'rgba(255,255,255,0.75)',
+    'rgba(255,255,255,0.28)',
+    'rgba(255,255,255,0.06)',
+    'rgba(255,255,255,0)',
+  ] as const,
+  locations: [0, 0.22, 0.48, 1] as const,
   start: { x: 0.5, y: 0 },
   end: { x: 0.5, y: 1 },
 };
@@ -16,12 +28,13 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     borderWidth: 1,
-    borderColor: '#dddddd',
-    borderRadius: 20,
+    borderColor: '#E1E1E1',
+    borderRadius: 24,
+    backgroundColor: '#FFFFFF',
     padding: 12,
     marginBottom: 10,
     gap: 10,
-    height: 120,
+    height: 110,
     overflow: 'hidden',
   },
   imageWrap: {
