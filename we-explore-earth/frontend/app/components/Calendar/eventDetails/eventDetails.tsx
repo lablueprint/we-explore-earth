@@ -205,16 +205,16 @@ export default function EventDetails({
                 )}
               </View>
 
-              <TouchableOpacity
-                onPress={handleRSVPPress}
-                style={styles.rsvpButton}
-              >
-
-                
+              {!isAdmin && (
+                <TouchableOpacity
+                  onPress={handleRSVPPress}
+                  style={styles.rsvpButton}
+                >
+                  
                 <Text style={styles.rsvpButtonText}>
                   {displayRSVP ? "Update RSVP" : "RSVP"}
                 </Text>
-              </TouchableOpacity>
+              </TouchableOpacity>)}
               
 
               {isAdmin && (

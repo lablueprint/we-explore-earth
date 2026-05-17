@@ -7,7 +7,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { LinearGradient } from 'expo-linear-gradient';
 
 //LOCAL FILES
-import { styles, cardGradient, clockIconSize, clockIconColor, cardActiveOpacity } from './styles';
+import { styles, cardGradient, glossOverlay, clockIconSize, clockIconColor, cardActiveOpacity } from './styles';
 import type { Event } from '@shared/types/event';
 import { typography } from '@shared/typography/typography';
 import { useUser } from '@/app/redux/hooks/useUser';
@@ -53,6 +53,15 @@ export default function EventView({ event, onPress }: Props) {
         end={cardGradient.end}
         style={styles.card}
       >
+      <LinearGradient
+        pointerEvents="none"
+        colors={glossOverlay.colors}
+        locations={glossOverlay.locations}
+        start={glossOverlay.start}
+        end={glossOverlay.end}
+        style={StyleSheet.absoluteFillObject}
+      />
+
       <View style={styles.imageWrap}>
         <View style={styles.imagePlaceholder}>
           <EventCoverImage
@@ -63,7 +72,7 @@ export default function EventView({ event, onPress }: Props) {
       </View>
 
       <View style={styles.content}>
-        <Text style={[typography.h1, styles.title]} numberOfLines={2}>
+        <Text style={[typography.h1, styles.title]} numberOfLines={1} ellipsizeMode="tail">
           {event.title}
         </Text>
 
