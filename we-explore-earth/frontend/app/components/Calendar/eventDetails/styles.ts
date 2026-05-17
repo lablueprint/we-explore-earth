@@ -174,6 +174,34 @@ export const styles = StyleSheet.create({
     marginBottom: 24,
   },
 
+  infoCardRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 16,
+  },
+
+  infoCard: {
+    backgroundColor: "#F0F0ED",
+    borderWidth: 1,
+    borderColor: "#D9D8D3",
+    borderRadius: 18,
+    paddingHorizontal: 22,
+    paddingVertical: 18,
+    marginBottom: 14,
+  },
+  
+  infoCardLabel: {
+    fontSize: 15,
+    color: "#9A9A94",
+    marginBottom: 10,
+  },
+  
+  infoCardText: {
+    fontSize: 18,
+    color: "#1D1D1B",
+    fontWeight: "400",
+  },
+
   avatar: {
     width: 42,
     height: 42,
@@ -217,6 +245,18 @@ export const styles = StyleSheet.create({
   viewAllButton: {
     paddingVertical: 4,
     paddingHorizontal: 4,
+  },
+  logisticsIcon: {
+    width: 16,
+    height: 16,
+    resizeMode: "contain",
+    marginTop: 2,
+  },
+  logisticsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
+    gap: 10,
   },
   
 });
