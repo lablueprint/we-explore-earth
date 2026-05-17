@@ -113,6 +113,11 @@ export default function RSVPModal({
         Alert.alert('Error', 'Failed to cancel user RSVP.');
         return;
       }
+
+      if (user) {
+        const updatedEvents = user.events.filter((e) => e.eventID !== event.id);
+        dispatch(updateUserState({ ...user, events: updatedEvents }));
+      }
       onRSVPChange(null);
       onClose();
     } catch {

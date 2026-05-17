@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Modal,
   View,
@@ -8,7 +8,7 @@ import {
   ScrollView,
   StyleSheet,
 } from "react-native";
-import { useRouter, useSegments } from "expo-router";
+import { useRouter, useSegments, useFocusEffect } from "expo-router";
 
 import { styles } from "./styles";
 import type { Event, FirestoreTimestamp } from "@shared/types/event";
@@ -101,6 +101,13 @@ export default function EventDetails({
   };
 
   const displayRSVP = hasLocalChange ? localRSVP : currentRSVP;
+
+  useFocusEffect(
+    useCallback(() => {
+      setLocalRSVP(currentRSVP);
+      setHasLocalChange(false);
+    }, [currentRSVP])
+  );
 
   if (!event) return null;
 
@@ -202,10 +209,12 @@ export default function EventDetails({
                 onPress={handleRSVPPress}
                 style={styles.rsvpButton}
               >
+
+                
                 <Text style={styles.rsvpButtonText}>
                   {displayRSVP ? "Update RSVP" : "RSVP"}
                 </Text>
-              </TouchableOpacity>)}
+              </TouchableOpacity>
               
 
               {isAdmin && (
