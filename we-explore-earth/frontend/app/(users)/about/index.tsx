@@ -86,7 +86,7 @@ export default function AboutPage() {
                     </View>
                 </View>
 
-                <View style={styles.sectionContainer, styles.lastSection}>
+                <View style={[styles.sectionContainer, styles.lastSection]}>
                   <Text style={styles.sectionHeader}>PROGRAMMING</Text>
                   <Text style={styles.listItem}>  {'\u2022'} Group hike cleanups & conservation projects</Text>
                   <Text style={styles.listItem}>  {'\u2022'} Backpacking experiences</Text>
