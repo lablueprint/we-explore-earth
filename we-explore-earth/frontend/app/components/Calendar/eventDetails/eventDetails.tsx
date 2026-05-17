@@ -161,6 +161,7 @@ export default function EventDetails({
   };
 
   if (!event) return null;
+  const isFull = (event.attendees?.length ?? 0) >= event.maxAttendees;
 
   return (
     <>
@@ -271,16 +272,16 @@ export default function EventDetails({
               </View>
 
               {!isAdmin && (
-              <TouchableOpacity
-                onPress={handleRSVPPress}
-                style={styles.rsvpButton}
-              >
-
-                
-                <Text style={styles.rsvpButtonText}>
-                  {displayRSVP ? "Update RSVP" : "RSVP"}
-                </Text>
-              </TouchableOpacity>)}
+                <TouchableOpacity
+                  onPress={isFull ? undefined : handleRSVPPress}
+                  style={isFull ? styles.eventFullButton : styles.rsvpButton}
+                  disabled={isFull}
+                >
+                  <Text style={isFull ? styles.eventFullText : styles.rsvpButtonText}>
+                    {isFull ? "Event Full" : displayRSVP ? "Update RSVP" : "RSVP"}
+                  </Text>
+                </TouchableOpacity>
+              )}
               
 
               {isAdmin && (
