@@ -33,13 +33,52 @@ function formatEventDate(seconds: number): string {
   return `${dayName} ${monthName} ${day}, ${hour12}${minuteStr}${ampm}`;
 }
 
+const isSameDay = (start: Date, end: Date) => {
+  return (
+    start.getFullYear() === end.getFullYear() &&
+    start.getMonth() === end.getMonth() &&
+    start.getDate() === end.getDate()
+  );
+};
+
+const formatEventDateTime = (startTs: { _seconds: number }, endTs: { _seconds: number }) => {
+  const start = new Date(startTs._seconds * 1000);
+  const end = new Date(endTs._seconds * 1000);
+
+  if (isSameDay(start, end)) {
+    const datePart = start.toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+    });
+
+    const timePart = start.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+    });
+
+    return `${datePart}, ${timePart}`;
+  }
+
+  const startStr = start.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+
+  const endStr = end.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+
+  return `${startStr} - ${endStr}`;
+};
+
 export default function EventView({ event, onPress }: Props) {
   //REACT HOOKS
   const { userId } = useUser();
 
   const rsvp = userId ? event.attendees?.find((a) => a.userID === userId) : undefined;
   const rsvpStatus = rsvp?.status ?? null;
-
   //RENDER
   return (
     <TouchableOpacity
@@ -76,15 +115,15 @@ export default function EventView({ event, onPress }: Props) {
           {event.title}
         </Text>
 
-        <View style={styles.datePill}>
+        <View style={styles.timeRow}>
           <Ionicons
             name="time-outline"
             size={clockIconSize}
             color={clockIconColor}
             style={styles.clockIcon}
           />
-          <Text style={[typography.body, styles.dateText]}>
-            {formatEventDate(event.timeStart._seconds)}
+          <Text style={styles.timeText}>
+            {formatEventDateTime(event.timeStart, event.timeEnd)}
           </Text>
         </View>
 

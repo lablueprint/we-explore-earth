@@ -40,6 +40,49 @@ const formatTime = (ts: FirestoreTimestamp) => {
   });
 };
 
+const isSameDay = (start: Date, end: Date) =>
+  start.getFullYear() === end.getFullYear() &&
+  start.getMonth() === end.getMonth() &&
+  start.getDate() === end.getDate();
+
+const formatEventDateLine = (startTs: FirestoreTimestamp, endTs: FirestoreTimestamp) => {
+  const start = new Date(startTs._seconds * 1000);
+  const end = new Date(endTs._seconds * 1000);
+
+  if (isSameDay(start, end)) {
+    return formatDate(startTs);
+  }
+
+  const startDate = start.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+  
+  const endDate = end.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+
+  const startTime = formatTime(startTs);
+  const endTime = formatTime(endTs);
+
+  return `${startDate} • ${startTime} - ${endDate} • ${endTime}`;
+};
+
+const formatEventSubLine = (startTs: FirestoreTimestamp, endTs: FirestoreTimestamp) => {
+  const start = new Date(startTs._seconds * 1000);
+  const end = new Date(endTs._seconds * 1000);
+
+  if (isSameDay(start, end)) {
+    return `${formatTime(startTs)} to ${formatTime(endTs)}`;
+  }
+
+  const diffMs = end.getTime() - start.getTime();
+  const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+  return `${days} Days`;
+};
+
 export default function EventDetails({
   visible,
   event,
@@ -170,11 +213,10 @@ export default function EventDetails({
                 <Text style={styles.infoIcon}>🗓️</Text>
                 <View>
                   <Text style={styles.infoTitle}>
-                    {formatDate(event.timeStart)}
+                  {formatEventDateLine(event.timeStart, event.timeEnd)}
                   </Text>
                   <Text style={styles.infoSub}>
-                    {formatTime(event.timeStart)} to{" "}
-                    {formatTime(event.timeEnd)}
+                    {formatEventSubLine(event.timeStart, event.timeEnd)}
                   </Text>
                 </View>
               </View>
