@@ -5,7 +5,7 @@ import { Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { EventFormDirtyProvider } from "./EventFormDirtyContext";
 import { PendingUpdatedAdminEventProvider } from "./PendingUpdatedAdminEventContext";
-import { HomeIcon, ProfileIcon, CreateEventIcon, NotifyIcon } from "../components/Native/tab-icons";
+import { HomeIcon, ProfileIcon, CreateEventIcon, NotifyIcon } from "../components/NavBar/tab-icons";
 
 const TAB_BAR_WIDTH = 254;
 const screenWidth = Dimensions.get('window').width;

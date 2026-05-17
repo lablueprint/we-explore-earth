@@ -3,7 +3,7 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 import { Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import { HomeIcon, ProfileIcon, DonateIcon, EventIcon } from "../components/Native/tab-icons";
+import { HomeIcon, ProfileIcon, DonateIcon, EventIcon } from "../components/NavBar/tab-icons";
 
 const TAB_BAR_WIDTH = 254;
 const screenWidth = Dimensions.get('window').width;
