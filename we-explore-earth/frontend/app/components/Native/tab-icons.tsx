@@ -20,7 +20,7 @@ export function EventIcon({ color, size = 24 }: IconProps) {
 }
 
 export function CreateEventIcon({ color, size = 24 }: IconProps) {
-  return <Image source={require('../../../../shared/icons/Events.png')} style={{ width: size, height: size, tintColor: color }} />;
+  return <Image source={require('../../../../shared/icons/CreateEvent.png')} style={{ width: size, height: size, tintColor: color }} />;
 }
 
 export function NotifyIcon({ color, size = 24 }: IconProps) {

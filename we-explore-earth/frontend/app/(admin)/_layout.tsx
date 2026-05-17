@@ -1,19 +1,11 @@
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Dimensions, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { EventFormDirtyProvider } from "./EventFormDirtyContext";
 import { PendingUpdatedAdminEventProvider } from "./PendingUpdatedAdminEventContext";
-import { HomeIcon, ProfileIcon } from "../components/Native/tab-icons";
-
-function CreateEventIcon({ color, size = 24 }: { color: string; size?: number }) {
-  return <Image source={require('../../../shared/icons/Events.png')} style={{ width: size, height: size, tintColor: color }} />;
-}
-
-function NotifyIcon({ color, size = 24 }: { color: string; size?: number }) {
-  return <Image source={require('../../../shared/icons/Events.png')} style={{ width: size, height: size, tintColor: color }} />;
-}
+import { HomeIcon, ProfileIcon, CreateEventIcon, NotifyIcon } from "../components/Native/tab-icons";
 
 const TAB_BAR_WIDTH = 254;
 const screenWidth = Dimensions.get('window').width;
