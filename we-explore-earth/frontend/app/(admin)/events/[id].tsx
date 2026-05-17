@@ -9,6 +9,7 @@ export default function EventFormPage() {
     form,
     updateField,
     withDirty,
+    setCoverImage,
     categoryOptions,
     accommodationOptions,
     loading,
@@ -53,8 +54,8 @@ export default function EventFormPage() {
       setHostedBy={withDirty((v) => updateField("hostedBy", v))}
       maxAttendees={form.maxAttendees}
       setMaxAttendees={withDirty((v) => updateField("maxAttendees", v))}
-      imageUri={form.imageUri}
-      setImageUri={withDirty((v) => updateField("imageUri", v))}
+      eventImage={form.eventImage}
+      setEventImage={withDirty(setCoverImage)}
       onSubmit={handleSubmit}
       submitButtonText={isCreate ? "Create Event" : "Update Event"}
       formTitle={isCreate ? "Create New Event" : "Edit Event"}

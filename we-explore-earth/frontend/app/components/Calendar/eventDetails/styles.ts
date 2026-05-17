@@ -47,6 +47,8 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 20,
+    overflow: 'hidden',
+    position: 'relative',
   },
   
   imagePlaceholderText: {

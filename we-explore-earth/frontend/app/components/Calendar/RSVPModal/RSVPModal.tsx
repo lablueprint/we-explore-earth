@@ -41,7 +41,7 @@ import {
   activityIndicatorColor,
 } from "./styles";
 import type { Event, RSVPStatus } from "@shared/types/event";
-import { useUser } from "../../../../hooks/useUser";
+import { useUser } from '@/app/redux/hooks/useUser';
 import { useAppDispatch } from "../../../redux/hooks";
 import { updateUserState } from "../../../redux/slices/userSlice";
 
