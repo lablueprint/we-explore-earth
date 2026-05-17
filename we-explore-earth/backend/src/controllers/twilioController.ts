@@ -32,11 +32,11 @@ export const sendEventBlastSMS = async (req: Request, res: Response) => {
 
     if (eventID === "") {
       const snapshot = await db.collection("users").get();
-      const nonAdminUsers = snapshot.docs
+      const eligibleUsers = snapshot.docs
         .map((doc) => doc.data())
-        .filter((user) => !user.isAdmin);
-      emails = nonAdminUsers.map((user) => user.email);
-      phoneNumbers = nonAdminUsers.map((user) => user.phoneNumber);
+        .filter((user) => !user.isAdmin && user.notificationsEnabled);
+      emails = eligibleUsers.map((user) => user.email);
+      phoneNumbers = eligibleUsers.map((user) => user.phoneNumber);
     } else {
       if (!eventID) {
         return res.status(400).json({ error: "eventID is required" });
@@ -55,8 +55,12 @@ export const sendEventBlastSMS = async (req: Request, res: Response) => {
         userIDs.map((userID) => db.collection("users").doc(userID).get())
       );
 
-      emails = userDocs.map((userDoc) => userDoc.data()?.email);
-      phoneNumbers = userDocs.map((userDoc) => userDoc.data()?.phoneNumber);
+      emails = userDocs
+        .filter((userDoc) => userDoc.data()?.notificationsEnabled)
+        .map((userDoc) => userDoc.data()?.email);
+      phoneNumbers = userDocs
+        .filter((userDoc) => userDoc.data()?.notificationsEnabled)
+        .map((userDoc) => userDoc.data()?.phoneNumber);
     }
 
     console.log("Event ID:", eventID || "everybody");

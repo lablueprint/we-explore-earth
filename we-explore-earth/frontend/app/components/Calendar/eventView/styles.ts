@@ -70,7 +70,6 @@ export const styles = StyleSheet.create({
     marginTop: 8,
     gap: 6,
   },
-  
   timeText: {
     fontSize: 14,
     color: "#8C8C86",
