@@ -273,5 +273,20 @@ export const styles = StyleSheet.create({
     color: '#006e0d',
     fontWeight: '600',
   },
+
+    eventFullButton: {
+  backgroundColor: '#979292',
+   borderRadius: 999,
+    paddingVertical: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 28,
+    overflow: 'hidden',
+  },
+  eventFullText: {
+    color: '#f8ebeb',
+     fontSize: 18,
+    fontWeight: "700",
+  },
   
 });
