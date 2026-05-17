@@ -213,7 +213,7 @@ export async function signupUser(req: Request, res: Response) {
 export async function updateUser(req: Request, res:Response) {
   try {
     const { id } = req.params;
-    const { email, firstName, lastName, isAdmin, hasOnboarded, phoneNumber } = req.body;
+    const { email, firstName, lastName, isAdmin, hasOnboarded, phoneNumber, notificationsEnabled } = req.body;
 
     if (!id) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -231,6 +231,7 @@ export async function updateUser(req: Request, res:Response) {
     if (phoneNumber !== undefined) userData.phoneNumber = phoneNumber;
     if (firstName !== undefined) userData.firstName = firstName;
     if (lastName !== undefined) userData.lastName = lastName;
+    if (notificationsEnabled !== undefined) userData.notificationsEnabled = notificationsEnabled;
   
     await db.collection("users").doc(id as string).set(userData);
 
