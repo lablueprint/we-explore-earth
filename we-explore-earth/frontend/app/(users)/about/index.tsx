@@ -36,7 +36,56 @@ export default function AboutPage() {
                         We build stewards and explorers of the land by creating accessible pathways into nature for people of all backgrounds.
                     </Text>
                 </View>
+                
+                <View style={styles.sectionContainer}>
+                    <Text style={styles.sectionHeader}>OUR IMPACT</Text>
+                    <View style={styles.impactRow}>
+                        <Image 
+                            source={require('../../../../shared/images/about-impact-one.png')} 
+                            style={styles.impactImage} 
+                            resizeMode="cover"
+                        />
+                        <View style={styles.impactTextContainer}>
+                            <Text style={styles.impactNumber}>32, 476 lbs</Text>
+                            <Text style={styles.impactLabel}>Trash removed from nature</Text>
+                        </View>
+                    </View>
 
+                    <View style={styles.impactRow}>
+                        <Image 
+                            source={require('../../../../shared/images/about-impact-two.png')} 
+                            style={styles.impactImage} 
+                            resizeMode="cover"
+                        />
+                        <View style={styles.impactTextContainer}>
+                            <Text style={styles.impactNumber}>18, 253+</Text>
+                            <Text style={styles.impactLabel}>Volunteer hours served</Text>
+                        </View>
+                    </View>
+                    <View style={styles.impactRow}>
+                        <Image 
+                            source={require('../../../../shared/images/about-impact-three.png')} 
+                            style={styles.impactImage} 
+                            resizeMode="cover"
+                        />
+                        <View style={styles.impactTextContainer}>
+                            <Text style={styles.impactNumber}>7,800+</Text>
+                            <Text style={styles.impactLabel}>Participants per year</Text>
+                        </View>
+                    </View>
+                    <View style={styles.impactRow}>
+                        <Image 
+                            source={require('../../../../shared/images/about-impact-four.png')} 
+                            style={styles.impactImage} 
+                            resizeMode="cover"
+                        />
+                        <View style={styles.impactTextContainer}>
+                            <Text style={styles.impactNumber}>72%</Text>
+                            <Text style={styles.impactLabel}>Women-led & attended</Text>
+                        </View>
+                    </View>
+
+                </View>
             </ScrollView>
         </SafeAreaView>
     );

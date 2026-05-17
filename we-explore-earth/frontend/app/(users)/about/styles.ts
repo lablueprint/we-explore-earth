@@ -58,5 +58,31 @@ export const styles = StyleSheet.create({
         color: '#333333',
         lineHeight: 24,
         marginBottom: 20,
+    },
+    impactRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 24,
+    },
+    impactImage: {
+        width: 140,
+        height: 100,
+        borderRadius: 12,
+        marginRight: 16,
+    },
+    impactTextContainer: {
+        flex: 1, 
+        justifyContent: 'center',
+    },
+    impactNumber: {
+        ...typography.body,
+        fontSize: 20,
+        color: '#333333',
+        marginBottom: 4,
+    },
+    impactLabel: {
+        ...typography.body,
+        fontSize: 14,
+        color: '#8A8A8A',
     }
 });
