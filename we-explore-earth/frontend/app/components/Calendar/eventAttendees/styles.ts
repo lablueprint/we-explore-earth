@@ -1,101 +1,172 @@
-import { StyleSheet } from 'react-native';
+
+
+import { StyleSheet } from "react-native";
+import { typography } from '../../../../../shared/typography/typography';
+
 
 export const styles = StyleSheet.create({
   container: {
-    padding: 16,
     flex: 1,
+    paddingHorizontal: 16,
+    paddingTop: 30,
+    backgroundColor: "#FFFFFF",
   },
+  listCard: {
+  backgroundColor: '#fff',
+  borderRadius: 12,
+  overflow: 'hidden',
+  },
+
   header: {
-    fontSize: 22,
-    fontWeight: "600",
-    marginBottom: 8,
+    ...typography.h2,
+    fontSize: 28,
+    fontWeight: "400",
     textAlign: "center",
+    marginBottom: 4,
+    color: "#111",
   },
+
   subheading: {
-    color: "#000000ff",
-    marginBottom: 12,
-    fontSize: 18,
-    textAlign: "center",
-  },
-  sectionTitle: {
-    marginTop: 16,
-    fontSize: 16,
-    fontWeight: "500",
-  },
- attendeeItem: {
-  padding: 10,
-  marginBottom: 10,
-  borderWidth: 1,
-  borderColor: "#686869",      
-  backgroundColor: "#f0f5fa", 
-  borderRadius: 6,
-
-},
-  attendeeName: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-
-  attendeeUsername: {
+    ...typography.h2,
     fontSize: 14,
+    textAlign: "center",
+    color: "#666",
+    marginBottom: 18,
+  },
+
+  tabRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 50,
+    marginBottom: 14,
+  },
+
+  tabText: {
+     ...typography.body,
+    fontSize: 15,
+    fontWeight: "500",
+    color: "#777",
+    paddingBottom: 4,
+   
+  },
+
+  tabTextActive: {
+    ...typography.body,
+    fontSize: 15,
+    fontWeight: "500",
+    color: "#13381f",
+    paddingBottom: 4,
+    textDecorationLine: "underline",
+  },
+
+  attendeeItem: {
+  paddingVertical: 18,
+  paddingHorizontal: 18,
+  backgroundColor: "#EFEFEF",
+  borderBottomWidth: 1,
+  borderBottomColor: "#DADADA",
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+  },
+
+  attendeeName: {
+
+    ...typography.body,
+    fontSize: 17,
+    fontWeight: "500",
+    color: "#222",
   },
 
   attendeeEmail: {
+    ...typography.body,
     fontSize: 14,
+    color: "#777",
+    marginTop: 2,
+    
   },
 
- checkInButton: {
-  alignSelf: "flex-start",
-},
 
-
-  searchBar: {
-    height: 40,
-    borderWidth: 1,
-    marginBottom: 10,
-    paddingHorizontal: 10,
-    borderRadius: 5,
+  sectionTitle: {
+    ...typography.body,
+    marginTop: 16,
+    fontSize: 16,
+    fontWeight: "500",
+    
   },
+
+
   item: {
+    ...typography.body,
     fontSize: 18,
     padding: 10,
   },
 
-tabRow: {
-  flexDirection: "row",
-  justifyContent: "center",
-  alignItems: "center",
-  gap: 60, // <-- space between tabs
-  marginTop: 12,
-  marginBottom: 12,
+  tab: {
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+    alignItems: "center",
+    backgroundColor: "#F1F1F1",
+    marginHorizontal: 10,
+  },
+
+  tabActive: {
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+searchWrapper: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  backgroundColor: '#EFEFEF',
+  borderRadius: 12,
+  paddingHorizontal: 12,
+  marginBottom: 14,
+},
+searchIcon: {
+  marginRight: 8,
+},
+searchBar: {
+  ...typography.body,
+  flex: 1,
+  height: 46,
+  fontSize: 16,
 },
 
-tab: {
-  paddingVertical: 10,
-  paddingHorizontal: 30,  // gives them width
-  borderRadius: 8,
-  alignItems: "center",
-  backgroundColor: "#f1f1f1",
-  marginHorizontal: 10,   // spacing between tabs
+
+checkInButton: {
+  marginLeft: "auto",
+  borderWidth: 1,
+  borderColor: "#2F5E2E",
+  borderRadius: 20,
+  paddingVertical: 6,
+  paddingHorizontal: 12,
+  backgroundColor: "#FFFFFF",
 },
 
-tabActive: {
-  backgroundColor: "#ffffff",
-  shadowColor: "#000",
-  shadowOpacity: 0.08,
-  shadowRadius: 4,
-  elevation: 2,
+checkedInButton: {
+  marginLeft: "auto",
+  borderRadius: 20,
+  paddingVertical: 6,
+  paddingHorizontal: 12,
+  backgroundColor: "#2F5E2E",
 },
 
-tabText: {
-  fontSize: 14,
+checkInText: {
+  color: "#2F5E2E",
+  fontSize: 13,
   fontWeight: "600",
-  color: "#666",
 },
 
-tabTextActive: {
-  color: "#111",
-  fontWeight: "bold",
-  textDecorationLine: "underline",
+checkedInText: {
+  color: "#FFFFFF",
+  fontSize: 13,
+  fontWeight: "600",
 },
+
+
 });

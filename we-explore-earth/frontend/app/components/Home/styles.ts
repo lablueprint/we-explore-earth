@@ -20,11 +20,10 @@ export const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: 32,
   },
   heroBlock: {
     marginTop: 16,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   heroRow: {
     flexDirection: "row",

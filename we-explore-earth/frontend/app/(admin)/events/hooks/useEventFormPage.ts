@@ -68,8 +68,8 @@ export function useEventFormPage(id: string | undefined) {
   }, [setEventFormDirty]);
 
   const markDirty = useCallback(() => {
-    if (isCreate) setEventFormDirty(true);
-  }, [isCreate, setEventFormDirty]);
+    setEventFormDirty(true);
+  }, [setEventFormDirty]);
 
   const withDirty = useCallback(
     <T,>(setter: (value: T) => void) =>
@@ -83,7 +83,7 @@ export function useEventFormPage(id: string | undefined) {
   // --- Navigation effects: confirm leave, reset on blur, reset when switching to create ---
   useEffect(() => {
     const unsubBeforeRemove = navigation.addListener("beforeRemove", (e) => {
-      const shouldConfirm = !isCreate || isEventFormDirty;
+      const shouldConfirm = isEventFormDirty;
       if (!shouldConfirm) return;
       e.preventDefault();
       Alert.alert(
@@ -100,7 +100,7 @@ export function useEventFormPage(id: string | undefined) {
       );
     });
     return unsubBeforeRemove;
-  }, [navigation, isCreate, isEventFormDirty]);
+  }, [navigation, isEventFormDirty]);
 
   useEffect(() => {
     const unsubBlur = navigation.addListener("blur", resetForm);

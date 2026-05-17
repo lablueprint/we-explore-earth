@@ -1,5 +1,7 @@
 import { StyleSheet } from "react-native";
 
+import { typography } from '../../../../../shared/typography/typography';
+
 export const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
@@ -124,6 +126,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     marginBottom: 18,
+    gap: 10,
   },
 
   infoIcon: {
@@ -174,6 +177,34 @@ export const styles = StyleSheet.create({
     marginBottom: 24,
   },
 
+  infoCardRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 16,
+  },
+
+  infoCard: {
+    backgroundColor: "#F0F0ED",
+    borderWidth: 1,
+    borderColor: "#D9D8D3",
+    borderRadius: 18,
+    paddingHorizontal: 22,
+    paddingVertical: 18,
+    marginBottom: 14,
+  },
+  
+  infoCardLabel: {
+    fontSize: 15,
+    color: "#9A9A94",
+    marginBottom: 10,
+  },
+  
+  infoCardText: {
+    fontSize: 18,
+    color: "#1D1D1B",
+    fontWeight: "400",
+  },
+
   avatar: {
     width: 42,
     height: 42,
@@ -217,6 +248,30 @@ export const styles = StyleSheet.create({
   viewAllButton: {
     paddingVertical: 4,
     paddingHorizontal: 4,
+  },
+  logisticsIcon: {
+    width: 16,
+    height: 16,
+    resizeMode: "contain",
+    marginTop: 2,
+  },
+  logisticsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
+    gap: 10,
+  },
+  closeButton: {
+    marginTop: 20,
+    padding: 10,
+    marginRight: 16,
+    borderRadius: 6,
+    alignSelf: 'flex-end',
+  },
+  closeText: {
+    ...typography.body,
+    color: '#006e0d',
+    fontWeight: '600',
   },
   
 });

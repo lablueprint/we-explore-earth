@@ -5,8 +5,20 @@ export const clockIconColor = '#777';
 export const cardActiveOpacity = 0.85;
 
 export const cardGradient = {
-  colors: ['#fbfbfb', '#f7f7f7', '#ffffff'] as const,
+  colors: ['#FFFFFF', '#FAFAFA', '#F2F2F2'] as const,
   locations: [0, 0.55, 1] as const,
+  start: { x: 0.5, y: 0 },
+  end: { x: 0.5, y: 1 },
+};
+
+export const glossOverlay = {
+  colors: [
+    'rgba(255,255,255,0.75)',
+    'rgba(255,255,255,0.28)',
+    'rgba(255,255,255,0.06)',
+    'rgba(255,255,255,0)',
+  ] as const,
+  locations: [0, 0.22, 0.48, 1] as const,
   start: { x: 0.5, y: 0 },
   end: { x: 0.5, y: 1 },
 };
@@ -16,12 +28,13 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     borderWidth: 1,
-    borderColor: '#dddddd',
-    borderRadius: 20,
+    borderColor: '#E1E1E1',
+    borderRadius: 24,
+    backgroundColor: '#FFFFFF',
     padding: 12,
     marginBottom: 10,
     gap: 10,
-    height: 120,
+    height: 110,
     overflow: 'hidden',
   },
   imageWrap: {
@@ -51,16 +64,15 @@ export const styles = StyleSheet.create({
     lineHeight: 20,
     letterSpacing: -0.3,
   },
-  datePill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+  timeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 8,
+    gap: 6,
+  },
+  timeText: {
+    fontSize: 14,
+    color: "#8C8C86",
   },
   clockIcon: {
     marginRight: 5,

@@ -67,7 +67,7 @@ export default function AdminHomeScreen() {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: "white",
+        backgroundColor: "#F8F9F7",
         paddingTop: 20,
         paddingHorizontal: 20,
       }}

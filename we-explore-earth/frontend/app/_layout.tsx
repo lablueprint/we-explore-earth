@@ -15,6 +15,7 @@ export default function RootLayout() {
   const [loaded, error] = useFonts({
     'LibreBaskerville-Regular': require('../../shared/fonts/LibreBaskerville-Regular.ttf'),
     'HankenGrotesk-Regular': require('../../shared/fonts/HankenGrotesk-Regular.ttf'),
+    'HankenGrotesk-Variable': require('../../shared/fonts/HankenGrotesk-Variable.ttf')
   });
 
   useEffect(() => {
