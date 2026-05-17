@@ -344,22 +344,28 @@ export function EventForm({
         </View>
       </View>
 
-      {/** TODO: Merge with new date picker */}
-      {isAndroid && showDateStartPicker && (
-        <DateTimePicker value={dateStart} mode="date" display="default" onChange={handleDateStartChange}/>
-      )}
-
-      {isAndroid && showTimeStartPicker && (
-        <DateTimePicker value={timeStart} mode="time" display="default" onChange={handleTimeStartChange}/>
-      )}
-
-      {/** TODO: Merge with new date picker */}
-      {isAndroid && showDateEndPicker && (
-        <DateTimePicker value={dateEnd} mode="date" display="default" onChange={handleDateEndChange} />
-      )}
-
-      {isAndroid && showTimeEndPicker && (
-        <DateTimePicker value={timeEnd} mode="time" display="default" onChange={handleTimeEndChange} />
+      {isAndroid && (
+        <>
+          <SingleDatePickerModal 
+            date={dateStart}
+            setDate={setDateStart}
+            calendarVisible={showDateStartPicker}
+            setCalendarVisible={setShowDateStartPicker}
+          />
+          {showTimeStartPicker && (
+            <DateTimePicker value={timeStart} mode="time" display="default" onChange={handleTimeStartChange}/>
+          )}
+          <SingleDatePickerModal 
+            date={dateEnd}
+            setDate={setDateEnd}
+            calendarVisible={showDateEndPicker}
+            setCalendarVisible={setShowDateEndPicker}
+            minDate={dateStart}
+          />
+          {showTimeEndPicker && (
+            <DateTimePicker value={timeEnd} mode="time" display="default" onChange={handleTimeEndChange} />
+          )}
+        </>
       )}
 
       {isIOS && (
