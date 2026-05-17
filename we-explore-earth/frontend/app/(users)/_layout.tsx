@@ -41,7 +41,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
           >
             {isFocused ? (
               <View style={styles.activeCircle}>
-                <Icon size={24} color={ACTIVE_COLOR} />
+                <Icon size={20} color={ACTIVE_COLOR} />
               </View>
             ) : (
               <Icon size={24} color={INACTIVE_COLOR} />
