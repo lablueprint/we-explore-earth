@@ -126,6 +126,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     marginBottom: 18,
+    gap: 10,
   },
 
   infoIcon: {

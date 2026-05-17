@@ -216,7 +216,10 @@ export default function EventDetails({
               </View>
 
               <View style={styles.infoRow}>
-                <Text style={styles.infoIcon}>🗓️</Text>
+                <Image
+                      source={require("../../../../../shared/images/calendar.png")}
+                      style={styles.logisticsIcon}
+                    />
                 <View>
                   <Text style={styles.infoTitle}>
                   {formatEventDateLine(event.timeStart, event.timeEnd)}
@@ -228,7 +231,10 @@ export default function EventDetails({
               </View>
 
               <View style={styles.infoRow}>
-                <Text style={styles.infoIcon}>📍</Text>
+                <Image
+                      source={require("../../../../../shared/images/location.png")}
+                      style={styles.logisticsIcon}
+                    />
                 <View>
                   <Text style={styles.infoTitle}>{event.location}</Text>
                 </View>
