@@ -44,7 +44,7 @@ async function fetchAudience(): Promise<AudienceOption[]> {
     attendeeCount: e.attendees.length || 0,
   }));
 
-  return [{ id: "", label: "Everybody", attendeeCount: -1 }, ...eventOptions];
+  return eventOptions;
 }
 
 function audienceSummaryLine(option: AudienceOption): string {
@@ -54,9 +54,8 @@ function audienceSummaryLine(option: AudienceOption): string {
 
 export default function AdminNotificationsPage() {
   const [audienceMenuOpen, setAudienceMenuOpen] = useState(false);
-  const [audienceOptions, setAudienceOptions] = useState<AudienceOption[]>([
-    { id: "", label: "Everybody", attendeeCount: -1 },
-  ]);
+  const [audienceSearch, setAudienceSearch] = useState("");
+  const [audienceOptions, setAudienceOptions] = useState<AudienceOption[]>([]);
   const [selectedAudienceId, setSelectedAudienceId] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -69,9 +68,19 @@ export default function AdminNotificationsPage() {
       .catch((err) => console.error("Failed to load audience options:", err));
   }, []);
 
+  const EVERYBODY: AudienceOption = { id: "", label: "Everybody", attendeeCount: -1 };
+
+  const filteredAudienceOptions = audienceSearch.trim()
+    ? audienceOptions.filter((o) =>
+        o.label.toLowerCase().includes(audienceSearch.toLowerCase())
+      )
+    : audienceOptions;
+
   const selectedAudience =
-    selectedAudienceId !== null
-      ? (audienceOptions.find((o) => o.id === selectedAudienceId) ?? audienceOptions[0]!)
+    selectedAudienceId === ""
+      ? EVERYBODY
+      : selectedAudienceId !== null
+      ? (audienceOptions.find((o) => o.id === selectedAudienceId) ?? null)
       : null;
 
   const formComplete = title.trim().length > 0 && content.trim().length > 0;
@@ -94,7 +103,10 @@ export default function AdminNotificationsPage() {
         <Text style={styles.label}>Audience</Text>
         <TouchableOpacity
           style={styles.selectRow}
-          onPress={() => setAudienceMenuOpen((open) => !open)}
+          onPress={() => {
+            setAudienceMenuOpen((open) => !open);
+            setAudienceSearch("");
+          }}
           activeOpacity={0.7}
         >
           <Text
@@ -113,19 +125,40 @@ export default function AdminNotificationsPage() {
         </TouchableOpacity>
         {audienceMenuOpen ? (
           <View style={styles.dropdownWrap}>
+            <TouchableOpacity
+              style={styles.dropdownRow}
+              onPress={() => {
+                setSelectedAudienceId("");
+                setAudienceMenuOpen(false);
+                setAudienceSearch("");
+              }}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.dropdownRowText}>Everybody</Text>
+            </TouchableOpacity>
+            <View style={styles.dropdownDivider} />
+            <TextInput
+              style={styles.dropdownSearch}
+              value={audienceSearch}
+              onChangeText={setAudienceSearch}
+              placeholder="Search events…"
+              placeholderTextColor="#bbb"
+              autoCorrect={false}
+            />
             <ScrollView
               keyboardShouldPersistTaps="handled"
               nestedScrollEnabled
               showsVerticalScrollIndicator={false}
               style={styles.dropdownScroll}
             >
-              {audienceOptions.map((opt) => (
+              {filteredAudienceOptions.map((opt) => (
                 <TouchableOpacity
                   key={opt.id}
                   style={styles.dropdownRow}
                   onPress={() => {
                     setSelectedAudienceId(opt.id);
                     setAudienceMenuOpen(false);
+                    setAudienceSearch("");
                   }}
                   activeOpacity={0.7}
                 >
@@ -327,6 +360,19 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: "hidden",
     maxHeight: 220,
+  },
+  dropdownDivider: {
+    height: 1,
+    backgroundColor: "#e8e8e8",
+  },
+  dropdownSearch: {
+    paddingHorizontal: 16,
+    paddingVertical: 11,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+    fontSize: 15,
+    fontFamily: "HankenGrotesk-Regular",
+    color: "#1a1a1a",
   },
   dropdownScroll: {
     flexGrow: 0,
