@@ -12,7 +12,7 @@ const ACTIVE_COLOR = '#FFFFFF';
 const INACTIVE_COLOR = '#9E9E9E';
 const ACTIVE_BG = '#2D5A1B';
 
-const TAB_ICONS = [HomeIcon, ProfileIcon, DonateIcon, EventIcon];
+const TAB_ICONS = [HomeIcon, EventIcon, DonateIcon, ProfileIcon];
 
 function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   return (
@@ -93,9 +93,9 @@ export default function TabLayout() {
       tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{ headerShown: false }}>
       <Tabs.Screen name="home/index" />
-      <Tabs.Screen name="profile/index" />
-      <Tabs.Screen name="about/index" />
       <Tabs.Screen name="events/index" />
+      <Tabs.Screen name="about/index" />
+      <Tabs.Screen name="profile/index" />
     </Tabs>
   );
 }
