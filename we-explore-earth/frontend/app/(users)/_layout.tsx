@@ -2,7 +2,7 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 
 import { HapticTab } from "../components/Native/haptic-tab";
-import { IconSymbol } from "../components/Native/icon-symbol";
+import { HomeIcon, ProfileIcon, DonateIcon, EventIcon } from "../components/Native/tab-icons";
 
 export default function TabLayout() {
 
@@ -16,28 +16,28 @@ export default function TabLayout() {
         name="home/index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarIcon: ({ color }) => <HomeIcon size={28} color={color} />,
         }}
       />
       <Tabs.Screen
         name="profile/index"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          tabBarIcon: ({ color }) => <ProfileIcon size={28} color={color} />,
         }}
       />
       <Tabs.Screen
         name="about/index"
         options={{
           title: 'About',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          tabBarIcon: ({ color }) => <DonateIcon size={28} color={color} />,
         }}
       />
       <Tabs.Screen
         name="events/index"
         options={{
           title: 'Events',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          tabBarIcon: ({ color }) => <EventIcon size={28} color={color} />,
         }}
       />
     </Tabs>
