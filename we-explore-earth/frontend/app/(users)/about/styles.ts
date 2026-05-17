@@ -38,5 +38,25 @@ export const styles = StyleSheet.create({
         ...typography.body,
         fontSize: 14,
         color: '#8A8A8A',
+    },
+    sectionContainer: {
+        borderTopWidth: 1,
+        borderTopColor: '#E5E5E5', 
+        paddingTop: 32, 
+        marginBottom: 20,
+    },
+    sectionHeader: {
+        ...typography.body,
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#8A8A8A',
+        marginBottom: 16,
+    },
+    sectionText: {
+        ...typography.body,
+        fontSize: 16,
+        color: '#333333',
+        lineHeight: 24,
+        marginBottom: 20,
     }
 });
