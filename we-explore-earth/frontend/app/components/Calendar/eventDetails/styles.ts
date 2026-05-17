@@ -261,17 +261,5 @@ export const styles = StyleSheet.create({
     marginTop: 4,
     gap: 10,
   },
-  closeButton: {
-    marginTop: 20,
-    padding: 10,
-    marginRight: 16,
-    borderRadius: 6,
-    alignSelf: 'flex-end',
-  },
-  closeText: {
-    ...typography.body,
-    color: '#006e0d',
-    fontWeight: '600',
-  },
   
 });
