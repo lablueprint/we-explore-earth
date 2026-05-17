@@ -51,16 +51,16 @@ export const styles = StyleSheet.create({
     lineHeight: 20,
     letterSpacing: -0.3,
   },
-  datePill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-start',
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+  timeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 8,
+    gap: 6,
+  },
+  
+  timeText: {
+    fontSize: 14,
+    color: "#8C8C86",
   },
   clockIcon: {
     marginRight: 5,
