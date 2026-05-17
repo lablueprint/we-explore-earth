@@ -136,19 +136,19 @@ export default function EventAttendees({eventId}: Props){
         <View style={styles.tabRow}>
           <TouchableOpacity onPress={() => setTab("ALL")}>
             <Text style={tab === "ALL" ? styles.tabTextActive : styles.tabText}>
-              All
+              All ({attendees.length})
             </Text>
           </TouchableOpacity> 
           
           <TouchableOpacity onPress={() => setTab("YES")}>
             <Text style={tab === "YES" ? styles.tabTextActive : styles.tabText}>
-              Yes
+              Yes ({attendees.filter(u => u.events?.find(e => e.eventID === eventId)?.status === "YES").length})
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => setTab("MAYBE")}>
             <Text style={tab === "MAYBE" ? styles.tabTextActive : styles.tabText}>
-              Maybe 
+              Maybe ({attendees.filter(u => u.events?.find(e => e.eventID === eventId)?.status === "MAYBE").length})
             </Text>
           </TouchableOpacity>
         </View>
