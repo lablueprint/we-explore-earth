@@ -11,6 +11,7 @@ export const styles = StyleSheet.create({
     backgroundColor: "#F7F6F2",
     paddingHorizontal: 24,
     paddingTop: 18,
+    marginTop: 18,
   },
 
   topRow: {
