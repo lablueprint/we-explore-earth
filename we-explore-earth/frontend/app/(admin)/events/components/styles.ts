@@ -426,6 +426,66 @@ tagContainer: {
 
 });
 
+// FOR SINGLE DATE PICKER MODAL (for selecting start and end date in event form)
 
+// Date range styles (for calendar that's imported from 'react-native-calendar')
+const SELECTED_BACKGROUND_COLOR = '#D6E6CB';
+const SELECTED_EDGE_BORDER_RADIUS = 50;
+const SELECTED_EDGE_CIRCLE_COLOR = '#507C30';
+const SELECTED_EDGE_TEXT_COLOR = '#FCFCFC';
 
+/* 
+ * Width of the calendar is 322, so each day has a width of 46 (322 / 7).
+ * Middle days have a background that spans the entire width.
+ * Edge days have a background that spans 70% of the width.
+ */
+const RANGE_DAY_WIDTH = 46;
+const SELECTED_EDGE_BACKGROUND_WIDTH = Math.round(RANGE_DAY_WIDTH * 0.7);
 
+// Base container style for all selected days. Start dates, end dates, and single dates override some of these styles.
+const baseContainerStyle = {
+  width: RANGE_DAY_WIDTH,
+  justifyContent: 'center',
+  alignItems: 'center',
+  backgroundColor: SELECTED_BACKGROUND_COLOR,
+  borderRadius: 0,
+};
+
+// Edge days are indicated with a dark green circle overlay.
+const edgeCircleStyle = {
+  color: SELECTED_EDGE_TEXT_COLOR,
+  backgroundColor: SELECTED_EDGE_CIRCLE_COLOR,
+  borderRadius: SELECTED_EDGE_BORDER_RADIUS,
+  width: 26,
+  height: 26,
+  lineHeight: 26,
+  textAlign: 'center',
+}
+
+export const dateRangeStyles = {
+  singleDay: {
+    container: {
+      ...baseContainerStyle,
+      width: SELECTED_EDGE_BACKGROUND_WIDTH,
+      borderRadius: SELECTED_EDGE_BORDER_RADIUS,
+    },
+    text: {
+      ...edgeCircleStyle,
+    }
+  },
+};
+
+// Modal styles (parent container of the calendar)
+export const calendarStyles = StyleSheet.create({
+  wrapper: {
+    marginTop: 12,
+    padding: 16,
+    width: 354,
+    alignSelf: 'center',
+    backgroundColor: '#F0F0F0',
+    borderWidth: 1,
+    borderRadius: 20,
+    borderColor: '#DEDEDE',
+    elevation: 5,
+  },
+})

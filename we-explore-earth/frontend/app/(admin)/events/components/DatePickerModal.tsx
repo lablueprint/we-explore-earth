@@ -14,23 +14,19 @@ LocaleConfig.locales['en'] = {
 };
 LocaleConfig.defaultLocale = 'en';
 
-function DateRangePickerModal (
+function SingleDatePickerModal ( // TODO: Change filename to SingleDatePickerModal.tsx
     {
-        startDate,
-        endDate,
-        setStartDate,
-        setEndDate,
-        setSelectedDate, // selected date option (not a date)
-        setShowInvalidDateRangeMessage
+        date,
+        setDate,
+        setCalendarVisible,
+        minDate
     }
     :
     {
-        startDate: Date | undefined,
-        endDate: Date | undefined,
-        setStartDate: React.Dispatch<Date | undefined>,
-        setEndDate: React.Dispatch<Date | undefined>,
-        setSelectedDate: React.Dispatch<string>,
-        setShowInvalidDateRangeMessage: React.Dispatch<boolean>
+        date: Date,
+        setDate: React.Dispatch<Date>,
+        setCalendarVisible: React.Dispatch<boolean>,
+        minDate?: Date
     }
 ) {
     // For converting Date objects (e.g., `startDate`, `endDate`) to date strings (YYYY-MM-DD) wrt local timezone
@@ -42,62 +38,28 @@ function DateRangePickerModal (
     };
 
     const onDayPress = (selectedDate: any) => {
-        setSelectedDate('Custom');
-        setShowInvalidDateRangeMessage(false);
-
         const { dateString } = selectedDate; // corresponds to the date the user tapped on the calendar
 
         // Create normalized Date object from date string with respect to local timezone
         const [year, month, day] = dateString.split('-').map(Number);
         const localDate = new Date(year, month - 1, day, 0, 0, 0, 0);
 
-        // Reset range if no range is defined (default: 'Any date'), if range is defined, or if user picks a date before the start
-        if ((!startDate && !endDate) || (startDate && endDate) || (startDate && dateString < getLocalDateString(startDate))) {
-            setStartDate(localDate);
-            setEndDate(undefined);
-        } else {
-            setEndDate(localDate);
-        }
+        // Set date to the date the user tapped on the calendar
+        setDate(localDate);
+        setCalendarVisible(false);
     };
 
     const getMarkedDates = () => {
         const marked: any = {}; // type MarkedDates: maps date strings in "YYYY-MM-DD" format to type MarkingProps (in imported Calendar component's docs)
-        const startKey = startDate ? getLocalDateString(startDate) : '';
-        const endKey = endDate ? getLocalDateString(endDate) : '';
-        
-        // Start and end dates are both selected
-        if (startDate && endDate) {
-            // Single date range
-            if (startKey == endKey) {
-                marked[startKey] = { customStyles: dateRangeStyles.singleDay };
-            }
-            // Multi date range
-            else {
-                // Fill in the gap between start and end
-                const middleDate = new Date(startDate);
-                while (middleDate < endDate!) {
-                    middleDate.setDate(middleDate.getDate() + 1);
-                    const middleKey = getLocalDateString(middleDate);
-                    marked[middleKey] = { customStyles: dateRangeStyles.middleDay };
-                }
-                
-                // Start and end date have unique styles
-                marked[startKey] = { customStyles: dateRangeStyles.startDay };
-                marked[endKey] = { customStyles: dateRangeStyles.endDay };
-            }
-        }
-        // Only start date is selected
-        else if (startDate) {
-            marked[startKey] = { customStyles: dateRangeStyles.startDay };
-        }
-        
+        const key = getLocalDateString(date);
+        marked[key] = { customStyles: dateRangeStyles.singleDay };        
         return marked;
     };
 
     return (
         <View style={calendarStyles.wrapper}>
             <Calendar
-                minDate={getLocalDateString(new Date())}
+                minDate={minDate ? getLocalDateString(minDate) : getLocalDateString(new Date())}
                 markingType={'custom'}
                 markedDates={getMarkedDates()}
                 onDayPress={onDayPress}
@@ -122,13 +84,15 @@ function DateRangePickerModal (
                     textDayFontFamily: 'HankenGrotesk-Regular',
                     textDayFontSize: 12,
                     textDayFontWeight: 400,
-                    todayTextColor: '#000000',
+                    // if there is no minDate, then today is the minDate
+                    // if today is on or after minDate, then today is enabled and colored black; otherwise, today is disabled and colored gray
+                    todayTextColor: !minDate || (getLocalDateString(new Date()) >= getLocalDateString(minDate)) ? '#000000' : '#B2B2B2',
                     dayTextColor: '#000000', // for all non-disabled days excluding today
                     textDisabledColor: '#B2B2B2', // for disabled days (all days before current day)
-                } as any}
+                }}
             />
         </View>
     );
 };
 
-export default DateRangePickerModal;
+export default SingleDatePickerModal;
