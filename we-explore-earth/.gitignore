@@ -13,6 +13,7 @@ frontend/.env
 
 # Expo
 frontend/.expo/
+backend/.expo/
 frontend/dist/
 frontend/web-build/
 
