@@ -61,11 +61,14 @@ export const styles = StyleSheet.create({
   },
 
   attendeeItem: {
-    paddingVertical: 18,
-    paddingHorizontal: 18,
-    backgroundColor: "#EFEFEF",
-    borderBottomWidth: 1,
-    borderBottomColor: "#DADADA",
+  paddingVertical: 18,
+  paddingHorizontal: 18,
+  backgroundColor: "#EFEFEF",
+  borderBottomWidth: 1,
+  borderBottomColor: "#DADADA",
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
   },
 
   attendeeName: {
@@ -93,11 +96,6 @@ export const styles = StyleSheet.create({
     
   },
 
-  checkInButton: {
-    ...typography.body,
-    alignSelf: "flex-start",
-    
-  },
 
   item: {
     ...typography.body,
@@ -138,4 +136,37 @@ searchBar: {
   height: 46,
   fontSize: 16,
 },
+
+
+checkInButton: {
+  marginLeft: "auto",
+  borderWidth: 1,
+  borderColor: "#2F5E2E",
+  borderRadius: 20,
+  paddingVertical: 6,
+  paddingHorizontal: 12,
+  backgroundColor: "#FFFFFF",
+},
+
+checkedInButton: {
+  marginLeft: "auto",
+  borderRadius: 20,
+  paddingVertical: 6,
+  paddingHorizontal: 12,
+  backgroundColor: "#2F5E2E",
+},
+
+checkInText: {
+  color: "#2F5E2E",
+  fontSize: 13,
+  fontWeight: "600",
+},
+
+checkedInText: {
+  color: "#FFFFFF",
+  fontSize: 13,
+  fontWeight: "600",
+},
+
+
 });

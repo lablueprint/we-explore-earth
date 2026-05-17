@@ -560,3 +560,40 @@ export async function removeRSVP(req: Request, res: Response) {
     return res.status(500).json({ error: "Failed to remove event RSVP" });
   }
 }
+
+export async function toggleCheckIn(req: Request, res: Response) {
+  try {
+    const eventId = req.params.id;
+    const { userId, checkedIn } = req.body;
+
+    if (!userId || checkedIn === undefined) {
+      return res.status(400).json({ error: "userId and checkedIn are required" });
+    }
+
+    const eventRef = db.collection("events").doc(eventId as any);
+    const eventDoc = await eventRef.get();
+
+    if (!eventDoc.exists) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    const eventData = eventDoc.data()!;
+    const attendees: EventRSVP[] = eventData.attendees.map((a: EventRSVP) => {
+      if (a.userID === userId) {
+        return {
+          ...a,
+          checkedIn,
+        };
+      }
+
+      return a;
+    });
+
+    await eventRef.update({ attendees });
+
+    return res.status(200).json({ message: "Check-in updated successfully" });
+  } catch (error: any) {
+    console.error("Error updating check-in:", error);
+    return res.status(500).json({ error: "Failed to update check-in" });
+  }
+}
