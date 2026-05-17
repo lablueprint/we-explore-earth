@@ -14,14 +14,15 @@ export const typography = StyleSheet.create({
     color: '#000',
   },
   h3: {
-    fontFamily: 'HankenGrotesk-Regular',
+    fontFamily: 'HankenGrotesk-Variable',
     fontWeight: 500,
     fontSize: 16,
     color: '#888888',
   },
   body: {
-    fontFamily: 'HankenGrotesk-Regular',
+    fontFamily: 'HankenGrotesk-Variable',
     fontSize: 16,
+    fontWeight: 300,
     lineHeight: 24,
     color: '#333',
   },
