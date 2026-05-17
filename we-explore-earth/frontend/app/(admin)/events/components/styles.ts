@@ -477,11 +477,15 @@ export const dateRangeStyles = {
 
 // Modal styles (parent container of the calendar)
 export const calendarStyles = StyleSheet.create({
-  wrapper: {
-    marginTop: 12,
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalView: {
     padding: 16,
     width: 354,
-    alignSelf: 'center',
     backgroundColor: '#F0F0F0',
     borderWidth: 1,
     borderRadius: 20,

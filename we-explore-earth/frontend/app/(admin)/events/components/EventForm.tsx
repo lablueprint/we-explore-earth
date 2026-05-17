@@ -364,14 +364,12 @@ export function EventForm({
 
       {isIOS && (
         <>
-          {/** TODO: Make into pop up modal */}
-          {showDateStartPicker && (
-            <SingleDatePickerModal 
-              date={dateStart}
-              setDate={setDateStart}
-              setCalendarVisible={setShowDateStartPicker}
-            />
-          )}
+          <SingleDatePickerModal 
+            date={dateStart}
+            setDate={setDateStart}
+            calendarVisible={showDateStartPicker}
+            setCalendarVisible={setShowDateStartPicker}
+          />
           {/** TODO: Center time option */}
           <IosDateTimePickerSheet
             visible={showTimeStartPicker}
@@ -381,15 +379,13 @@ export function EventForm({
             display="spinner"
             onChange={handleTimeStartChange}
           />
-          {/** TODO: Make into pop up modal */}
-          {showDateEndPicker && (
-            <SingleDatePickerModal 
-              date={dateEnd}
-              setDate={setDateEnd}
-              setCalendarVisible={setShowDateEndPicker}
-              minDate={dateStart}
-            />
-          )}
+          <SingleDatePickerModal 
+            date={dateEnd}
+            setDate={setDateEnd}
+            calendarVisible={showDateEndPicker}
+            setCalendarVisible={setShowDateEndPicker}
+            minDate={dateStart}
+          />
           {/** TODO: Center time option */}
           <IosDateTimePickerSheet
             visible={showTimeEndPicker}

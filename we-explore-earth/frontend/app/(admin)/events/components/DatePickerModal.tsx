@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Modal, Pressable } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { dateRangeStyles, calendarStyles } from './styles';
 
@@ -18,6 +18,7 @@ function SingleDatePickerModal ( // TODO: Change filename to SingleDatePickerMod
     {
         date,
         setDate,
+        calendarVisible,
         setCalendarVisible,
         minDate
     }
@@ -25,6 +26,7 @@ function SingleDatePickerModal ( // TODO: Change filename to SingleDatePickerMod
     {
         date: Date,
         setDate: React.Dispatch<Date>,
+        calendarVisible: boolean,
         setCalendarVisible: React.Dispatch<boolean>,
         minDate?: Date
     }
@@ -57,41 +59,50 @@ function SingleDatePickerModal ( // TODO: Change filename to SingleDatePickerMod
     };
 
     return (
-        <View style={calendarStyles.wrapper}>
-            <Calendar
-                minDate={minDate ? getLocalDateString(minDate) : getLocalDateString(new Date())}
-                markingType={'custom'}
-                markedDates={getMarkedDates()}
-                onDayPress={onDayPress}
-                enableSwipeMonths={true}
-                style={{
-                    width: 322,
-                }}
-                theme={{
-                    calendarBackground: '#F0F0F0',
-                    arrowColor: '#888888', // arrows for switching between months
-                    // for 'Month YYYY' at the top
-                    textMonthFontFamily: 'HankenGrotesk-Regular',
-                    textMonthFontSize: 16,
-                    textMonthFontWeight: 500,
-                    monthTextColor: '#181818',
-                    // for day headers (e.g., 'Su', 'Mo', etc.)
-                    textDayHeaderFontFamily: 'HankenGrotesk-Regular',
-                    textDayHeaderFontSize: 10,
-                    textDayHeaderFontWeight: 400,
-                    textSectionTitleColor: '#181818',
-                    // for each day of the month
-                    textDayFontFamily: 'HankenGrotesk-Regular',
-                    textDayFontSize: 12,
-                    textDayFontWeight: 400,
-                    // if there is no minDate, then today is the minDate
-                    // if today is on or after minDate, then today is enabled and colored black; otherwise, today is disabled and colored gray
-                    todayTextColor: !minDate || (getLocalDateString(new Date()) >= getLocalDateString(minDate)) ? '#000000' : '#B2B2B2',
-                    dayTextColor: '#000000', // for all non-disabled days excluding today
-                    textDisabledColor: '#B2B2B2', // for disabled days (all days before current day)
-                }}
-            />
-        </View>
+        <Modal
+            transparent={true}
+            animationType='fade'
+            visible={calendarVisible}
+            onRequestClose={() => setCalendarVisible(false)}
+        >
+            <Pressable style={calendarStyles.centeredView} onPress={() => setCalendarVisible(false)}>
+                <Pressable style={calendarStyles.modalView}>
+                    <Calendar
+                        minDate={minDate ? getLocalDateString(minDate) : getLocalDateString(new Date())}
+                        markingType={'custom'}
+                        markedDates={getMarkedDates()}
+                        onDayPress={onDayPress}
+                        enableSwipeMonths={true}
+                        style={{
+                            width: 322,
+                        }}
+                        theme={{
+                            calendarBackground: '#F0F0F0',
+                            arrowColor: '#888888', // arrows for switching between months
+                            // for 'Month YYYY' at the top
+                            textMonthFontFamily: 'HankenGrotesk-Regular',
+                            textMonthFontSize: 16,
+                            textMonthFontWeight: 500,
+                            monthTextColor: '#181818',
+                            // for day headers (e.g., 'Su', 'Mo', etc.)
+                            textDayHeaderFontFamily: 'HankenGrotesk-Regular',
+                            textDayHeaderFontSize: 10,
+                            textDayHeaderFontWeight: 400,
+                            textSectionTitleColor: '#181818',
+                            // for each day of the month
+                            textDayFontFamily: 'HankenGrotesk-Regular',
+                            textDayFontSize: 12,
+                            textDayFontWeight: 400,
+                            // if there is no minDate, then today is the minDate
+                            // if today is on or after minDate, then today is enabled and colored black; otherwise, today is disabled and colored gray
+                            todayTextColor: !minDate || (getLocalDateString(new Date()) >= getLocalDateString(minDate)) ? '#000000' : '#B2B2B2',
+                            dayTextColor: '#000000', // for all non-disabled days excluding today
+                            textDisabledColor: '#B2B2B2', // for disabled days (all days before current day)
+                        }}
+                    />
+                </Pressable>
+            </Pressable>
+        </Modal>
     );
 };
 
