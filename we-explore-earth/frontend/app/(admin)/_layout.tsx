@@ -1,9 +1,9 @@
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import { EventFormDirtyProvider } from "./EventFormDirtyContext";
+import { EventFormDirtyProvider, useEventFormDirty } from "./EventFormDirtyContext";
 import { PendingUpdatedAdminEventProvider } from "./PendingUpdatedAdminEventContext";
 import { HomeIcon, ProfileIcon, CreateEventIcon, NotifyIcon } from "../components/NavBar/tab-icons";
 
@@ -17,7 +17,10 @@ const ACTIVE_BG = '#2D5A1B';
 const TAB_ICONS = [HomeIcon, CreateEventIcon, NotifyIcon, ProfileIcon];
 
 function CustomTabBar({ state, navigation }: BottomTabBarProps) {
-  console.log('admin routes:', state.routes.map(r => r.name));
+  const { isEventFormDirty, setEventFormDirty } = useEventFormDirty();
+  const currentRouteName = state.routes[state.index]?.name;
+  const isOnEventForm = currentRouteName === 'events/[id]';
+
   return (
     <View style={styles.container}>
       {state.routes.map((route, index) => {
@@ -27,6 +30,24 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
         if (!Icon) return null;
 
         const onPress = () => {
+          if (isOnEventForm && isEventFormDirty && !isFocused) {
+            Alert.alert(
+              'Leave without saving?',
+              'Your changes have not been saved.',
+              [
+                { text: 'Stay', style: 'cancel' },
+                {
+                  text: 'Leave',
+                  style: 'destructive',
+                  onPress: () => {
+                    setEventFormDirty(false);
+                    navigation.navigate(route.name);
+                  },
+                },
+              ]
+            );
+            return;
+          }
           const event = navigation.emit({
             type: 'tabPress',
             target: route.key,
