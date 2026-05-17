@@ -36,7 +36,7 @@ export default function AboutPage() {
                         We build stewards and explorers of the land by creating accessible pathways into nature for people of all backgrounds.
                     </Text>
                 </View>
-                
+
                 <View style={styles.sectionContainer}>
                     <Text style={styles.sectionHeader}>OUR IMPACT</Text>
                     <View style={styles.impactRow}>
@@ -84,7 +84,20 @@ export default function AboutPage() {
                             <Text style={styles.impactLabel}>Women-led & attended</Text>
                         </View>
                     </View>
+                </View>
 
+                <View style={styles.sectionContainer}>
+                  <Text style={styles.sectionHeader}>PROGRAMMING</Text>
+                  <Text style={styles.listItem}>  {'\u2022'} Group hike cleanups & conservation projects</Text>
+                  <Text style={styles.listItem}>  {'\u2022'} Backpacking experiences</Text>
+                  <Text style={styles.listItem}>  {'\u2022'} Monthly full moon hikes</Text>
+                  <Text style={styles.listItem}>  {'\u2022'} Nature walks with land acknowledgements</Text>
+                  <Text style={styles.listItem}>  {'\u2022'} Monthly hikes (co-ed & women's hikes)</Text>
+                  <Text style={styles.listItem}>  {'\u2022'} Climb & connect nights</Text>
+                  <Text style={styles.listItem}>  {'\u2022'} Bouldering & crag nature days</Text>
+                  <Text style={styles.listItem}>  {'\u2022'} Road trips to national parks & picnic lands</Text>
+                  <Text style={styles.listItem}>  {'\u2022'} Forest bridges campout series</Text>
+                  <Text style={styles.listItem}>{"\n"} ...plus special events, festivals, and so much more!</Text>
                 </View>
             </ScrollView>
         </SafeAreaView>

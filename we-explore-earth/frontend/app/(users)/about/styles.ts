@@ -84,5 +84,11 @@ export const styles = StyleSheet.create({
         ...typography.body,
         fontSize: 14,
         color: '#8A8A8A',
+    },
+    listItem: {
+        ...typography.body,
+        fontSize: 16,
+        color: '#333333',
+        marginBottom: 3, 
     }
 });
