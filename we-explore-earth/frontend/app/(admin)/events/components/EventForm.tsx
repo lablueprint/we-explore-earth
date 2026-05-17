@@ -11,17 +11,14 @@ import {
   Modal,
 } from "react-native";
 
-import {MapPinPlus,FilePenLine, Plus, DollarSign, ChartPie, AlarmClock, PenLineIcon, PersonStanding, UserRoundPlus,} from "lucide-react-native";
-// TODO: Delete imports? 
+import { MapPinPlus, PenLineIcon, PersonStanding, UserRoundPlus } from "lucide-react-native";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
-import SingleDatePickerModal from "./DatePickerModal";
+import SingleDatePickerModal from "./SingleDatePickerModal";
 import { styles } from "./styles";
 import { CategoryAccommodationSection } from "./CategoryAccommodationSection";
 import * as ImagePicker from 'expo-image-picker';
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-// import { storage } from "@/firebase.config";
 import { LinearGradient } from "expo-linear-gradient";
 import { typography } from "../../../../../shared/typography/typography";
 
@@ -32,7 +29,6 @@ interface EventFormProps {
   setDescription: (text: string) => void;
   location: string;
   setLocation: (text: string) => void;
-  //-------------------------------------------------------
   dateStart: Date;
   setDateStart: (date: Date) => void;
   timeStart: Date;
@@ -41,7 +37,6 @@ interface EventFormProps {
   setDateEnd: (date: Date) => void;
   timeEnd: Date;
   setTimeEnd: (date: Date) => void;
-  //-------------------------------------------------------
   categoryOptions: string[];
   accommodationOptions: string[];
   category: string[];
@@ -61,7 +56,6 @@ interface EventFormProps {
   formTitle: string;
 }
 
-{/** TODO  */}
 function IosDateTimePickerSheet({
   visible,
   onClose,
@@ -98,7 +92,6 @@ function IosDateTimePickerSheet({
               <Text style={styles.iosPickerDoneText}>Done</Text>
             </TouchableOpacity>
           </View>
-          {/** TODO  */}
           <DateTimePicker
             value={value}
             mode={mode}
@@ -142,7 +135,6 @@ export function EventForm({
   eventImage,
   setEventImage,
   submitButtonText,
-  formTitle,
 }: EventFormProps) {
   const [showDateStartPicker, setShowDateStartPicker] = useState(false);
   const [showTimeStartPicker, setShowTimeStartPicker] = useState(false);
@@ -152,35 +144,11 @@ export function EventForm({
   const isAndroid = Platform.OS === "android";
   const isIOS = Platform.OS === "ios";
 
-  const formatDate = (date: Date): string => {
-    return date.toLocaleDateString();
-  };
-
-  const formatTime = (date: Date): string => {
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  };
-
   const formatPriceForDisplay = (cents: string): string => {
     const padded = cents.padStart(3, "0");
     const dollars = padded.slice(0, -2);
     const centsPart = padded.slice(-2);
     return `${parseInt(dollars, 10)}.${centsPart}`;
-  };
-
-  {/** TODO: Remove */}
-  const handleDateStartChange = (
-    event: DateTimePickerEvent,
-    selectedDate?: Date
-  ) => {
-    if (isAndroid) {
-      setShowDateStartPicker(false);
-      if (event.type === "dismissed") {
-        return;
-      }
-    }
-    if (selectedDate) {
-      setDateStart(selectedDate);
-    }
   };
 
   const handleTimeStartChange = (
@@ -195,22 +163,6 @@ export function EventForm({
     }
     if (selectedDate) {
       setTimeStart(selectedDate);
-    }
-  };
-
-  {/** TODO: Remove */}
-  const handleDateEndChange = (
-    event: DateTimePickerEvent,
-    selectedDate?: Date
-  ) => {
-    if (isAndroid) {
-      setShowDateEndPicker(false);
-      if (event.type === "dismissed") {
-        return;
-      }
-    }
-    if (selectedDate) {
-      setDateEnd(selectedDate);
     }
   };
 

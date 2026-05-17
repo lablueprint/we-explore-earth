@@ -14,7 +14,7 @@ LocaleConfig.locales['en'] = {
 };
 LocaleConfig.defaultLocale = 'en';
 
-function SingleDatePickerModal ( // TODO: Change filename to SingleDatePickerModal.tsx
+function SingleDatePickerModal (
     {
         date,
         setDate,
