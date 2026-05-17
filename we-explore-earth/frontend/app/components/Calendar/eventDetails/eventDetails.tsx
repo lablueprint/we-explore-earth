@@ -7,7 +7,6 @@ import {
   Alert,
   ScrollView,
   StyleSheet,
-  Image
 } from "react-native";
 import { useRouter, useSegments, useFocusEffect } from "expo-router";
 
@@ -155,11 +154,6 @@ export default function EventDetails({
     }, [currentRSVP])
   );
 
-  const formatPrice = (price?: number | null) => {
-    if (price == null || price === 0) return "Free";
-    return `${price}`;
-  };
-
   if (!event) return null;
 
   return (
@@ -216,10 +210,7 @@ export default function EventDetails({
               </View>
 
               <View style={styles.infoRow}>
-                <Image
-                      source={require("../../../../../shared/images/calendar.png")}
-                      style={styles.logisticsIcon}
-                    />
+                <Text style={styles.infoIcon}>🗓️</Text>
                 <View>
                   <Text style={styles.infoTitle}>
                   {formatEventDateLine(event.timeStart, event.timeEnd)}
@@ -231,16 +222,14 @@ export default function EventDetails({
               </View>
 
               <View style={styles.infoRow}>
-                <Image
-                      source={require("../../../../../shared/images/location.png")}
-                      style={styles.logisticsIcon}
-                    />
+                <Text style={styles.infoIcon}>📍</Text>
                 <View>
                   <Text style={styles.infoTitle}>{event.location}</Text>
                 </View>
               </View>
 
               <Text style={styles.sectionLabel}>ATTENDEES</Text>
+
               <View style={styles.attendeeHeader}>
                 <Text style={styles.attendeeCount}>{event.attendees?.length ?? 0} People on the List</Text>
 
@@ -268,13 +257,12 @@ export default function EventDetails({
                
               </View>
 
-
-              <TouchableOpacity
-                onPress={handleRSVPPress}
-                style={styles.rsvpButton}
-              >
-
-                
+              {!isAdmin && (
+                <TouchableOpacity
+                  onPress={handleRSVPPress}
+                  style={styles.rsvpButton}
+                >
+                  
                 <Text style={styles.rsvpButtonText}>
                   {displayRSVP ? "Update RSVP" : "RSVP"}
                 </Text>
@@ -296,51 +284,6 @@ export default function EventDetails({
               <Text style={styles.body}>
                 {event.description || "No description provided."}
               </Text>
-
-              <Text style={styles.sectionLabel}>HOST</Text>
-
-              <View style={styles.infoCard}>
-                <Text style={styles.infoCardText}>
-                  {event.hostedBy}
-                </Text>
-              </View>
-
-
-              <Text style={styles.sectionLabel}>LOGISTICS</Text>
-              <View style={styles.infoCard}>
-                <Text style={styles.infoCardLabel}>
-                  Maximum capacity
-                </Text>
-
-                <View style={styles.logisticsRow}>
-                  <Image
-                    source={require("../../../../../shared/images/clock_loader_40.png")}
-                    style={styles.logisticsIcon}
-                  />
-
-                  <Text style={styles.infoCardText}>
-                    {event.maxAttendees} {event.maxAttendees === 1 ? "person" : "people"}
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.infoCard}>
-                <Text style={styles.infoCardLabel}>
-                  Price per person
-                </Text>
-
-                <View style={styles.logisticsRow}>
-                  <Image
-                    source={require("../../../../../shared/images/attach_money.png")}
-                    style={styles.logisticsIcon}
-                  />
-
-                  <Text style={styles.infoCardText}>
-                    {formatPrice(event.price)} 
-                  </Text>
-                </View>
-              </View>
-
 
             </ScrollView>
           </View>
