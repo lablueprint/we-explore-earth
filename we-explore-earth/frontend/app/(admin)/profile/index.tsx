@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ActivityIndicator } from "react-native";
-import AddAdmin from "./components/AddAdmin/addAdmin";
+import { ActivityIndicator, ScrollView, Text } from "react-native";
+import { AddAdmin } from "./components/AddAdmin";
+import { ProfileInfo } from "@/app/components/Profile/profileInfo";
+import { UserForm } from "@/app/components/Profile/userForm";
+import { LogoutButton } from "@/app/components/Profile/logoutButton";
+import { styles as profileInfoStyles } from "@/app/components/Profile/profileInfo.styles";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export default function AdminProfile() {
   const [admins, setAdmins] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchAdmins = async () => {
@@ -29,13 +34,21 @@ export default function AdminProfile() {
   }
 
   return (
-    <View style={{ padding: 16 }}>
-      <Text style={{ fontSize: 18, fontWeight: "600", marginBottom: 8 }}>
-        Admins
-      </Text>
-      <AddAdmin />
+    <ScrollView contentContainerStyle={{ padding: 16, gap: 12 }}>
+      {isEditing ? (
+        <UserForm
+          onCancel={() => setIsEditing(false)}
+          onSaved={() => setIsEditing(false)}
+        />
+      ) : (
+        <>
+          <ProfileInfo onEdit={() => setIsEditing(true)} />
 
-
-    </View>
+          <Text style={profileInfoStyles.sectionLabel}>ADMIN</Text>
+          <AddAdmin />
+          <LogoutButton />
+        </>
+      )}
+    </ScrollView>
   );
 }
