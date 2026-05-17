@@ -12,6 +12,7 @@ import {
 } from "react-native";
 
 import {MapPinPlus,FilePenLine, Plus, DollarSign, ChartPie, AlarmClock, PenLineIcon, PersonStanding, UserRoundPlus,} from "lucide-react-native";
+// TODO: Delete imports?
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
@@ -30,6 +31,7 @@ interface EventFormProps {
   setDescription: (text: string) => void;
   location: string;
   setLocation: (text: string) => void;
+  //-------------------------------------------------------
   dateStart: Date;
   setDateStart: (date: Date) => void;
   timeStart: Date;
@@ -38,6 +40,7 @@ interface EventFormProps {
   setDateEnd: (date: Date) => void;
   timeEnd: Date;
   setTimeEnd: (date: Date) => void;
+  //-------------------------------------------------------
   categoryOptions: string[];
   accommodationOptions: string[];
   category: string[];
@@ -57,6 +60,7 @@ interface EventFormProps {
   formTitle: string;
 }
 
+{/** TODO */}
 function IosDateTimePickerSheet({
   visible,
   onClose,
@@ -93,6 +97,7 @@ function IosDateTimePickerSheet({
               <Text style={styles.iosPickerDoneText}>Done</Text>
             </TouchableOpacity>
           </View>
+          {/** TODO */}
           <DateTimePicker
             value={value}
             mode={mode}
@@ -161,6 +166,7 @@ export function EventForm({
     return `${parseInt(dollars, 10)}.${centsPart}`;
   };
 
+  {/** TODO */}
   const handleDateStartChange = (
     event: DateTimePickerEvent,
     selectedDate?: Date
@@ -191,6 +197,7 @@ export function EventForm({
     }
   };
 
+  {/** TODO */}
   const handleDateEndChange = (
     event: DateTimePickerEvent,
     selectedDate?: Date
@@ -336,6 +343,7 @@ export function EventForm({
         </View>
       </View>
 
+      {/** TODO */}
       {isAndroid && showDateStartPicker && (
         <DateTimePicker value={dateStart} mode="date" display="default" onChange={handleDateStartChange}/>
       )}
@@ -344,6 +352,7 @@ export function EventForm({
         <DateTimePicker value={timeStart} mode="time" display="default" onChange={handleTimeStartChange}/>
       )}
 
+      {/** TODO */}
       {isAndroid && showDateEndPicker && (
         <DateTimePicker value={dateEnd} mode="date" display="default" onChange={handleDateEndChange} />
       )}
@@ -354,14 +363,15 @@ export function EventForm({
 
       {isIOS && (
         <>
-          <IosDateTimePickerSheet
+          {/** TODO */}
+          {/* <IosDateTimePickerSheet
             visible={showDateStartPicker}
             onClose={() => setShowDateStartPicker(false)}
             value={dateStart}
             mode="date"
             display="inline"
             onChange={handleDateStartChange}
-          />
+          /> */}
           <IosDateTimePickerSheet
             visible={showTimeStartPicker}
             onClose={() => setShowTimeStartPicker(false)}
@@ -370,14 +380,15 @@ export function EventForm({
             display="spinner"
             onChange={handleTimeStartChange}
           />
-          <IosDateTimePickerSheet
+          {/** TODO */}
+          {/* <IosDateTimePickerSheet
             visible={showDateEndPicker}
             onClose={() => setShowDateEndPicker(false)}
             value={dateEnd}
             mode="date"
             display="inline"
             onChange={handleDateEndChange}
-          />
+          /> */}
           <IosDateTimePickerSheet
             visible={showTimeEndPicker}
             onClose={() => setShowTimeEndPicker(false)}
