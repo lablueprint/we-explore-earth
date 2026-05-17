@@ -85,6 +85,9 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: "#1A1A1A",
   },
+  rowValueDisabled: {
+    color: "#9A9A9A",
+  },
   rowInput: {
     fontSize: 16,
     color: "#1A1A1A",
@@ -114,5 +117,49 @@ export const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "600",
     letterSpacing: 0.3,
+  },
+  editHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 4,
+    marginBottom: 4,
+  },
+  backText: {
+    fontSize: 16,
+    color: "#1A1A1A",
+  },
+  actionPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#E5E5E5",
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 999,
+  },
+  actionPillDisabled: {
+    opacity: 0.6,
+  },
+  actionPillText: {
+    color: "#1A1A1A",
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  editAvatarWrapper: {
+    alignItems: "center",
+    marginTop: 8,
+    marginBottom: 8,
+  },
+  editAvatar: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    backgroundColor: "#EDEDED",
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
   },
 });

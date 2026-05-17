@@ -51,10 +51,11 @@ function formatPhoneForDisplay(digits: string): string {
 }
 
 interface UserFormProps {
-  submitButtonText?: string;
+  onCancel?: () => void;
+  onSaved?: () => void;
 }
 
-export function UserForm({ submitButtonText = "Save" }: UserFormProps) {
+export function UserForm({ onCancel, onSaved }: UserFormProps) {
   const { user, userId, avatarUrl } = useUser();
   const { updateUser } = useUpdateUser();
 
@@ -132,7 +133,7 @@ export function UserForm({ submitButtonText = "Save" }: UserFormProps) {
 
       const updatedUser: User = await response.json();
       updateUser(updatedUser);
-      Alert.alert("Success", "Profile updated successfully!");
+      onSaved?.();
     } catch (error: any) {
       console.error("Error while updating user:", error);
       Alert.alert(
@@ -146,41 +147,37 @@ export function UserForm({ submitButtonText = "Save" }: UserFormProps) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.profileCard}>
-        <View style={styles.avatar}>
-          {avatarUrl ? (
-            <SvgUri uri={avatarUrl} width={88} height={88} />
-          ) : (
-            <Ionicons name="person" size={48} color="#9A9A9A" />
-          )}
-        </View>
-
-        <View style={styles.profileInfo}>
-          <Text style={styles.name}>{displayName || "—"}</Text>
-          {user?.isAdmin && (
-            <View style={styles.adminBadge}>
-              <Text style={styles.adminBadgeText}>Admin</Text>
-            </View>
-          )}
-        </View>
-      </View>
-
-      <View style={styles.sectionHeaderRow}>
-        <Text style={[styles.sectionLabel, { marginTop: 0, marginBottom: 0 }]}>
-          ACCOUNT
-        </Text>
+      <View style={styles.editHeaderRow}>
+        <TouchableOpacity
+          onPress={onCancel}
+          disabled={isSubmitting}
+          hitSlop={8}
+        >
+          <Text style={styles.backText}>Back</Text>
+        </TouchableOpacity>
         <TouchableOpacity
           style={[
-            styles.saveButton,
-            isSubmitting && styles.saveButtonDisabled,
+            styles.actionPill,
+            isSubmitting && styles.actionPillDisabled,
           ]}
           onPress={handleSubmit}
           disabled={isSubmitting}
         >
-          <Text style={styles.saveButtonText}>
-            {isSubmitting ? "Saving..." : submitButtonText}
+          <Ionicons name="pencil-outline" size={14} color="#1A1A1A" />
+          <Text style={styles.actionPillText}>
+            {isSubmitting ? "Saving..." : "Save"}
           </Text>
         </TouchableOpacity>
+      </View>
+
+      <View style={styles.editAvatarWrapper}>
+        <View style={styles.editAvatar}>
+          {avatarUrl ? (
+            <SvgUri uri={avatarUrl} width={150} height={150} />
+          ) : (
+            <Ionicons name="person" size={80} color="#9A9A9A" />
+          )}
+        </View>
       </View>
 
       <View style={styles.card}>
@@ -198,19 +195,22 @@ export function UserForm({ submitButtonText = "Save" }: UserFormProps) {
             />
           </View>
         </View>
+      </View>
 
-        <View style={styles.divider} />
-
+      <View style={styles.card}>
         <View style={styles.row}>
-          <Ionicons name="mail-outline" size={22} color="#1A1A1A" />
+          <Ionicons name="mail-outline" size={22} color="#9A9A9A" />
           <View style={styles.rowTextContainer}>
             <Text style={styles.rowLabel}>Mail</Text>
-            <Text style={styles.rowValue}>{user?.email ?? "—"}</Text>
+            <Text style={[styles.rowValue, styles.rowValueDisabled]}>
+              {user?.email ?? "—"}
+            </Text>
           </View>
+          <Ionicons name="lock-closed" size={18} color="#9A9A9A" />
         </View>
+      </View>
 
-        <View style={styles.divider} />
-
+      <View style={styles.card}>
         <View style={styles.row}>
           <Ionicons name="call-outline" size={22} color="#1A1A1A" />
           <View style={styles.rowTextContainer}>
@@ -227,13 +227,11 @@ export function UserForm({ submitButtonText = "Save" }: UserFormProps) {
         </View>
       </View>
 
-      <Text style={styles.sectionLabel}>NOTIFICATIONS</Text>
-
       <View style={styles.card}>
         <View style={styles.row}>
           <Ionicons name="volume-high-outline" size={22} color="#1A1A1A" />
           <View style={styles.rowTextContainer}>
-            <Text style={styles.toggleLabel}>Admin event announcements</Text>
+            <Text style={styles.toggleLabel}>Event announcement</Text>
           </View>
           <Switch
             value={notificationsEnabled}
@@ -244,7 +242,6 @@ export function UserForm({ submitButtonText = "Save" }: UserFormProps) {
           />
         </View>
       </View>
-
     </View>
   );
 }

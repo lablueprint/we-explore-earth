@@ -86,4 +86,27 @@ export const styles = StyleSheet.create({
     height: 1,
     backgroundColor: "#E5E5E5",
   },
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    paddingHorizontal: 4,
+    marginBottom: 4,
+  },
+  editButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#E5E5E5",
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 999,
+  },
+  editButtonText: {
+    color: "#1A1A1A",
+    fontSize: 14,
+    fontWeight: "500",
+  },
 });
