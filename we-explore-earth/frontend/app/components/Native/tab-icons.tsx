@@ -18,3 +18,11 @@ export function DonateIcon({ color, size = 24 }: IconProps) {
 export function EventIcon({ color, size = 24 }: IconProps) {
   return <Image source={require('../../../../shared/icons/Events.png')} style={{ width: size, height: size, tintColor: color }} />;
 }
+
+export function CreateEventIcon({ color, size = 24 }: IconProps) {
+  return <Image source={require('../../../../shared/icons/Events.png')} style={{ width: size, height: size, tintColor: color }} />;
+}
+
+export function NotifyIcon({ color, size = 24 }: IconProps) {
+  return <Image source={require('../../../../shared/icons/Events.png')} style={{ width: size, height: size, tintColor: color }} />;
+}
