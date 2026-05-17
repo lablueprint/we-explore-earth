@@ -4,14 +4,14 @@ import { useState, useEffect} from 'react';
 import type { Event } from '@shared/types/event';
 import type { User } from '@shared/types/user';
 import { styles } from './styles';
-
+import {Search} from "lucide-react-native";
 type Props = {
   eventId: string;
 };
 
 export default function EventAttendees({eventId}: Props){
-  type Tab = "YES" | "MAYBE";
-  const [tab, setTab] = useState<Tab>("YES");
+  type Tab = "ALL" | "YES" | "MAYBE";
+  const [tab, setTab] = useState<Tab>("ALL");
   const [event, setEvent] = useState<Event | null>(null);
   const [attendees, setAttendees] = useState<User[]>([]);
   const [search, setSearch] = useState('');
@@ -66,11 +66,14 @@ export default function EventAttendees({eventId}: Props){
     }
   }, [event?.attendees]);
 
-  useEffect(() => { //when attendees or tab or event id changes it changes the rsvp information
-    const RsvpAttendees = attendees.filter((u) => {
-      const rsvp = u.events?.find((e) => e.eventID === eventId);
-      return rsvp?.status === tab;
-    });
+  useEffect(() => {
+  const RsvpAttendees =
+      tab === "ALL"
+        ? attendees
+        : attendees.filter((u) => {
+            const rsvp = u.events?.find((e) => e.eventID === eventId);
+            return rsvp?.status === tab;
+          });
 
     setSearchFilteredData(RsvpAttendees);
     setRsvpFiltered(RsvpAttendees);
@@ -85,26 +88,58 @@ export default function EventAttendees({eventId}: Props){
     const filtered = rsvpFiltered.filter(item =>
       (item.firstName.toLowerCase().includes(text.toLowerCase()) ||
       item.lastName.toLowerCase().includes(text.toLowerCase()) ||
-      item.username.toLowerCase().includes(text.toLowerCase()) ||
       item.email.toLowerCase().includes(text.toLowerCase()) ) 
     );
     setSearchFilteredData(filtered);
   };
+  const toggleCheckIn = async (userId: string, currentCheckedIn: boolean) => {
+  try {
+    const response = await fetch(
+      `${process.env.EXPO_PUBLIC_API_URL}/events/${eventId}/check-in`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+          checkedIn: !currentCheckedIn,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to update check-in");
+    }
+
+    fetchEventDetails(eventId);
+  } catch (error) {
+    console.error("Error checking in attendee:", error);
+  }
+};
 
   return (
   <View style={styles.container}>
     {event && (
       <>
-        <Text style={styles.header}> {event.title}</Text>
+        <Text style={ styles.header}> {event.title}</Text>
         <Text style={styles.subheading}>RSVP List</Text>      
-        <TextInput
-          style={styles.searchBar}
-          placeholder="Search here..."
-          value={search}
-          onChangeText={handleSearch}
-         />
-
+        <View style={styles.searchWrapper}>
+          <Search size={16} color="#8e8e93" strokeWidth={3} />
+          <TextInput
+            style={styles.searchBar}
+            placeholder="Search attendees"
+            value={search}
+            onChangeText={handleSearch}
+          />
+        </View>
         <View style={styles.tabRow}>
+          <TouchableOpacity onPress={() => setTab("ALL")}>
+            <Text style={tab === "ALL" ? styles.tabTextActive : styles.tabText}>
+              All
+            </Text>
+          </TouchableOpacity> 
+          
           <TouchableOpacity onPress={() => setTab("YES")}>
             <Text style={tab === "YES" ? styles.tabTextActive : styles.tabText}>
               Yes
@@ -122,17 +157,36 @@ export default function EventAttendees({eventId}: Props){
         <Text style={styles.attendeeName}>No attendees that meet this criteria</Text>
         ) : ( 
         <FlatList
+          style={styles.listCard}
           data={searchfilteredData}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={styles.attendeeItem}>
-              <Text style={styles.attendeeName}>
-                {item.firstName} {item.lastName}
-              </Text>
-              <Text style={styles.attendeeUsername}>{item.username}</Text>
-              <Text style={styles.attendeeEmail}>{item.email}</Text>
-            </View>
-          )}
+          renderItem={({ item }) => {
+            const rsvp = event?.attendees?.find((r) => r.userID === item.id);
+            const isCheckedIn = rsvp?.checkedIn === true;
+
+            return (
+              <View style={styles.attendeeItem}>
+                <View>
+                  <Text style={styles.attendeeName}>
+                    {item.firstName} {item.lastName}
+                  </Text>
+
+                  <Text style={styles.attendeeEmail}>
+                    {item.email}
+                  </Text>
+                </View>
+
+                <TouchableOpacity
+                  style={isCheckedIn ? styles.checkedInButton : styles.checkInButton}
+                  onPress={() => toggleCheckIn(item.id, isCheckedIn)}
+                >
+                  <Text style={isCheckedIn ? styles.checkedInText : styles.checkInText}>
+                    {isCheckedIn ? "✓" : "Check in"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )
+          }}
         />
         )}
       </>

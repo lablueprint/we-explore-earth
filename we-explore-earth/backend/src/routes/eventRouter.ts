@@ -9,6 +9,7 @@ import {
   addOrUpdateRSVP,
   removeRSVP,
   getEventImageSignedUrl,
+  toggleCheckIn, 
 } from "../controllers/eventController";
 
 const router = express.Router();
@@ -41,5 +42,8 @@ router.post("/:id/rsvp", addOrUpdateRSVP);
 
 // DELETE /events/:id/rsvp
 router.delete("/:id/rsvp", removeRSVP);
+
+// PATCH /events/:id/check-in
+router.patch("/:id/check-in", toggleCheckIn);
 
 export default router;
