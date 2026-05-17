@@ -16,20 +16,6 @@ type Props = {
   onPress: (event: Event) => void;
 };
 
-function formatEventDate(seconds: number): string {
-  const date = new Date(seconds * 1000);
-  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const dayName = days[date.getDay()];
-  const monthName = months[date.getMonth()];
-  const day = date.getDate();
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  const hour12 = hours % 12 || 12;
-  const minuteStr = minutes === 0 ? '' : `:${String(minutes).padStart(2, '0')}`;
-  return `${dayName}, ${monthName} ${day} at ${hour12}${minuteStr} ${ampm}`;
-}
 
 const isSameDay = (start: Date, end: Date) => {
   return (
@@ -42,32 +28,34 @@ const isSameDay = (start: Date, end: Date) => {
 const formatEventDateTime = (startTs: { _seconds: number }, endTs: { _seconds: number }) => {
   const start = new Date(startTs._seconds * 1000);
   const end = new Date(endTs._seconds * 1000);
+  const sevenDaysFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+  const timePart = start.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
 
   if (isSameDay(start, end)) {
+    if (isSameDay(start, tomorrow)) {
+      return `Tomorrow at ${timePart}`;
+    }
+    if (start <= sevenDaysFromNow) {
+      const weekday = start.toLocaleDateString("en-US", { weekday: "long" });
+      return `${weekday} at ${timePart}`;
+    }
     const datePart = start.toLocaleDateString("en-US", {
       weekday: "short",
       month: "short",
       day: "numeric",
     });
-
-    const timePart = start.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-    });
-
-    return `${datePart}, ${timePart}`;
+    return `${datePart} at ${timePart}`;
   }
 
-  const startStr = start.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
-
-  const endStr = end.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
-
+  const startStr = start.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+  const endStr = end.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
   return `${startStr} - ${endStr}`;
 };
 
