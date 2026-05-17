@@ -4,10 +4,8 @@ import React from 'react';
 //THIRD-PARTY LIBRARIES
 import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { LinearGradient } from 'expo-linear-gradient';
-
 //LOCAL FILES
-import { styles, cardGradient, glossOverlay, clockIconSize, clockIconColor, cardActiveOpacity } from './styles';
+import { styles, clockIconSize, clockIconColor, cardActiveOpacity } from './styles';
 import type { Event } from '@shared/types/event';
 import { typography } from '@shared/typography/typography';
 import { useUser } from '@/app/redux/hooks/useUser';
@@ -30,7 +28,7 @@ function formatEventDate(seconds: number): string {
   const ampm = hours >= 12 ? 'PM' : 'AM';
   const hour12 = hours % 12 || 12;
   const minuteStr = minutes === 0 ? '' : `:${String(minutes).padStart(2, '0')}`;
-  return `${dayName} ${monthName} ${day}, ${hour12}${minuteStr}${ampm}`;
+  return `${dayName}, ${monthName} ${day} at ${hour12}${minuteStr} ${ampm}`;
 }
 
 const isSameDay = (start: Date, end: Date) => {
@@ -85,22 +83,7 @@ export default function EventView({ event, onPress }: Props) {
       onPress={() => onPress(event)}
       activeOpacity={cardActiveOpacity}
     >
-      <LinearGradient
-        colors={cardGradient.colors}
-        locations={cardGradient.locations}
-        start={cardGradient.start}
-        end={cardGradient.end}
-        style={styles.card}
-      >
-      <LinearGradient
-        pointerEvents="none"
-        colors={glossOverlay.colors}
-        locations={glossOverlay.locations}
-        start={glossOverlay.start}
-        end={glossOverlay.end}
-        style={StyleSheet.absoluteFillObject}
-      />
-
+      <View style={styles.card}>
       <View style={styles.imageWrap}>
         <View style={styles.imagePlaceholder}>
           <EventCoverImage
@@ -135,7 +118,7 @@ export default function EventView({ event, onPress }: Props) {
           </View>
         )}
       </View>
-      </LinearGradient>
+      </View>
     </TouchableOpacity>
   );
 }
