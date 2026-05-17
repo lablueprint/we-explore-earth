@@ -1,42 +1,31 @@
-import { View, Text, Button, Alert } from 'react-native';
+import React from 'react';
+import { View, Text, Image, ScrollView, SafeAreaView } from 'react-native';
+import { styles } from './styles';
 
-export default function AboutScreen() {
+export default function AboutPage() {
+    return (
+        <SafeAreaView style={styles.safeArea}>
+            <ScrollView style={styles.container}>
+                
+                <Image
+                    source={require('../../../../shared/images/about-main-image.png')}
+                    style={styles.mainImage}
+                    resizeMode="cover"
+                />
 
-  const sendTestSMS = async () => {
-    try {
-      const response = await fetch("http://localhost:3000/twilio/send-sms", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          to: "+19514630046",
-          body: "Hello from React Native 🚀"
-        }),
-      });
+                <Text style={styles.title}>We Explore Earth</Text>
+                
+                <Text style={styles.description}>
+                    Reconnecting people with themselves, their community, and the land — through creative, inclusive outdoor experiences.
+                </Text>
 
-      const data = await response.json();
+                <View style={styles.tagsContainer}>
+                    <Text style={styles.tagText}>501(c)(3) nonprofit</Text>
+                    <Text style={styles.tagText}>Est. 2017</Text>
+                    <Text style={styles.tagText}>LA, OC, SF</Text>
+                </View>
 
-      if (data.success) {
-        Alert.alert("Success", "SMS sent!");
-      } else {
-        Alert.alert("Error", "Failed to send SMS");
-      }
-
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Error", "Network request failed");
-    }
-  };
-
-  return (
-    <View style={{ 
-      flex: 1, 
-      justifyContent: "center", 
-      alignItems: "center" 
-    }}>
-      <Text>About Page</Text>
-      <Button title="Send Test SMS" onPress={sendTestSMS} />
-    </View>
-  );
+            </ScrollView>
+        </SafeAreaView>
+    );
 }
