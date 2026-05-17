@@ -61,7 +61,8 @@ export const styles = StyleSheet.create({
 
   editButton: {
     borderWidth: 1,
-    borderColor: "#2F6B0C",
+    backgroundColor: "rgba(40, 95, 0, 1)",
+    borderColor: "rgba(40, 95, 0, 1)",
     borderRadius: 999,
     paddingVertical: 16,
     alignItems: "center",
@@ -70,7 +71,7 @@ export const styles = StyleSheet.create({
   },
   
   editButtonText: {
-    color: "#2F6B0C",
+    color: "rgba(255, 255, 255, 1)",
     fontSize: 17,
     fontWeight: "700",
   },
@@ -243,6 +244,19 @@ export const styles = StyleSheet.create({
 
   scrollContent: {
     paddingBottom: 80,
+  },
+
+  editButtonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+  
+  editButtonIcon: {
+    width: 20,
+    height: 20,
+    resizeMode: "contain",
   },
   
   viewAllButton: {

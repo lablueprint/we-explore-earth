@@ -7,6 +7,7 @@ import {
   Alert,
   ScrollView,
   StyleSheet,
+  Image
 } from "react-native";
 import { useRouter, useSegments, useFocusEffect } from "expo-router";
 
@@ -270,12 +271,18 @@ export default function EventDetails({
               
 
               {isAdmin && (
-                <TouchableOpacity
-                  onPress={handleEditEvent}
-                  style={styles.editButton}
-                >
-                  <Text style={styles.editButtonText}>Edit Event</Text>
-                </TouchableOpacity>
+                <TouchableOpacity style={styles.editButton}>
+                <View style={styles.editButtonContent}>
+                  <Image
+                    source={require("../../../../../shared/images/gear.png")}
+                    style={styles.editButtonIcon}
+                  />
+              
+                  <Text style={styles.editButtonText}>
+                    Manage
+                  </Text>
+                </View>
+              </TouchableOpacity>
               )}
 
               <View style={styles.divider} />
