@@ -197,7 +197,9 @@ export default function EventDetails({
                 />
               </View>
 
-              <Text style={typography.h1}>{event.title}</Text>
+              <Text style={[typography.h1, { paddingLeft: 5 }]}>
+                {event.title}
+              </Text>
 
               <View style={styles.tagRow}>
                 {Array.isArray(event.category) &&
@@ -255,7 +257,7 @@ export default function EventDetails({
                       animationType="slide"
                       onRequestClose={() => setShowAll(false)}
                     >
-                      <View>
+                      <View style={styles.modalView}>
                         <TouchableOpacity style={styles.closeButton} onPress={() => setShowAll(false)}>
                           <Text style={styles.backText}>Close</Text>
                         </TouchableOpacity>
@@ -268,7 +270,7 @@ export default function EventDetails({
                
               </View>
 
-
+              {!isAdmin && (
               <TouchableOpacity
                 onPress={handleRSVPPress}
                 style={styles.rsvpButton}
