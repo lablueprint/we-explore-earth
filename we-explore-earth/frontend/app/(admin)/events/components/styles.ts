@@ -10,7 +10,8 @@ export const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
-    paddingBottom: 40,
+    paddingTop: 60,
+    paddingBottom: 120,
   },
 
   input: {
