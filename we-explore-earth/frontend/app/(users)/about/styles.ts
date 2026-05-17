@@ -90,5 +90,8 @@ export const styles = StyleSheet.create({
         fontSize: 16,
         color: '#333333',
         marginBottom: 3, 
+    },
+    lastSection: {
+        marginBottom: 100,
     }
 });
