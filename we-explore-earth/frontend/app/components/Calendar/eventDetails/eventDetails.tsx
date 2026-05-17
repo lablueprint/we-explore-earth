@@ -16,7 +16,7 @@ import RSVPModal from "../RSVPModal/RSVPModal";
 import { useUser } from '@/app/redux/hooks/useUser';
 import { typography } from "../../../../../shared/typography/typography";
 import { EventCoverImage } from "@/app/components/Calendar/eventCoverImage/eventCoverImage";
-import EventAttendeesSummary from '../eventAttendeesSummary/eventAttendeesSummary';
+import EventAttendees from '../eventAttendees/eventAttendees';
 
 type Props = {
   visible: boolean;
@@ -55,6 +55,7 @@ export default function EventDetails({
   const [rsvpModalVisible, setRsvpModalVisible] = useState(false);
   const [localRSVP, setLocalRSVP] = useState<"YES" | "MAYBE" | null>(null);
   const [hasLocalChange, setHasLocalChange] = useState(false);
+  const [showAll, setShowAll] = useState(false);
 
   const currentRSVP =
     event && user?.events
@@ -184,7 +185,24 @@ export default function EventDetails({
                 <Text style={styles.attendeeCount}>{event.attendees?.length ?? 0} People on the List</Text>
 
                 {isAdmin && (
-                   <EventAttendeesSummary selectedEvent={event} /> 
+                  <>
+                    <TouchableOpacity style={styles.viewAllButton} onPress={() => setShowAll(true)}>
+                      <Text style={styles.backText}>View All</Text>
+                    </TouchableOpacity>
+
+                    <Modal
+                      visible={showAll}
+                      animationType="slide"
+                      onRequestClose={() => setShowAll(false)}
+                    >
+                      <View>
+                        <TouchableOpacity style={styles.closeButton} onPress={() => setShowAll(false)}>
+                          <Text style={styles.backText}>Close</Text>
+                        </TouchableOpacity>
+                      </View>
+                      <EventAttendees eventId={event.id} />
+                    </Modal>
+                  </>
                 )}
               
                
