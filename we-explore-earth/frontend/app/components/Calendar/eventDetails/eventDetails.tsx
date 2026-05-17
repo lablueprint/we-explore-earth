@@ -53,13 +53,11 @@ const formatEventDateLine = (startTs: FirestoreTimestamp, endTs: FirestoreTimest
   }
 
   const startDate = start.toLocaleDateString("en-US", {
-    weekday: "short",
     month: "short",
     day: "numeric",
   });
-
+  
   const endDate = end.toLocaleDateString("en-US", {
-    weekday: "short",
     month: "short",
     day: "numeric",
   });
