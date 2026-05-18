@@ -130,6 +130,16 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
+  backButton: {
+    marginBottom: 12,
+    alignSelf: 'flex-start',
+  },
+  termsBody: {
+    fontSize: 14,
+    color: '#444',
+    lineHeight: 22,
+    marginBottom: 16,
+  },
 });
 
 export const titleTextStyle = [typography.h1, styles.title];
@@ -142,3 +152,4 @@ export const termsTextStyle = [typography.body, styles.termsText];
 export const termsLinkStyle = [typography.body, styles.termsLink];
 export const rsvpButtonTextStyle = [typography.body, styles.rsvpButtonText];
 export const cancelButtonTextStyle = [typography.body, styles.cancelButtonText];
+export const termsBodyStyle = [typography.body, styles.termsBody];

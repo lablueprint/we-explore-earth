@@ -132,14 +132,6 @@ export default function EventDetails({
     onRSVPChange?.();
   };
 
-  const handleTermsPress = () => {
-    setRsvpModalVisible(false);
-    onClose();
-    requestAnimationFrame(() => {
-      router.push("/rsvp-terms-placeholder");
-    });
-  };
-
   const handleEditEvent = () => {
     if (!event?.id) return;
     onClose();
@@ -245,7 +237,11 @@ export default function EventDetails({
 
               <Text style={styles.sectionLabel}>ATTENDEES</Text>
               <View style={styles.attendeeHeader}>
-                <Text style={styles.attendeeCount}>{event.attendees?.length ?? 0} People on the List</Text>
+              <Text style={styles.attendeeCount}>
+                {(event.attendees?.length ?? 0) === 1
+                  ? "1 Person on the List"
+                  : `${event.attendees?.length ?? 0} People on the List`}
+              </Text>
 
                 {isAdmin && (
                   <>
@@ -362,7 +358,6 @@ export default function EventDetails({
         currentRSVP={localRSVP}
         onClose={() => setRsvpModalVisible(false)}
         onRSVPChange={handleRSVPChange}
-        onTermsPress={handleTermsPress}
       />
     </>
   );
