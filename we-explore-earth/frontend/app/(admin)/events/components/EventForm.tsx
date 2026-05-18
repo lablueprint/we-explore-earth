@@ -222,7 +222,7 @@ export function EventForm({
         locations={[0, 0.5, 1]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={{ flex: 1, paddingTop: 24 }}
+        style={{ flex: 1 }}
       >
       
       <ScrollView

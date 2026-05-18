@@ -195,7 +195,8 @@ export const styles = StyleSheet.create({
   },
 
 
-  coverContainer: {
+coverContainer: {
+  marginTop: 24,
   width: "100%",
   height: 220,
   borderRadius: 24,
