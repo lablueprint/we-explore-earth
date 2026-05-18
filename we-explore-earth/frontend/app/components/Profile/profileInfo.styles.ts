@@ -69,13 +69,13 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   rowLabel: {
+    ...typography.body,
     fontSize: 13,
     color: "#9A9A9A",
     marginBottom: 2,
   },
   rowValue: {
-    fontSize: 16,
-    color: "#1A1A1A",
+    ...typography.body,
   },
   toggleLabel: {
     fontSize: 16,
