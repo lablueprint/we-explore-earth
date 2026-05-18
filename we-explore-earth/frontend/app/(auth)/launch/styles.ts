@@ -39,6 +39,7 @@ export const styles = StyleSheet.create({
     ...typography.h1,
     fontSize: 42,
     fontWeight: 'normal',
+    lineHeight: 46,
     color: '#0A1207',
     marginBottom: 24,
     textAlign: 'center',
