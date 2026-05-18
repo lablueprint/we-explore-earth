@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   Modal,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -13,6 +12,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 
 import { typography } from "@shared/typography/typography";
 import { styles as sharedStyles } from "../events/components/styles";
+import { styles, modalStyles } from "./styles";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -44,7 +44,7 @@ async function fetchAudience(): Promise<AudienceOption[]> {
     attendeeCount: e.attendees.length || 0,
   }));
 
-  return [{ id: "", label: "Everybody", attendeeCount: -1 }, ...eventOptions];
+  return eventOptions;
 }
 
 function audienceSummaryLine(option: AudienceOption): string {
@@ -54,9 +54,8 @@ function audienceSummaryLine(option: AudienceOption): string {
 
 export default function AdminNotificationsPage() {
   const [audienceMenuOpen, setAudienceMenuOpen] = useState(false);
-  const [audienceOptions, setAudienceOptions] = useState<AudienceOption[]>([
-    { id: "", label: "Everybody", attendeeCount: -1 },
-  ]);
+  const [audienceSearch, setAudienceSearch] = useState("");
+  const [audienceOptions, setAudienceOptions] = useState<AudienceOption[]>([]);
   const [selectedAudienceId, setSelectedAudienceId] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -69,9 +68,19 @@ export default function AdminNotificationsPage() {
       .catch((err) => console.error("Failed to load audience options:", err));
   }, []);
 
+  const EVERYBODY: AudienceOption = { id: "", label: "Everybody", attendeeCount: -1 };
+
+  const filteredAudienceOptions = audienceSearch.trim()
+    ? audienceOptions.filter((o) =>
+        o.label.toLowerCase().includes(audienceSearch.toLowerCase())
+      )
+    : audienceOptions;
+
   const selectedAudience =
-    selectedAudienceId !== null
-      ? (audienceOptions.find((o) => o.id === selectedAudienceId) ?? audienceOptions[0]!)
+    selectedAudienceId === ""
+      ? EVERYBODY
+      : selectedAudienceId !== null
+      ? (audienceOptions.find((o) => o.id === selectedAudienceId) ?? null)
       : null;
 
   const formComplete = title.trim().length > 0 && content.trim().length > 0;
@@ -94,7 +103,10 @@ export default function AdminNotificationsPage() {
         <Text style={styles.label}>Audience</Text>
         <TouchableOpacity
           style={styles.selectRow}
-          onPress={() => setAudienceMenuOpen((open) => !open)}
+          onPress={() => {
+            setAudienceMenuOpen((open) => !open);
+            setAudienceSearch("");
+          }}
           activeOpacity={0.7}
         >
           <Text
@@ -113,19 +125,40 @@ export default function AdminNotificationsPage() {
         </TouchableOpacity>
         {audienceMenuOpen ? (
           <View style={styles.dropdownWrap}>
+            <TouchableOpacity
+              style={styles.dropdownRow}
+              onPress={() => {
+                setSelectedAudienceId("");
+                setAudienceMenuOpen(false);
+                setAudienceSearch("");
+              }}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.dropdownRowText}>Everybody</Text>
+            </TouchableOpacity>
+            <View style={styles.dropdownDivider} />
+            <TextInput
+              style={styles.dropdownSearch}
+              value={audienceSearch}
+              onChangeText={setAudienceSearch}
+              placeholder="Search events…"
+              placeholderTextColor="#bbb"
+              autoCorrect={false}
+            />
             <ScrollView
               keyboardShouldPersistTaps="handled"
               nestedScrollEnabled
               showsVerticalScrollIndicator={false}
               style={styles.dropdownScroll}
             >
-              {audienceOptions.map((opt) => (
+              {filteredAudienceOptions.map((opt) => (
                 <TouchableOpacity
                   key={opt.id}
                   style={styles.dropdownRow}
                   onPress={() => {
                     setSelectedAudienceId(opt.id);
                     setAudienceMenuOpen(false);
+                    setAudienceSearch("");
                   }}
                   activeOpacity={0.7}
                 >
@@ -272,161 +305,3 @@ export default function AdminNotificationsPage() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f5f5f5",
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 20,
-    paddingTop: 40,
-    paddingBottom: 48,
-  },
-  pageTitle: {
-    marginBottom: 28,
-    marginTop: 4,
-  },
-  label: {
-    fontFamily: "HankenGrotesk-Regular",
-    fontSize: 14,
-    color: "#888",
-    marginBottom: 6,
-  },
-  selectRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#e8e8e8",
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 15,
-    marginBottom: 20,
-  },
-  selectText: {
-    fontFamily: "HankenGrotesk-Regular",
-    fontSize: 16,
-    color: "#1a1a1a",
-  },
-  placeholderText: {
-    fontFamily: "HankenGrotesk-Regular",
-    fontSize: 16,
-    color: "#bbb",
-  },
-  dropdownWrap: {
-    marginTop: -16,
-    marginBottom: 20,
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#e8e8e8",
-    borderRadius: 12,
-    overflow: "hidden",
-    maxHeight: 220,
-  },
-  dropdownScroll: {
-    flexGrow: 0,
-  },
-  dropdownRow: {
-    paddingHorizontal: 16,
-    paddingVertical: 13,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-  },
-  dropdownRowText: {
-    fontFamily: "HankenGrotesk-Regular",
-    fontSize: 16,
-    color: "#1a1a1a",
-  },
-  input: {
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#e8e8e8",
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 15,
-    fontSize: 16,
-    fontFamily: "HankenGrotesk-Regular",
-    color: "#1a1a1a",
-    marginBottom: 20,
-  },
-  textArea: {
-    height: 130,
-    textAlignVertical: "top",
-  },
-  sendButton: {
-    backgroundColor: "#3d5a1a",
-    borderRadius: 32,
-    paddingVertical: 17,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 10,
-    marginTop: 4,
-  },
-  sendButtonDisabled: {
-    backgroundColor: "#c4c4c4",
-  },
-  sendButtonText: {
-    color: "#fff",
-    fontSize: 17,
-    fontWeight: "600",
-    fontFamily: "HankenGrotesk-Regular",
-  },
-  modalConfirmButton: {
-    backgroundColor: "#3d5a1a",
-  },
-});
-
-const modalStyles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginTop: 12,
-    alignItems: "baseline",
-  },
-  emphasis: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
-  },
-  muted: {
-    fontSize: 16,
-    color: "#666",
-    flexShrink: 1,
-  },
-  previewSection: {
-    marginTop: 20,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "#eee",
-    marginVertical: 10,
-  },
-  previewTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#444",
-  },
-  previewBody: {
-    marginTop: 10,
-    fontSize: 16,
-    color: "#555",
-    lineHeight: 22,
-  },
-  checkboxRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 24,
-    gap: 12,
-  },
-  checkboxLabel: {
-    flex: 1,
-    fontSize: 16,
-    color: "#333",
-  },
-});

@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { typography } from "@shared/typography/typography";
 
 export const styles = StyleSheet.create({
   container: {
@@ -29,9 +30,7 @@ export const styles = StyleSheet.create({
     gap: 6,
   },
   name: {
-    fontSize: 26,
-    fontWeight: "500",
-    color: "#1A1A1A",
+    ...typography.smaller_h1,
   },
   adminBadge: {
     alignSelf: "flex-start",

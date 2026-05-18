@@ -288,8 +288,7 @@ export async function getFilteredEvents(req: Request, res: Response) {
 
     // Prepare the filters
     if (!filters.startDate && !filters.endDate) { // default case: no date range selected (aka: any date)
-      filterStartDate = new Date(); // set start date to current date
-      filterStartDate.setHours(0, 0, 0, 0); // normalize start date
+      filterStartDate = new Date(); // use exact current time so events are removed once their end time passes
     }
     else if (filters.startDate && filters.endDate) { // valid date range selected
       filterStartDate = new Date(filters.startDate);
@@ -331,10 +330,8 @@ export async function getFilteredEvents(req: Request, res: Response) {
       // If default case (any date; no date range is selected), only include events that start on or after today
       // Only default case has a start date but no end date because all valid date ranges will have both start and end dates.
       if (filterStartDate && !filterEndDate) {
-        const eventStartDate = firestoreTimestampToDate(raw.timeStart);
-        eventStartDate.setHours(0, 0, 0, 0); // normalize event's start date
-        // only compare event's start date with selected date range; ignore event's end date
-        if (eventStartDate < filterStartDate) {
+        const eventEndDate = firestoreTimestampToDate(raw.timeEnd);
+        if (eventEndDate < filterStartDate) {
           return;
         }
       }
