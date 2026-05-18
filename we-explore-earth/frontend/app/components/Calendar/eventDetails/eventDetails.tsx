@@ -132,14 +132,6 @@ export default function EventDetails({
     onRSVPChange?.();
   };
 
-  const handleTermsPress = () => {
-    setRsvpModalVisible(false);
-    onClose();
-    requestAnimationFrame(() => {
-      router.push("/rsvp-terms-placeholder");
-    });
-  };
-
   const handleEditEvent = () => {
     if (!event?.id) return;
     onClose();
@@ -366,7 +358,6 @@ export default function EventDetails({
         currentRSVP={localRSVP}
         onClose={() => setRsvpModalVisible(false)}
         onRSVPChange={handleRSVPChange}
-        onTermsPress={handleTermsPress}
       />
     </>
   );
