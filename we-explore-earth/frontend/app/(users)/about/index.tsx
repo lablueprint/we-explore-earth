@@ -1,5 +1,6 @@
 import React from 'react';
 import ContactButton from '../../components/ContactButton/ContactButton';
+import DonateButton from '../../components/DonateButton/DonateButton';
 import { View, Text, Image, ScrollView, SafeAreaView } from 'react-native';
 import { styles } from './styles';
 
@@ -25,6 +26,8 @@ export default function AboutPage() {
                     <Text style={styles.tagText}>Est. 2017</Text>
                     <Text style={styles.tagText}>LA, OC, SF</Text>
                 </View>
+                
+                <DonateButton />
 
                 <View style={styles.sectionContainer}>
                     <Text style={styles.sectionHeader}>WHO WE ARE</Text>
