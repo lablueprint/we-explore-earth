@@ -13,7 +13,6 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import { router } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -34,6 +33,7 @@ import {
   termsLinkStyle,
   rsvpButtonTextStyle,
   cancelButtonTextStyle,
+  termsBodyStyle,
   closeIconSize,
   closeIconColor,
   checkmarkIconSize,
@@ -51,7 +51,6 @@ type Props = {
   currentRSVP: RSVPStatus | null;
   onClose: () => void;
   onRSVPChange: (status: RSVPStatus | null) => void;
-  onTermsPress?: () => void;
 };
 
 export default function RSVPModal({
@@ -60,7 +59,6 @@ export default function RSVPModal({
   currentRSVP,
   onClose,
   onRSVPChange,
-  onTermsPress,
 }: Props) {
   //REACT HOOKS
   const insets = useSafeAreaInsets();
@@ -77,11 +75,13 @@ export default function RSVPModal({
   const [isCancelling, setIsCancelling] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<RSVPStatus | null>(effectiveRSVP);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
 
   useEffect(() => {
     if (visible) {
       setSelectedStatus(effectiveRSVP);
       setAgreedToTerms(false);
+      setShowTerms(false);
     }
   }, [visible]);
 
@@ -235,7 +235,21 @@ export default function RSVPModal({
             ]}
             keyboardShouldPersistTaps="handled"
           >
-            <Text style={titleTextStyle}>Are you going?</Text>
+            {showTerms ? (
+              <>
+                <TouchableOpacity onPress={() => setShowTerms(false)} style={styles.backButton}>
+                  <Ionicons name="arrow-back" size={closeIconSize} color={closeIconColor} />
+                </TouchableOpacity>
+                <Text style={titleTextStyle}>Terms of Service</Text>
+                <Text style={termsBodyStyle}>By participating in any We Explore Earth activity, event, experience, workshop, cleanup, hike, climb, restoration project, volunteer activity, or outdoor gathering, participants acknowledge and understand that outdoor and community-based activities involve inherent risks, including but not limited to injury, illness, property damage, wildlife encounters, environmental hazards, vehicle-related incidents, acts of nature, negligence of others, permanent disability, and death.</Text>
+                <Text style={termsBodyStyle}>Participants voluntarily assume all risks associated with participation and accept full personal responsibility for their safety, well-being, equipment, transportation, and personal belongings during any We Explore Earth related activity.</Text>
+                <Text style={termsBodyStyle}>By registering for or participating in any event, participants agree to release, waive, discharge, and hold harmless We Explore Earth, its directors, officers, volunteers, event leaders, organizers, affiliates, collaborators, sponsors, land agencies, property owners, partnering organizations, and representatives from any and all liability, claims, demands, damages, causes of action, or expenses arising out of or related to participation in any activity.</Text>
+                <Text style={termsBodyStyle}>Participants agree to follow all instructions, posted rules, land regulations, safety guidance, and local laws during participation. We Explore Earth reserves the right to remove or deny participation to any individual acting in an unsafe, unlawful, or disruptive manner.</Text>
+                <Text style={termsBodyStyle}>Participants understand that certain activities may involve strenuous physical exertion and confirm that they are physically and mentally capable of participating. Participants are encouraged to consult a medical professional before participating in strenuous outdoor activities if they have any health concerns.</Text>
+                <Text style={termsBodyStyle}>By completing registration or attending an event, participants confirm that they have read, understood, and agreed to these Terms of Service and Liability Waiver.</Text>
+              </>
+            ) : (
+            <><Text style={titleTextStyle}>Are you going?</Text>
 
             <View style={styles.optionRow}>
               <TouchableOpacity
@@ -289,16 +303,7 @@ export default function RSVPModal({
                 By selecting this check box, you agree to our{" "}
                 <Text
                   style={termsLinkStyle}
-                  onPress={() => {
-                    if (onTermsPress) {
-                      onTermsPress();
-                    } else {
-                      onClose();
-                      requestAnimationFrame(() => {
-                        router.push("/rsvp-terms-placeholder");
-                      });
-                    }
-                  }}
+                  onPress={() => setShowTerms(true)}
                 >
                   terms and conditions
                 </Text>
@@ -329,6 +334,8 @@ export default function RSVPModal({
                   <Text style={cancelButtonTextStyle}>Cancel RSVP</Text>
                 </TouchableOpacity>
               )
+            )}
+            </>
             )}
           </ScrollView>
         </LinearGradient>
