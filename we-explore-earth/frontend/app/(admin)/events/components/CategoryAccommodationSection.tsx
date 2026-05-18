@@ -74,29 +74,26 @@ export function CategoryAccommodationSection({
 return (
   <>
 
-  <TouchableOpacity onPress={() => setModalVisible(true)}  style ={{ marginLeft: -10 }} >
-    <View  style={[ styles.inputWithIcon, { alignItems: "flex-start",}]} >
-      <Plus
-        size={20}
-        color="#7A7A7A"
-      />
-    
-
-      <View style={{ flex: 1 }}>
-        <Text style={[typography.body, { color: "#6B6B6B" }]}>
-           Add event tags
+  <TouchableOpacity onPress={() => setModalVisible(true)} >
+    <View style={styles.addEventTagWrapper}>
+      {/** Header: + Add event tags */}
+      <View style={styles.addEventTagHeader} >
+        <Plus size={20} color="#7A7A7A" />
+        <Text style={[styles.input, styles.inputInsideIcon, typography.body, { color: "#6B6B6B" }]}>
+          Add event tags
         </Text>
-
-        {(category.length > 0 || accommodation.length > 0) && (
-          <View style={styles.tagContainer}>
-            {[...category, ...accommodation].map((tag) => (
-              <View key={tag} style={styles.tagPill}>
-                <Text style={styles.tagText}>{tag}</Text>
-              </View>
-            ))}
-          </View>
-        )}
       </View>
+      
+      {/** Selected tag pills */}
+      {(category.length > 0 || accommodation.length > 0) && (
+        <View style={styles.tagContainer}>
+          {[...category, ...accommodation].map((tag) => (
+            <View key={tag} style={styles.tagPill}>
+              <Text style={styles.tagText}>{tag}</Text>
+            </View>
+          ))}
+        </View>
+      )}
     </View>
   </TouchableOpacity>
 

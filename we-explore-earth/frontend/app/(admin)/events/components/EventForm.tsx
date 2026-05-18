@@ -211,24 +211,25 @@ export function EventForm({
   };
 
   return (
-
     <View style={styles.container}>
 
       <LinearGradient
-          colors={[
-            "#afc49e",
-            "#F8F9F7", 
-            "#afc49e",  
-          ]}
-          locations={[0, 0.5, 1]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={{ flex: 1 }}
-        >
+        colors={[
+          "#afc49e",
+          "#F8F9F7", 
+          "#afc49e",  
+        ]}
+        locations={[0, 0.5, 1]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{ flex: 1, paddingTop: 24 }}
+      >
+      
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled" >
+        keyboardShouldPersistTaps="handled"
+      >
 
       <TouchableOpacity onPress={pickImage} style={styles.coverContainer}>
         {eventImage ? (
@@ -379,16 +380,14 @@ export function EventForm({
           />
         </View>
         
-        <View style= {[styles.input]}>
-          <CategoryAccommodationSection
-            categoryOptions={categoryOptions}
-            accommodationOptions={accommodationOptions}
-            category={category}
-            accommodation={accommodation}
-            onCategoryChange={onCategoryChange}
-            onAccommodationChange={onAccommodationChange}
-          />
-        </View>
+        <CategoryAccommodationSection
+          categoryOptions={categoryOptions}
+          accommodationOptions={accommodationOptions}
+          category={category}
+          accommodation={accommodation}
+          onCategoryChange={onCategoryChange}
+          onAccommodationChange={onAccommodationChange}
+        />
 
         <View style={styles.divider} />
 

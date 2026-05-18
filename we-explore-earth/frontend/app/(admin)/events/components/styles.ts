@@ -402,6 +402,19 @@ iconContainerTop: {
   marginTop: 2,
 },
 
+// FOR CATEGORY AND ACCOMMODATION SELECTION IN EVENT FORM
+
+addEventTagHeader: {
+  flexDirection: "row",
+  alignItems: "center",
+},
+
+addEventTagWrapper: {
+  backgroundColor: "#ededed",
+  borderRadius: 12,
+  paddingHorizontal: 16,
+  marginBottom: 16,
+},
 
 //TAGS
 tagPill: {
@@ -423,6 +436,7 @@ tagContainer: {
   flexDirection: "row",   
   flexWrap: "wrap",       
   marginTop: 6,
+  paddingBottom: 14,
 },
 
 });
