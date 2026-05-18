@@ -245,7 +245,11 @@ export default function EventDetails({
 
               <Text style={styles.sectionLabel}>ATTENDEES</Text>
               <View style={styles.attendeeHeader}>
-                <Text style={styles.attendeeCount}>{event.attendees?.length ?? 0} People on the List</Text>
+              <Text style={styles.attendeeCount}>
+                {(event.attendees?.length ?? 0) === 1
+                  ? "1 Person on the List"
+                  : `${event.attendees?.length ?? 0} People on the List`}
+              </Text>
 
                 {isAdmin && (
                   <>
@@ -285,7 +289,7 @@ export default function EventDetails({
               
 
               {isAdmin && (
-                <TouchableOpacity style={styles.editButton}>
+                <TouchableOpacity style={styles.editButton} onPress={handleEditEvent}>
                 <View style={styles.editButtonContent}>
                   <Image
                     source={require("../../../../../shared/images/gear.png")}

@@ -52,6 +52,7 @@ export const styles = StyleSheet.create({
   title: { 
     ...typography.h1,
     fontSize: 52,
+    lineHeight: 60,
     fontWeight: 'bold',
     color: '#0A1207', 
     marginBottom: 16,
