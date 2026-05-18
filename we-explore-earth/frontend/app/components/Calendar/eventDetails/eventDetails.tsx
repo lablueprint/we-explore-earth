@@ -138,6 +138,37 @@ export default function EventDetails({
     router.push(`/(admin)/events/${event.id}` as const);
   };
 
+  const handleDeleteEvent = () => {
+    if (!event?.id) return;
+    Alert.alert(
+      "Delete Event",
+      "Are you sure you want to delete this event? This cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            const baseUrl = process.env.EXPO_PUBLIC_API_URL;
+            if (!baseUrl) return;
+            try {
+              const res = await fetch(`${baseUrl}/events/${event.id}`, { method: "DELETE" });
+              if (!res.ok) {
+                Alert.alert("Error", "Failed to delete event.");
+                return;
+              }
+              Alert.alert("Success", "Event deleted successfully.", [
+                { text: "OK", onPress: () => { onClose(); onRSVPChange?.(); } }
+              ]);
+            } catch {
+              Alert.alert("Network Error", "Could not delete event.");
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const displayRSVP = hasLocalChange ? localRSVP : currentRSVP;
 
   useFocusEffect(
@@ -281,18 +312,20 @@ export default function EventDetails({
               
 
               {isAdmin && (
-                <TouchableOpacity style={styles.editButton} onPress={handleEditEvent}>
-                <View style={styles.editButtonContent}>
-                  <Image
-                    source={require("../../../../../shared/images/gear.png")}
-                    style={styles.editButtonIcon}
-                  />
-              
-                  <Text style={styles.editButtonText}>
-                    Manage
-                  </Text>
-                </View>
-              </TouchableOpacity>
+                <>
+                  <TouchableOpacity style={styles.editButton} onPress={handleEditEvent}>
+                    <View style={styles.editButtonContent}>
+                      <Image
+                        source={require("../../../../../shared/images/gear.png")}
+                        style={styles.editButtonIcon}
+                      />
+                      <Text style={styles.editButtonText}>Manage</Text>
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={handleDeleteEvent} style={styles.deleteButton}>
+                    <Text style={[typography.body, styles.deleteButtonText]}>Delete Event</Text>
+                  </TouchableOpacity>
+                </>
               )}
 
               <View style={styles.divider} />
