@@ -205,14 +205,14 @@ export default function EventDetails({
               <View style={styles.tagRow}>
                 {Array.isArray(event.category) &&
                   event.category.map((item) => (
-                    <View key={item} style={styles.categoryPill}>
+                    <View key={item} style={styles.tagPill}>
                       <Text style={styles.tagText}>{item}</Text>
                     </View>
                   ))}
 
                 {Array.isArray(event.accommodation) &&
                   event.accommodation.map((item) => (
-                    <View key={item} style={styles.accommodationPill}>
+                    <View key={item} style={styles.tagPill}>
                       <Text style={styles.tagText}>{item}</Text>
                     </View>
                   ))}
@@ -285,12 +285,18 @@ export default function EventDetails({
               
 
               {isAdmin && (
-                <TouchableOpacity
-                  onPress={handleEditEvent}
-                  style={styles.editButton}
-                >
-                  <Text style={styles.editButtonText}>Edit Event</Text>
-                </TouchableOpacity>
+                <TouchableOpacity style={styles.editButton}>
+                <View style={styles.editButtonContent}>
+                  <Image
+                    source={require("../../../../../shared/images/gear.png")}
+                    style={styles.editButtonIcon}
+                  />
+              
+                  <Text style={styles.editButtonText}>
+                    Manage
+                  </Text>
+                </View>
+              </TouchableOpacity>
               )}
 
               <View style={styles.divider} />

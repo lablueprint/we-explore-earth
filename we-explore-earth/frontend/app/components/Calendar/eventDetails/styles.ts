@@ -61,7 +61,8 @@ export const styles = StyleSheet.create({
 
   editButton: {
     borderWidth: 1,
-    borderColor: "#2F6B0C",
+    backgroundColor: "rgba(40, 95, 0, 1)",
+    borderColor: "rgba(40, 95, 0, 1)",
     borderRadius: 999,
     paddingVertical: 16,
     alignItems: "center",
@@ -70,7 +71,7 @@ export const styles = StyleSheet.create({
   },
   
   editButtonText: {
-    color: "#2F6B0C",
+    color: "rgba(255, 255, 255, 1)",
     fontSize: 17,
     fontWeight: "700",
   },
@@ -87,40 +88,23 @@ export const styles = StyleSheet.create({
   tagRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 10,
+    gap: 8,
     marginBottom: 28,
     marginTop: 7,
   },
-
+  
   tagPill: {
-    borderWidth: 1,
+    borderWidth: 0.8,
     borderColor: "#D7D5CF",
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    backgroundColor: "#F7F6F2",
+    backgroundColor: "#F5F5F5",
+    borderRadius: 7,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
   },
 
   tagText: {
     fontSize: 16,
     color: "#64645F",
-  },
-
-  accommodationPill: {
-    borderWidth: 1,
-    borderColor: "#B7D6A8",
-    backgroundColor: "#EAF4E4",
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-  },
-  categoryPill: {
-    borderWidth: 1,
-    borderColor: "#D7D5CF",
-    backgroundColor: "#F7F6F2",
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
   },
 
   infoRow: {
@@ -241,6 +225,19 @@ export const styles = StyleSheet.create({
 
   scrollContent: {
     paddingBottom: 80,
+  },
+
+  editButtonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+  
+  editButtonIcon: {
+    width: 20,
+    height: 20,
+    resizeMode: "contain",
   },
   
   viewAllButton: {
