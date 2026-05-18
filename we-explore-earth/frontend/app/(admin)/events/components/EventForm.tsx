@@ -239,7 +239,7 @@ export function EventForm({
             resizeMode="cover"
           /> 
         ) : (
-          <Text style={typography.body}>Add photo</Text>
+          <Text style={[typography.body, { color: '#6B6B6B' }]}>Add photo</Text>
         )}
 
         {eventImage && (
