@@ -29,7 +29,7 @@ function DateRangePickerModal (
         endDate: Date | undefined,
         setStartDate: React.Dispatch<Date | undefined>,
         setEndDate: React.Dispatch<Date | undefined>,
-        setSelectedDate: React.Dispatch<string>,
+        setSelectedDate: React.Dispatch<any>,
         setShowInvalidDateRangeMessage: React.Dispatch<boolean>
     }
 ) {
@@ -125,7 +125,7 @@ function DateRangePickerModal (
                     todayTextColor: '#000000',
                     dayTextColor: '#000000', // for all non-disabled days excluding today
                     textDisabledColor: '#B2B2B2', // for disabled days (all days before current day)
-                } as any}
+                }}
             />
         </View>
     );
