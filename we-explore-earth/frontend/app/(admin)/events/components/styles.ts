@@ -225,15 +225,14 @@ editButton: {
 
 //SUBMIT
 launchButton: {
-  backgroundColor: "#1D6400",
-  width: "100%",
-  height: 64,
-  borderRadius: 32,
   justifyContent: "center",
-  alignItems: "center",
-  alignSelf: "flex-start",
-  marginLeft: 0,
   marginTop: 30,
+  paddingHorizontal: 20,
+  paddingVertical: 12,
+  width: "100%",
+  height: 60,
+  borderRadius: 100,
+  backgroundColor: "#1D6400",
 },
 
 launchButtonText: {
@@ -242,7 +241,7 @@ launchButtonText: {
   fontWeight: "400",
   fontFamily: 'HankenGrotesk-Regular',
   lineHeight: 24,
-  
+  textAlign: "center",
 },
 
 
