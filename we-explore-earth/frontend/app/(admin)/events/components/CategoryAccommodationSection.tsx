@@ -6,6 +6,7 @@ import {
   Modal,
   TouchableOpacity,
   ScrollView,
+  Pressable,
 } from "react-native";
 import { styles } from "./styles";
 import { typography } from "../../../../../shared/typography/typography";
@@ -99,12 +100,12 @@ return (
 
     <Modal
       visible={modalVisible}
-      animationType="slide"
+      animationType="fade"
       transparent
       onRequestClose={() => setModalVisible(false)}
     >
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
+      <Pressable style={styles.modalOverlay} onPress={() => {setModalVisible(false)}}>
+        <Pressable style={styles.modalContent} onPress={(e) => e.stopPropagation()}>
            <ScrollView >
           <Text style={[styles.modalTitle, typography.h3]}> Category </Text>
          
@@ -160,8 +161,8 @@ return (
             </TouchableOpacity>
           </View>
           </ScrollView>
-        </View>
-      </View>
+        </Pressable>
+      </Pressable>
     </Modal>
   </>
 );
