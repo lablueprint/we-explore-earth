@@ -177,10 +177,6 @@ export default function RSVPModal({
 
       onRSVPChange(selectedStatus);
       onClose();
-      Alert.alert(
-        "Success",
-        `You have RSVPed "${selectedStatus}" to this event.`,
-      );
     } catch {
       Alert.alert("Network Error", "Could not submit RSVP.");
     } finally {
