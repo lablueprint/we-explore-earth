@@ -137,10 +137,7 @@ export const styles = StyleSheet.create({
   },
 
   infoTitle: {
-    fontSize: 18,
-    fontWeight: "500",
-    color: "#1D1D1B",
-    marginBottom: 2,
+    ...typography.body,
   },
 
   infoSub: {
