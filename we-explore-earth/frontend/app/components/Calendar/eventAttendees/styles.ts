@@ -157,12 +157,14 @@ checkedInButton: {
 },
 
 checkInText: {
+  ...typography.body,
   color: "#2F5E2E",
   fontSize: 13,
   fontWeight: "600",
 },
 
 checkedInText: {
+   ...typography.body,
   color: "#FFFFFF",
   fontSize: 13,
   fontWeight: "600",
