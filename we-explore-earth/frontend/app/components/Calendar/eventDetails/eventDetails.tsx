@@ -197,14 +197,14 @@ export default function EventDetails({
               <View style={styles.tagRow}>
                 {Array.isArray(event.category) &&
                   event.category.map((item) => (
-                    <View key={item} style={styles.categoryPill}>
+                    <View key={item} style={styles.tagPill}>
                       <Text style={styles.tagText}>{item}</Text>
                     </View>
                   ))}
 
                 {Array.isArray(event.accommodation) &&
                   event.accommodation.map((item) => (
-                    <View key={item} style={styles.accommodationPill}>
+                    <View key={item} style={styles.tagPill}>
                       <Text style={styles.tagText}>{item}</Text>
                     </View>
                   ))}
