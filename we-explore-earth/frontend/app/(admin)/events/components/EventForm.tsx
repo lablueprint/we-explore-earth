@@ -257,7 +257,7 @@ export function EventForm({
 
       <TextInput
         style={[styles.input, typography.h2]}
-        placeholder="Event title"
+        placeholder="Event title *"
         value={title}
         onChangeText={setTitle}
       />
@@ -361,7 +361,7 @@ export function EventForm({
           <MapPinPlus size={20} color="#7A7A7A" />
           <TextInput
             style={[styles.input, styles.inputInsideIcon, typography.body]}
-            placeholder="Add Location"
+            placeholder="Add Location *"
             value={location}
             onChangeText={setLocation}
             placeholderTextColor="#6B6B6B"
@@ -372,7 +372,7 @@ export function EventForm({
           <PenLineIcon size={20} color="#7A7A7A" style={{ alignSelf: "flex-start", marginTop: 16 }} />
           <TextInput
             style={[styles.input, styles.inputInsideIcon, styles.textArea, typography.body]}
-            placeholder="Add Description"
+            placeholder="Add Description *"
             value={description}
             onChangeText={setDescription}
             multiline
@@ -395,7 +395,7 @@ export function EventForm({
           <PersonStanding size={20} color="#7A7A7A" />
           <TextInput
             style={[styles.input, styles.inputInsideIcon, typography.body]}
-            placeholder="Hosted By"
+            placeholder="Hosted By *"
             placeholderTextColor="#6B6B6B"
             value={hostedBy}
             onChangeText={setHostedBy}
@@ -421,7 +421,7 @@ export function EventForm({
           <UserRoundPlus size={20} color="#7A7A7A" />
           <TextInput
             style={[styles.input, styles.inputInsideIcon, typography.body]}
-            placeholder="Maximum Capacity"
+            placeholder="Maximum Capacity *"
             placeholderTextColor="#6B6B6B"
             value={maxAttendees}
             onChangeText={handleMaxAttendeesChange}
