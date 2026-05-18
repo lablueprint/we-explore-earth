@@ -10,8 +10,9 @@ import {
   Image
 } from "react-native";
 import { useRouter, useSegments, useFocusEffect } from "expo-router";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
-import { styles } from "./styles";
+import { styles, trashIconSize, trashIconColor } from "./styles";
 import type { Event, FirestoreTimestamp } from "@shared/types/event";
 import RSVPModal from "../RSVPModal/RSVPModal";
 import { useUser } from '@/app/redux/hooks/useUser';
@@ -305,7 +306,7 @@ export default function EventDetails({
               
 
               {isAdmin && (
-                <>
+                <View style={styles.adminButtonRow}>
                   <TouchableOpacity style={styles.editButton} onPress={handleEditEvent}>
                     <View style={styles.editButtonContent}>
                       <Image
@@ -315,10 +316,10 @@ export default function EventDetails({
                       <Text style={styles.editButtonText}>Manage</Text>
                     </View>
                   </TouchableOpacity>
-                  <TouchableOpacity onPress={handleDeleteEvent} style={styles.deleteButton}>
-                    <Text style={[typography.body, styles.deleteButtonText]}>Delete Event</Text>
+                  <TouchableOpacity onPress={handleDeleteEvent} style={styles.deleteIconButton}>
+                    <Ionicons name="trash-outline" size={trashIconSize} color={trashIconColor} />
                   </TouchableOpacity>
-                </>
+                </View>
               )}
 
               <View style={styles.divider} />

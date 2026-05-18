@@ -1,6 +1,9 @@
 import { StyleSheet } from "react-native";
 import { typography } from "../../../../../shared/typography/typography";
 
+export const trashIconSize = 22;
+export const trashIconColor = "#1D1D1B";
+
 export const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
@@ -60,6 +63,7 @@ export const styles = StyleSheet.create({
   },
 
   editButton: {
+    flex: 1,
     borderWidth: 1,
     backgroundColor: "rgba(40, 95, 0, 1)",
     borderColor: "rgba(40, 95, 0, 1)",
@@ -67,7 +71,6 @@ export const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 12,
   },
 
   editButtonText: {
@@ -77,19 +80,21 @@ export const styles = StyleSheet.create({
     fontWeight: "700",
   },
 
-  deleteButton: {
-    borderWidth: 1,
-    borderColor: "#C0392B",
-    borderRadius: 999,
-    paddingVertical: 16,
+  adminButtonRow: {
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    gap: 12,
     marginBottom: 20,
   },
 
-  deleteButtonText: {
-    color: "#C0392B",
-    fontWeight: "700",
+  deleteIconButton: {
+    width: 52,
+    height: 52,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "#E1E1E1",
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   title: {
