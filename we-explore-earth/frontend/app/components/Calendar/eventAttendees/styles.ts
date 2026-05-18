@@ -18,6 +18,7 @@ export const styles = StyleSheet.create({
   },
 
   header: {
+    paddingTop:15,
     ...typography.h2,
     fontSize: 28,
     fontWeight: "400",

@@ -2,6 +2,9 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   container: {
+    marginTop:30,
+    marginLeft: 10,
+    marginRight: 10,
     flex: 1,
     backgroundColor: "#f5f5f5",
   },
@@ -109,7 +112,7 @@ export const styles = StyleSheet.create({
     marginTop: 4,
   },
   sendButtonDisabled: {
-    backgroundColor: "#c4c4c4",
+    backgroundColor: "#A2A2A2",
   },
   sendButtonText: {
     color: "#fff",

@@ -98,7 +98,7 @@ export default function AdminNotificationsPage() {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        <Text style={[typography.h1, styles.pageTitle]}>Send Notification</Text>
+        <Text style={[typography.smaller_h1, styles.pageTitle]}>Send Announcement</Text>
 
         <Text style={styles.label}>Audience</Text>
         <TouchableOpacity
