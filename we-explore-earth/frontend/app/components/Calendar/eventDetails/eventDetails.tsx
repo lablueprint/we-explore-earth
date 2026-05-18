@@ -100,6 +100,7 @@ export default function EventDetails({
   const [localRSVP, setLocalRSVP] = useState<"YES" | "MAYBE" | null>(null);
   const [hasLocalChange, setHasLocalChange] = useState(false);
   const [showAll, setShowAll] = useState(false);
+  const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
 
   const currentRSVP =
     event && user?.events
@@ -140,33 +141,25 @@ export default function EventDetails({
 
   const handleDeleteEvent = () => {
     if (!event?.id) return;
-    Alert.alert(
-      "Delete Event",
-      "Are you sure you want to delete this event? This cannot be undone.",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            const baseUrl = process.env.EXPO_PUBLIC_API_URL;
-            if (!baseUrl) return;
-            try {
-              const res = await fetch(`${baseUrl}/events/${event.id}`, { method: "DELETE" });
-              if (!res.ok) {
-                Alert.alert("Error", "Failed to delete event.");
-                return;
-              }
-              Alert.alert("Success", "Event deleted successfully.", [
-                { text: "OK", onPress: () => { onClose(); onRSVPChange?.(); } }
-              ]);
-            } catch {
-              Alert.alert("Network Error", "Could not delete event.");
-            }
-          },
-        },
-      ]
-    );
+    setDeleteConfirmVisible(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    setDeleteConfirmVisible(false);
+    const baseUrl = process.env.EXPO_PUBLIC_API_URL;
+    if (!baseUrl || !event?.id) return;
+    try {
+      const res = await fetch(`${baseUrl}/events/${event.id}`, { method: "DELETE" });
+      if (!res.ok) {
+        Alert.alert("Error", "Failed to delete event.");
+        return;
+      }
+      Alert.alert("Success", "Event deleted successfully.", [
+        { text: "OK", onPress: () => { onClose(); onRSVPChange?.(); } }
+      ]);
+    } catch {
+      Alert.alert("Network Error", "Could not delete event.");
+    }
   };
 
   const displayRSVP = hasLocalChange ? localRSVP : currentRSVP;
@@ -189,7 +182,7 @@ export default function EventDetails({
   return (
     <>
       <Modal
-        visible={visible && !rsvpModalVisible}
+        visible={visible && !rsvpModalVisible && !deleteConfirmVisible}
         transparent
         animationType="slide"
         onRequestClose={onClose}
@@ -392,6 +385,23 @@ export default function EventDetails({
         onClose={() => setRsvpModalVisible(false)}
         onRSVPChange={handleRSVPChange}
       />
+
+      <Modal visible={deleteConfirmVisible} transparent animationType="fade" onRequestClose={() => setDeleteConfirmVisible(false)}>
+        <View style={styles.deleteModalBackdrop}>
+          <View style={styles.deleteModalCard}>
+            <Text style={[typography.h2, styles.deleteModalTitle]}>Delete Event?</Text>
+            <Text style={[typography.body, styles.deleteModalMessage]}>Are you sure you want to delete this event? This cannot be undone.</Text>
+            <View style={styles.deleteModalButtons}>
+              <TouchableOpacity style={styles.deleteModalCancel} onPress={() => setDeleteConfirmVisible(false)}>
+                <Text style={[typography.body, styles.deleteModalCancelText]}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.deleteModalConfirm} onPress={handleConfirmDelete}>
+                <Text style={[typography.body, styles.deleteModalConfirmText]}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 }
