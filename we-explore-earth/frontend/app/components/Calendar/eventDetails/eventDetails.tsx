@@ -10,8 +10,9 @@ import {
   Image
 } from "react-native";
 import { useRouter, useSegments, useFocusEffect } from "expo-router";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
-import { styles } from "./styles";
+import { styles, trashIconSize, trashIconColor } from "./styles";
 import type { Event, FirestoreTimestamp } from "@shared/types/event";
 import RSVPModal from "../RSVPModal/RSVPModal";
 import { useUser } from '@/app/redux/hooks/useUser';
@@ -100,6 +101,7 @@ export default function EventDetails({
   const [localRSVP, setLocalRSVP] = useState<"YES" | "MAYBE" | null>(null);
   const [hasLocalChange, setHasLocalChange] = useState(false);
   const [showAll, setShowAll] = useState(false);
+  const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
 
   const currentRSVP =
     event && user?.events
@@ -138,6 +140,29 @@ export default function EventDetails({
     router.push(`/(admin)/events/${event.id}` as const);
   };
 
+  const handleDeleteEvent = () => {
+    if (!event?.id) return;
+    setDeleteConfirmVisible(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    setDeleteConfirmVisible(false);
+    const baseUrl = process.env.EXPO_PUBLIC_API_URL;
+    if (!baseUrl || !event?.id) return;
+    try {
+      const res = await fetch(`${baseUrl}/events/${event.id}`, { method: "DELETE" });
+      if (!res.ok) {
+        Alert.alert("Error", "Failed to delete event.");
+        return;
+      }
+      Alert.alert("Success", "Event deleted successfully.", [
+        { text: "OK", onPress: () => { onClose(); onRSVPChange?.(); } }
+      ]);
+    } catch {
+      Alert.alert("Network Error", "Could not delete event.");
+    }
+  };
+
   const displayRSVP = hasLocalChange ? localRSVP : currentRSVP;
 
   useFocusEffect(
@@ -158,7 +183,7 @@ export default function EventDetails({
   return (
     <>
       <Modal
-        visible={visible && !rsvpModalVisible}
+        visible={visible && !rsvpModalVisible && !deleteConfirmVisible}
         transparent
         animationType="slide"
         onRequestClose={onClose}
@@ -281,18 +306,20 @@ export default function EventDetails({
               
 
               {isAdmin && (
-                <TouchableOpacity style={styles.editButton} onPress={handleEditEvent}>
-                <View style={styles.editButtonContent}>
-                  <Image
-                    source={require("../../../../../shared/images/gear.png")}
-                    style={styles.editButtonIcon}
-                  />
-              
-                  <Text style={styles.editButtonText}>
-                    Manage
-                  </Text>
+                <View style={styles.adminButtonRow}>
+                  <TouchableOpacity style={styles.editButton} onPress={handleEditEvent}>
+                    <View style={styles.editButtonContent}>
+                      <Image
+                        source={require("../../../../../shared/images/gear.png")}
+                        style={styles.editButtonIcon}
+                      />
+                      <Text style={styles.editButtonText}>Manage</Text>
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={handleDeleteEvent} style={styles.deleteIconButton}>
+                    <Ionicons name="trash-outline" size={trashIconSize} color={trashIconColor} />
+                  </TouchableOpacity>
                 </View>
-              </TouchableOpacity>
               )}
 
               <View style={styles.divider} />
@@ -359,6 +386,23 @@ export default function EventDetails({
         onClose={() => setRsvpModalVisible(false)}
         onRSVPChange={handleRSVPChange}
       />
+
+      <Modal visible={deleteConfirmVisible} transparent animationType="fade" onRequestClose={() => setDeleteConfirmVisible(false)}>
+        <View style={styles.deleteModalBackdrop}>
+          <View style={styles.deleteModalCard}>
+            <Text style={[typography.h2, styles.deleteModalTitle]}>Delete Event?</Text>
+            <Text style={[typography.body, styles.deleteModalMessage]}>Are you sure you want to delete this event? This cannot be undone.</Text>
+            <View style={styles.deleteModalButtons}>
+              <TouchableOpacity style={styles.deleteModalCancel} onPress={() => setDeleteConfirmVisible(false)}>
+                <Text style={[typography.body, styles.deleteModalCancelText]}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.deleteModalConfirm} onPress={handleConfirmDelete}>
+                <Text style={[typography.body, styles.deleteModalConfirmText]}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 }
