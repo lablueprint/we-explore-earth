@@ -67,13 +67,28 @@ export const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 20,
+    marginBottom: 12,
   },
 
   editButtonText: {
     ...typography.body,
     color: "#FFFFFF",
     fontSize: 17,
+    fontWeight: "700",
+  },
+
+  deleteButton: {
+    borderWidth: 1,
+    borderColor: "#C0392B",
+    borderRadius: 999,
+    paddingVertical: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 20,
+  },
+
+  deleteButtonText: {
+    color: "#C0392B",
     fontWeight: "700",
   },
 

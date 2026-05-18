@@ -594,3 +594,32 @@ export async function toggleCheckIn(req: Request, res: Response) {
     return res.status(500).json({ error: "Failed to update check-in" });
   }
 }
+
+export async function deleteEvent(req: Request, res: Response) {
+  try {
+    const eventId = req.params.id as string;
+    const eventRef = db.collection("events").doc(eventId);
+    const eventDoc = await eventRef.get();
+
+    if (!eventDoc.exists) return res.status(404).json({ error: "Event not found" });
+
+    const attendees: EventRSVP[] = eventDoc.data()!.attendees ?? [];
+    const baseUrl = `http://localhost:${process.env.PORT}`;
+
+    await Promise.all(
+      attendees.map(({ userID }) =>
+        fetch(`${baseUrl}/users/${userID}/rsvp`, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ eventID: eventId }),
+        })
+      )
+    );
+
+    await eventRef.delete();
+    return res.status(200).json({ message: "Event deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting event:", error);
+    return res.status(500).json({ error: "Failed to delete event" });
+  }
+}
