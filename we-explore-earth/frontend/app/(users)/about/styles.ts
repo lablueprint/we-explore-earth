@@ -93,5 +93,15 @@ export const styles = StyleSheet.create({
     },
     lastSection: {
         marginBottom: 100,
+    },
+    contactCard: {
+        borderWidth: 1,
+        borderColor: '#E5E5E5',
+        borderRadius: 16,
+        backgroundColor: '#FFFFFF',
+    },
+    contactDivider: {
+        height: 1,
+        backgroundColor: '#E5E5E5', 
     }
 });
