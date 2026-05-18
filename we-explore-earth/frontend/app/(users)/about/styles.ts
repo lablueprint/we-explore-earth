@@ -93,5 +93,46 @@ export const styles = StyleSheet.create({
     },
     lastSection: {
         marginBottom: 100,
-    }
+    },
+    contactCard: {
+        borderWidth: 1,
+        borderColor: '#E5E5E5',
+        borderRadius: 16,
+        backgroundColor: '#FFFFFF',
+    },
+    contactRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 16,
+    },
+    contactIcon: {
+        marginRight: 16,
+    },
+    contactTextContent: {
+        flex: 1, 
+    },
+    contactTitle: {
+        ...typography.body,
+        fontSize: 14,
+        color: '#8A8A8A',
+        marginBottom: 2,
+    },
+    contactSubtitle: {
+        ...typography.body,
+        fontSize: 16,
+        color: '#333333',
+    },
+    contactDivider: {
+        height: 1,
+        backgroundColor: '#E5E5E5', 
+    },
+
+    iconMain: {
+        fontSize: 24,
+        color: '#0A1207',
+    },
+    iconChevron: {
+        fontSize: 20,
+        color: '#8A8A8A',
+    },
 });

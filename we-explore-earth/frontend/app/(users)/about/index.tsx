@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, ScrollView, SafeAreaView } from 'react-native';
 import { styles } from './styles';
+import ContactButton from './components/ContactButton';
 
 export default function AboutPage() {
     return (
@@ -86,7 +87,7 @@ export default function AboutPage() {
                     </View>
                 </View>
 
-                <View style={[styles.sectionContainer, styles.lastSection]}>
+                <View style={styles.sectionContainer}>
                   <Text style={styles.sectionHeader}>PROGRAMMING</Text>
                   <Text style={styles.listItem}>  {'\u2022'} Group hike cleanups & conservation projects</Text>
                   <Text style={styles.listItem}>  {'\u2022'} Backpacking experiences</Text>
@@ -98,6 +99,26 @@ export default function AboutPage() {
                   <Text style={styles.listItem}>  {'\u2022'} Road trips to national parks & picnic lands</Text>
                   <Text style={styles.listItem}>  {'\u2022'} Forest bridges campout series</Text>
                   <Text style={styles.listItem}>{"\n"} ...plus special events, festivals, and so much more!</Text>
+                </View>
+
+                <View style={[styles.sectionContainer, styles.lastSection]}>
+                    <Text style={styles.sectionHeader}>CONTACT</Text>
+
+                    <View style={styles.contactCard}>
+                        <ContactButton 
+                            iconName="globe" 
+                            title="Website contact form" 
+                            subtitle="weexploreearth.com/contact-us" 
+                            url="https://weexploreearth.com/contact-us" 
+                        />
+                        <View style={styles.contactDivider} />
+                        <ContactButton 
+                            iconName="instagram" 
+                            title="Instagram" 
+                            subtitle="@weexploreearth" 
+                            url="https://www.instagram.com/weexploreearth/" 
+                        />
+                    </View>
                 </View>
             </ScrollView>
         </SafeAreaView>
