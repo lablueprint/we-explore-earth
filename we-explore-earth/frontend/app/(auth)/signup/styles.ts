@@ -22,6 +22,7 @@ export const styles = StyleSheet.create({
   title: {
     ...typography.h1,
     fontSize: 42,
+    lineHeight: 46,
     color: '#0A1207',
     marginBottom: 8,
   },
