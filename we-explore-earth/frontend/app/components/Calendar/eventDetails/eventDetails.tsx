@@ -285,7 +285,7 @@ export default function EventDetails({
               
 
               {isAdmin && (
-                <TouchableOpacity style={styles.editButton}>
+                <TouchableOpacity style={styles.editButton} onPress={handleEditEvent}>
                 <View style={styles.editButtonContent}>
                   <Image
                     source={require("../../../../../shared/images/gear.png")}

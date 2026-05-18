@@ -1,11 +1,10 @@
 import { StyleSheet } from "react-native";
-
-import { typography } from '../../../../../shared/typography/typography';
+import { typography } from "../../../../../shared/typography/typography";
 
 export const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(248, 249, 247, 1)',
+    backgroundColor: "rgba(248, 249, 247, 1)",
   },
 
   sheet: {
@@ -22,41 +21,42 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 18,
   },
+
   backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
     paddingVertical: 24,
     paddingHorizontal: 8,
   },
-  
+
   backArrow: {
     fontSize: 20,
-    color: '#2F6B0C',
-    fontWeight: '600',
+    color: "#2F6B0C",
+    fontWeight: "600",
   },
 
   backText: {
+    ...typography.body,
     fontSize: 18,
     color: "#2F6B0C",
-    fontWeight: "500",
   },
 
   imagePlaceholder: {
-    width: '100%',
+    width: "100%",
     height: 240,
     borderRadius: 24,
-    backgroundColor: '#E6E7E3',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#E6E7E3",
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 20,
-    overflow: 'hidden',
-    position: 'relative',
+    overflow: "hidden",
+    position: "relative",
   },
-  
+
   imagePlaceholderText: {
-    color: '#9A9A94',
-    fontSize: 16,
+    ...typography.body,
+    color: "#9A9A94",
   },
 
   editButton: {
@@ -69,19 +69,16 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     marginBottom: 20,
   },
-  
+
   editButtonText: {
-    color: "rgba(255, 255, 255, 1)",
+    ...typography.body,
+    color: "#FFFFFF",
     fontSize: 17,
     fontWeight: "700",
   },
 
   title: {
-    fontFamily: "PlayfairDisplay_400Regular",
-    fontSize: 34,
-    lineHeight: 40,
-    letterSpacing: -0.8,
-    color: "#1D1D1B",
+    ...typography.h1,
     marginBottom: 18,
   },
 
@@ -92,7 +89,7 @@ export const styles = StyleSheet.create({
     marginBottom: 28,
     marginTop: 7,
   },
-  
+
   tagPill: {
     borderWidth: 0.8,
     borderColor: "#D7D5CF",
@@ -103,7 +100,8 @@ export const styles = StyleSheet.create({
   },
 
   tagText: {
-    fontSize: 16,
+    ...typography.body,
+    fontSize: 13,
     color: "#64645F",
   },
 
@@ -122,16 +120,18 @@ export const styles = StyleSheet.create({
 
   infoTitle: {
     ...typography.body,
+    fontSize: 18,
+    color: "#1D1D1B",
   },
 
   infoSub: {
+    ...typography.body,
     fontSize: 16,
     color: "#7A7A73",
   },
 
   sectionLabel: {
-    fontSize: 14,
-    fontWeight: "600",
+    ...typography.h3,
     color: "#A1A19A",
     marginTop: 22,
     marginBottom: 10,
@@ -145,11 +145,13 @@ export const styles = StyleSheet.create({
   },
 
   attendeeCount: {
+    ...typography.body,
     fontSize: 18,
     color: "#2C2C28",
   },
 
   viewAll: {
+    ...typography.body,
     fontSize: 16,
     color: "#A7A7A0",
   },
@@ -174,17 +176,18 @@ export const styles = StyleSheet.create({
     paddingVertical: 18,
     marginBottom: 14,
   },
-  
+
   infoCardLabel: {
+    ...typography.body,
     fontSize: 15,
     color: "#9A9A94",
     marginBottom: 10,
   },
-  
+
   infoCardText: {
+    ...typography.body,
     fontSize: 18,
     color: "#1D1D1B",
-    fontWeight: "400",
   },
 
   avatar: {
@@ -205,6 +208,7 @@ export const styles = StyleSheet.create({
   },
 
   rsvpButtonText: {
+    ...typography.body,
     color: "#FFFFFF",
     fontSize: 18,
     fontWeight: "700",
@@ -217,6 +221,7 @@ export const styles = StyleSheet.create({
   },
 
   body: {
+    ...typography.body,
     fontSize: 17,
     lineHeight: 29,
     color: "#262622",
@@ -233,23 +238,25 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
   },
-  
+
   editButtonIcon: {
     width: 20,
     height: 20,
     resizeMode: "contain",
   },
-  
+
   viewAllButton: {
     paddingVertical: 4,
     paddingHorizontal: 4,
   },
+
   logisticsIcon: {
     width: 16,
     height: 16,
     resizeMode: "contain",
     marginTop: 2,
   },
+
   logisticsRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -258,31 +265,31 @@ export const styles = StyleSheet.create({
   },
 
   closeButton: {
-    marginTop: 20,
-    padding: 10,
-    marginRight: 16,
-    borderRadius: 6,
-    alignSelf: 'flex-end',
-  },
+    marginTop: 20,
+    padding: 10,
+    marginRight: 16,
+    borderRadius: 6,
+    alignSelf: "flex-end",
+  },
 
   modalView: {
     marginTop: 20,
   },
 
-
-    eventFullButton: {
-  backgroundColor: '#979292',
-   borderRadius: 999,
+  eventFullButton: {
+    backgroundColor: "#979292",
+    borderRadius: 999,
     paddingVertical: 18,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 28,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
+
   eventFullText: {
-    color: '#f8ebeb',
-     fontSize: 18,
+    ...typography.body,
+    color: "#f8ebeb",
+    fontSize: 18,
     fontWeight: "700",
   },
-  
 });
