@@ -66,7 +66,7 @@ function SingleDatePickerModal (
             onRequestClose={() => setCalendarVisible(false)}
         >
             <Pressable style={calendarStyles.centeredView} onPress={() => setCalendarVisible(false)}>
-                <Pressable style={calendarStyles.modalView}>
+                <Pressable style={calendarStyles.modalView} onPress={(e) => e.stopPropagation()}>
                     <Calendar
                         minDate={minDate ? getLocalDateString(minDate) : getLocalDateString(new Date())}
                         markingType={'custom'}
