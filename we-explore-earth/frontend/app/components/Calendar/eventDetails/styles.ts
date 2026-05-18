@@ -291,6 +291,54 @@ export const styles = StyleSheet.create({
     marginTop: 20,
   },
 
+  deleteModalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 32,
+  },
+  deleteModalCard: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 24,
+    width: '100%',
+  },
+  deleteModalTitle: {
+    marginBottom: 10,
+    color: '#1D1D1B',
+  },
+  deleteModalMessage: {
+    color: '#6B6B66',
+    marginBottom: 24,
+  },
+  deleteModalButtons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  deleteModalCancel: {
+    flex: 1,
+    backgroundColor: '#F0F0ED',
+    borderRadius: 999,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  deleteModalCancelText: {
+    color: '#1D1D1B',
+    fontWeight: '600',
+  },
+  deleteModalConfirm: {
+    flex: 1,
+    backgroundColor: '#F0F0ED',
+    borderRadius: 999,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  deleteModalConfirmText: {
+    color: '#C0392B',
+    fontWeight: '600',
+  },
+
   eventFullButton: {
     backgroundColor: "#979292",
     borderRadius: 999,
