@@ -106,7 +106,7 @@ return (
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
            <ScrollView >
-          <Text style={styles.modalTitle}> Category </Text>
+          <Text style={[styles.modalTitle, typography.h3]}> Category </Text>
          
             {categoryOptions.map((option) => (
               <TouchableOpacity
@@ -129,7 +129,7 @@ return (
             ))}
             
 
-            <Text style={styles.modalTitle}> Accommodations</Text>
+            <Text style={[styles.modalTitle, typography.h3]}> Accommodations</Text>
          
             {accommodationOptions.map((option) => (
               <TouchableOpacity

@@ -93,7 +93,6 @@ export const styles = StyleSheet.create({
     fontSize: 20,
     marginBottom: 16,
     marginTop: 16,
-    textAlign: "center",
     color: "#333",
     fontFamily: 'HankenGrotesk-Regular',
     lineHeight: 24,
