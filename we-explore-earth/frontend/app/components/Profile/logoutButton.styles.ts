@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { typography } from "@shared/typography/typography";
 
 export const styles = StyleSheet.create({
   logoutCard: {
@@ -13,8 +14,7 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
   },
   logoutText: {
+    ...typography.h3,
     color: "#C8102E",
-    fontSize: 17,
-    fontWeight: "600",
   },
 });

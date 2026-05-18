@@ -198,7 +198,7 @@ export default function EventDetails({
                 />
               </View>
 
-              <Text style={[typography.h1, { paddingLeft: 5 }]}>
+              <Text style={[typography.smaller_h1, { paddingLeft: 5 }]}>
                 {event.title}
               </Text>
 
