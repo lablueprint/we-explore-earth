@@ -257,6 +257,12 @@ export function useEventFormPage(id: string | undefined) {
 
     const timeStart = combineDateAndTime(form.dateStart, form.timeStart);
     const timeEnd = combineDateAndTime(form.dateEnd, form.timeEnd);
+
+    if (timeEnd.getTime() < timeStart.getTime()) {
+      Alert.alert("Error", "End of event cannot be before start of event");
+      return;
+    }
+
     const pickedImageUri = form.eventImage;
     const isNewLocalImage =
       typeof pickedImageUri === "string" &&

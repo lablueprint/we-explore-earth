@@ -11,15 +11,14 @@ import {
   Modal,
 } from "react-native";
 
-import {MapPinPlus,FilePenLine, Plus, DollarSign, ChartPie, AlarmClock, PenLineIcon, PersonStanding, UserRoundPlus,} from "lucide-react-native";
+import { MapPinPlus, PenLineIcon, PersonStanding, UserRoundPlus } from "lucide-react-native";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
+import SingleDatePickerModal from "./SingleDatePickerModal";
 import { styles } from "./styles";
 import { CategoryAccommodationSection } from "./CategoryAccommodationSection";
 import * as ImagePicker from 'expo-image-picker';
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-// import { storage } from "@/firebase.config";
 import { LinearGradient } from "expo-linear-gradient";
 import { typography } from "../../../../../shared/typography/typography";
 
@@ -136,7 +135,6 @@ export function EventForm({
   eventImage,
   setEventImage,
   submitButtonText,
-  formTitle,
 }: EventFormProps) {
   const [showDateStartPicker, setShowDateStartPicker] = useState(false);
   const [showTimeStartPicker, setShowTimeStartPicker] = useState(false);
@@ -146,34 +144,11 @@ export function EventForm({
   const isAndroid = Platform.OS === "android";
   const isIOS = Platform.OS === "ios";
 
-  const formatDate = (date: Date): string => {
-    return date.toLocaleDateString();
-  };
-
-  const formatTime = (date: Date): string => {
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  };
-
   const formatPriceForDisplay = (cents: string): string => {
     const padded = cents.padStart(3, "0");
     const dollars = padded.slice(0, -2);
     const centsPart = padded.slice(-2);
     return `${parseInt(dollars, 10)}.${centsPart}`;
-  };
-
-  const handleDateStartChange = (
-    event: DateTimePickerEvent,
-    selectedDate?: Date
-  ) => {
-    if (isAndroid) {
-      setShowDateStartPicker(false);
-      if (event.type === "dismissed") {
-        return;
-      }
-    }
-    if (selectedDate) {
-      setDateStart(selectedDate);
-    }
   };
 
   const handleTimeStartChange = (
@@ -188,21 +163,6 @@ export function EventForm({
     }
     if (selectedDate) {
       setTimeStart(selectedDate);
-    }
-  };
-
-  const handleDateEndChange = (
-    event: DateTimePickerEvent,
-    selectedDate?: Date
-  ) => {
-    if (isAndroid) {
-      setShowDateEndPicker(false);
-      if (event.type === "dismissed") {
-        return;
-      }
-    }
-    if (selectedDate) {
-      setDateEnd(selectedDate);
     }
   };
 
@@ -251,24 +211,25 @@ export function EventForm({
   };
 
   return (
-
     <View style={styles.container}>
 
       <LinearGradient
-          colors={[
-            "#afc49e",
-            "#F8F9F7", 
-            "#afc49e",  
-          ]}
-          locations={[0, 0.5, 1]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={{ flex: 1 }}
-        >
+        colors={[
+          "#afc49e",
+          "#F8F9F7", 
+          "#afc49e",  
+        ]}
+        locations={[0, 0.5, 1]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{ flex: 1 }}
+      >
+      
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled" >
+        keyboardShouldPersistTaps="handled"
+      >
 
       <TouchableOpacity onPress={pickImage} style={styles.coverContainer}>
         {eventImage ? (
@@ -336,32 +297,39 @@ export function EventForm({
         </View>
       </View>
 
-      {isAndroid && showDateStartPicker && (
-        <DateTimePicker value={dateStart} mode="date" display="default" onChange={handleDateStartChange}/>
-      )}
-
-      {isAndroid && showTimeStartPicker && (
-        <DateTimePicker value={timeStart} mode="time" display="default" onChange={handleTimeStartChange}/>
-      )}
-
-      {isAndroid && showDateEndPicker && (
-        <DateTimePicker value={dateEnd} mode="date" display="default" onChange={handleDateEndChange} />
-      )}
-
-      {isAndroid && showTimeEndPicker && (
-        <DateTimePicker value={timeEnd} mode="time" display="default" onChange={handleTimeEndChange} />
+      {isAndroid && (
+        <>
+          <SingleDatePickerModal 
+            date={dateStart}
+            setDate={setDateStart}
+            calendarVisible={showDateStartPicker}
+            setCalendarVisible={setShowDateStartPicker}
+          />
+          {showTimeStartPicker && (
+            <DateTimePicker value={timeStart} mode="time" display="default" onChange={handleTimeStartChange}/>
+          )}
+          <SingleDatePickerModal 
+            date={dateEnd}
+            setDate={setDateEnd}
+            calendarVisible={showDateEndPicker}
+            setCalendarVisible={setShowDateEndPicker}
+            minDate={dateStart}
+          />
+          {showTimeEndPicker && (
+            <DateTimePicker value={timeEnd} mode="time" display="default" onChange={handleTimeEndChange} />
+          )}
+        </>
       )}
 
       {isIOS && (
         <>
-          <IosDateTimePickerSheet
-            visible={showDateStartPicker}
-            onClose={() => setShowDateStartPicker(false)}
-            value={dateStart}
-            mode="date"
-            display="inline"
-            onChange={handleDateStartChange}
+          <SingleDatePickerModal 
+            date={dateStart}
+            setDate={setDateStart}
+            calendarVisible={showDateStartPicker}
+            setCalendarVisible={setShowDateStartPicker}
           />
+          {/** TODO: Center time option */}
           <IosDateTimePickerSheet
             visible={showTimeStartPicker}
             onClose={() => setShowTimeStartPicker(false)}
@@ -370,14 +338,14 @@ export function EventForm({
             display="spinner"
             onChange={handleTimeStartChange}
           />
-          <IosDateTimePickerSheet
-            visible={showDateEndPicker}
-            onClose={() => setShowDateEndPicker(false)}
-            value={dateEnd}
-            mode="date"
-            display="inline"
-            onChange={handleDateEndChange}
+          <SingleDatePickerModal 
+            date={dateEnd}
+            setDate={setDateEnd}
+            calendarVisible={showDateEndPicker}
+            setCalendarVisible={setShowDateEndPicker}
+            minDate={dateStart}
           />
+          {/** TODO: Center time option */}
           <IosDateTimePickerSheet
             visible={showTimeEndPicker}
             onClose={() => setShowTimeEndPicker(false)}
@@ -412,16 +380,14 @@ export function EventForm({
           />
         </View>
         
-        <View style= {[styles.input]}>
-          <CategoryAccommodationSection
-            categoryOptions={categoryOptions}
-            accommodationOptions={accommodationOptions}
-            category={category}
-            accommodation={accommodation}
-            onCategoryChange={onCategoryChange}
-            onAccommodationChange={onAccommodationChange}
-          />
-        </View>
+        <CategoryAccommodationSection
+          categoryOptions={categoryOptions}
+          accommodationOptions={accommodationOptions}
+          category={category}
+          accommodation={accommodation}
+          onCategoryChange={onCategoryChange}
+          onAccommodationChange={onAccommodationChange}
+        />
 
         <View style={styles.divider} />
 

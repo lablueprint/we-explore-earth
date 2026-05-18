@@ -93,7 +93,6 @@ export const styles = StyleSheet.create({
     fontSize: 20,
     marginBottom: 16,
     marginTop: 16,
-    textAlign: "center",
     color: "#333",
     fontFamily: 'HankenGrotesk-Regular',
     lineHeight: 24,
@@ -196,7 +195,8 @@ export const styles = StyleSheet.create({
   },
 
 
-  coverContainer: {
+coverContainer: {
+  marginTop: 24,
   width: "100%",
   height: 220,
   borderRadius: 24,
@@ -226,15 +226,14 @@ editButton: {
 
 //SUBMIT
 launchButton: {
-  backgroundColor: "#1D6400",
-  width: "100%",
-  height: 64,
-  borderRadius: 32,
   justifyContent: "center",
-  alignItems: "center",
-  alignSelf: "flex-start",
-  marginLeft: 0,
   marginTop: 30,
+  paddingHorizontal: 20,
+  paddingVertical: 12,
+  width: "100%",
+  height: 60,
+  borderRadius: 100,
+  backgroundColor: "#1D6400",
 },
 
 launchButtonText: {
@@ -243,7 +242,7 @@ launchButtonText: {
   fontWeight: "400",
   fontFamily: 'HankenGrotesk-Regular',
   lineHeight: 24,
-  
+  textAlign: "center",
 },
 
 
@@ -402,6 +401,19 @@ iconContainerTop: {
   marginTop: 2,
 },
 
+// FOR CATEGORY AND ACCOMMODATION SELECTION IN EVENT FORM
+
+addEventTagHeader: {
+  flexDirection: "row",
+  alignItems: "center",
+},
+
+addEventTagWrapper: {
+  backgroundColor: "#ededed",
+  borderRadius: 12,
+  paddingHorizontal: 16,
+  marginBottom: 16,
+},
 
 //TAGS
 tagPill: {
@@ -423,10 +435,75 @@ tagContainer: {
   flexDirection: "row",   
   flexWrap: "wrap",       
   marginTop: 6,
+  paddingBottom: 14,
 },
 
 });
 
+// FOR SINGLE DATE PICKER MODAL (for selecting start and end date in event form)
 
+// Date range styles (for calendar that's imported from 'react-native-calendar')
+const SELECTED_BACKGROUND_COLOR = '#D6E6CB';
+const SELECTED_EDGE_BORDER_RADIUS = 50;
+const SELECTED_EDGE_CIRCLE_COLOR = '#507C30';
+const SELECTED_EDGE_TEXT_COLOR = '#FCFCFC';
 
+/* 
+ * Width of the calendar is 322, so each day has a width of 46 (322 / 7).
+ * Middle days have a background that spans the entire width.
+ * Edge days have a background that spans 70% of the width.
+ */
+const RANGE_DAY_WIDTH = 46;
+const SELECTED_EDGE_BACKGROUND_WIDTH = Math.round(RANGE_DAY_WIDTH * 0.7);
 
+// Base container style for all selected days. Start dates, end dates, and single dates override some of these styles.
+const baseContainerStyle = {
+  width: RANGE_DAY_WIDTH,
+  justifyContent: 'center',
+  alignItems: 'center',
+  backgroundColor: SELECTED_BACKGROUND_COLOR,
+  borderRadius: 0,
+};
+
+// Edge days are indicated with a dark green circle overlay.
+const edgeCircleStyle = {
+  color: SELECTED_EDGE_TEXT_COLOR,
+  backgroundColor: SELECTED_EDGE_CIRCLE_COLOR,
+  borderRadius: SELECTED_EDGE_BORDER_RADIUS,
+  width: 26,
+  height: 26,
+  lineHeight: 26,
+  textAlign: 'center',
+}
+
+export const dateRangeStyles = {
+  singleDay: {
+    container: {
+      ...baseContainerStyle,
+      width: SELECTED_EDGE_BACKGROUND_WIDTH,
+      borderRadius: SELECTED_EDGE_BORDER_RADIUS,
+    },
+    text: {
+      ...edgeCircleStyle,
+    }
+  },
+};
+
+// Modal styles (parent container of the calendar)
+export const calendarStyles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalView: {
+    padding: 16,
+    width: 354,
+    backgroundColor: '#F0F0F0',
+    borderWidth: 1,
+    borderRadius: 20,
+    borderColor: '#DEDEDE',
+    elevation: 5,
+  },
+})
