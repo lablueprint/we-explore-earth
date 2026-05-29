@@ -280,8 +280,8 @@ export default function EventDetails({
               <View style={styles.attendeeHeader}>
              <Text style={styles.attendeeCount}>
                 {localAttendeeCount === 1
-                  ? "1 Person on the List"
-                  : `${localAttendeeCount} People on the List`}
+                  ? "1 person on the list"
+                  : `${localAttendeeCount} people on the list`}
               </Text>
 
                 {isAdmin && (
