@@ -102,6 +102,7 @@ export default function EventDetails({
   const [hasLocalChange, setHasLocalChange] = useState(false);
   const [showAll, setShowAll] = useState(false);
   const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
+  const [localAttendeeCount, setLocalAttendeeCount] = useState(0);
 
   const currentRSVP =
     event && user?.events
@@ -115,6 +116,7 @@ export default function EventDetails({
     if (visible) {
       setLocalRSVP(null);
       setHasLocalChange(false);
+      setLocalAttendeeCount(event?.attendees?.length ?? 0);
     } else {
       setRsvpModalVisible(false);
     }
@@ -129,10 +131,23 @@ export default function EventDetails({
   };
 
   const handleRSVPChange = (status: "YES" | "MAYBE" | null) => {
-    setLocalRSVP(status);
-    setHasLocalChange(true);
-    onRSVPChange?.();
-  };
+  const previousRSVP = hasLocalChange ? localRSVP : currentRSVP;
+
+  const wasAttending =
+    previousRSVP === "YES" || previousRSVP === "MAYBE";
+
+  const willAttend =
+    status === "YES" || status === "MAYBE";
+
+  if (!wasAttending && willAttend) {
+    setLocalAttendeeCount((prev) => prev + 1);
+  } else if (wasAttending && !willAttend) {
+    setLocalAttendeeCount((prev) => prev - 1);
+  }
+
+  setLocalRSVP(status);
+  setHasLocalChange(true);
+};
 
   const handleEditEvent = () => {
     if (!event?.id) return;
@@ -178,7 +193,8 @@ export default function EventDetails({
   };
 
   if (!event) return null;
-  const isFull = (event.attendees?.length ?? 0) >= event.maxAttendees;
+  const isFull = localAttendeeCount >= event.maxAttendees;
+  const isFullForUser = isFull && !displayRSVP
 
   return (
     <>
@@ -262,10 +278,10 @@ export default function EventDetails({
 
               <Text style={styles.sectionLabel}>ATTENDEES</Text>
               <View style={styles.attendeeHeader}>
-              <Text style={styles.attendeeCount}>
-                {(event.attendees?.length ?? 0) === 1
+             <Text style={styles.attendeeCount}>
+                {localAttendeeCount === 1
                   ? "1 Person on the List"
-                  : `${event.attendees?.length ?? 0} People on the List`}
+                  : `${localAttendeeCount} People on the List`}
               </Text>
 
                 {isAdmin && (
@@ -294,12 +310,12 @@ export default function EventDetails({
 
               {!isAdmin && (
                 <TouchableOpacity
-                  onPress={isFull ? undefined : handleRSVPPress}
-                  style={isFull ? styles.eventFullButton : styles.rsvpButton}
-                  disabled={isFull}
+                  onPress={isFullForUser ? undefined : handleRSVPPress}
+                  style={isFullForUser ? styles.eventFullButton : styles.rsvpButton}
+                  disabled={isFullForUser}
                 >
-                  <Text style={isFull ? styles.eventFullText : styles.rsvpButtonText}>
-                    {isFull ? "Event Full" : displayRSVP ? "Update RSVP" : "RSVP"}
+                  <Text style={isFullForUser ? styles.eventFullText : styles.rsvpButtonText}>
+                    {isFullForUser ? "Event Full" : displayRSVP ? "Update RSVP" : "RSVP"}
                   </Text>
                 </TouchableOpacity>
               )}
