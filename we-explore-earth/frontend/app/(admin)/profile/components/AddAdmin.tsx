@@ -48,24 +48,29 @@ export function AddAdmin() {
 
   const handleAddAdmin = async () => {
     const normalizedEmail = email.trim().toLowerCase();
-
+  
     if (!normalizedEmail || !normalizedEmail.includes("@")) {
       Alert.alert("Invalid Email", "Enter a valid email");
       return;
     }
-
+  
+    if (admins.includes(normalizedEmail)) {
+      Alert.alert("Already Admin", "This email is already an admin.");
+      return;
+    }
+  
     try {
       setLoadingAdd(true);
-
+  
       const res = await fetch(`${API_URL}/config/admin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: normalizedEmail }),
       });
-
+  
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error);
-
+  
       setEmail("");
       fetchAdmins();
     } catch (e: any) {
@@ -76,20 +81,36 @@ export function AddAdmin() {
   };
 
   const removeAdmin = async (adminEmail: string) => {
-    try {
-      const res = await fetch(`${API_URL}/config/admin`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: adminEmail }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error);
-
-      fetchAdmins();
-    } catch (e: any) {
-      Alert.alert("Error", e.message ?? "Failed to remove admin");
-    }
+    Alert.alert(
+      "Remove Admin",
+      `Are you sure you want to remove ${adminEmail} as an admin?`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Remove",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const res = await fetch(`${API_URL}/config/admin`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: adminEmail }),
+              });
+  
+              const data = await res.json();
+              if (!res.ok) throw new Error(data?.error);
+  
+              fetchAdmins();
+            } catch (e: any) {
+              Alert.alert("Error", e.message ?? "Failed to remove admin");
+            }
+          },
+        },
+      ]
+    );
   };
 
   return (

@@ -23,24 +23,39 @@ export async function addAdmin(req: Request, res: Response) {
     return res.status(400).json({ error: "Email is required" });
   }
 
-  const normalizedEmail = email.toLowerCase();
+  const normalizedEmail = email.trim().toLowerCase();
 
   try {
-    await db.doc("config/shared").update({
+    const configRef = db.doc("config/shared");
+    const snap = await configRef.get();
+    const data = snap.data();
+
+    const admins: string[] = data?.admins ?? [];
+
+    if (admins.includes(normalizedEmail)) {
+      return res.status(400).json({
+        error: "Admin already exists",
+      });
+    }
+
+    await configRef.update({
       admins: admin.firestore.FieldValue.arrayUnion(normalizedEmail),
     });
 
     const usersRef = db.collection("users");
-    const snap = await usersRef.where("email", "==", normalizedEmail).limit(1).get();
+    const userSnap = await usersRef
+      .where("email", "==", normalizedEmail)
+      .limit(1)
+      .get();
 
-    if (!snap.empty) {
-      const userDocRef = snap.docs[0].ref;
+    if (!userSnap.empty) {
+      const userDocRef = userSnap.docs[0].ref;
       await userDocRef.set({ isAdmin: true }, { merge: true });
     }
 
-    res.json({ success: true });
+    return res.json({ success: true });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 }
 
