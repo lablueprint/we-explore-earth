@@ -264,8 +264,8 @@ export default function EventDetails({
               <View style={styles.attendeeHeader}>
               <Text style={styles.attendeeCount}>
                 {(event.attendees?.length ?? 0) === 1
-                  ? "1 Person on the List"
-                  : `${event.attendees?.length ?? 0} People on the List`}
+                  ? "1 person on the list"
+                  : `${event.attendees?.length ?? 0} people on the list`}
               </Text>
 
                 {isAdmin && (
