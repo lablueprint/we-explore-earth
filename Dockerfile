@@ -5,4 +5,4 @@ WORKDIR /app/backend
 RUN npm install
 RUN npm run build
 EXPOSE 3000
-CMD ["node", "dist/src/index.js"]
+CMD ["node", "dist/backend/src/index.js"]
