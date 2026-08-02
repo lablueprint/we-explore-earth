@@ -5,7 +5,10 @@ import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { s3Client, bucketName } from "../s3Client";
 import { User, NewUser, UserRSVP } from "@shared/types/user";
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
+
+//Create a Resend instance that we will use in all email sending functions
+const resend = new Resend(process.env.EMAIL_PASS);
 
 const AVATAR_SIGNED_URL_EXPIRES_IN = 60 * 60;
 
@@ -161,16 +164,8 @@ export async function signupUser(req: Request, res: Response) {
     const verificationLink = await admin.auth().generateEmailVerificationLink(email);
 
     // Send verification email
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
-    });
-
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+    await resend.emails.send({
+      from: 'onboarding@resend.dev',
       to: email,
       subject: 'Verify Your Email - We Explore Earth',
       html: `
@@ -342,16 +337,8 @@ export async function resetPassword(req: Request, res: Response) {
 
     const verificationLink = await admin.auth().generatePasswordResetLink(email);
 
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
-    });
-
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+    await resend.emails.send({
+      from: 'onboarding@resend.dev',
       to: email,
       subject: 'Reset Your Password - We Explore Earth',
       html: `

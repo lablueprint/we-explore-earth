@@ -15,13 +15,12 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.999.0",
     "@aws-sdk/s3-request-presigner": "^3.989.0",
-    "@types/nodemailer": "^7.0.4",
     "cors": "^2.8.5",
     "dotenv": "^17.4.1",
     "express": "^5.1.0",
     "firebase-admin": "^13.10.0",
     "multer": "^2.0.2",
-    "nodemailer": "^8.0.7",
+    "resend": "^6.18.1",
     "twilio": "^5.13.1"
   },
   "devDependencies": {
