@@ -165,7 +165,7 @@ export async function signupUser(req: Request, res: Response) {
 
     // Send verification email
     await resend.emails.send({
-      from: 'onboarding@resend.dev',
+      from: process.env.EMAIL_USER!,
       to: email,
       subject: 'Verify Your Email - We Explore Earth',
       html: `
@@ -338,7 +338,7 @@ export async function resetPassword(req: Request, res: Response) {
     const verificationLink = await admin.auth().generatePasswordResetLink(email);
 
     await resend.emails.send({
-      from: 'onboarding@resend.dev',
+      from: process.env.EMAIL_USER!,
       to: email,
       subject: 'Reset Your Password - We Explore Earth',
       html: `
